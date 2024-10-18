@@ -81,7 +81,7 @@ while running:
     particles_g.update(screen_rect, dt, fps)
     player_g.update(screen_rect, dt)
     bullets_g.update(screen_rect, dt)
-    enemies_g.update(screen_rect, (player.rect.x, player.rect.y), dt)
+    enemies_g.update(screen, screen_rect, (player.rect.x, player.rect.y), dt)
     enemy_spawn.update(dt)
 
     bullets_g.draw(screen)
