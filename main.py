@@ -55,15 +55,17 @@ while running:
             if event.key == pygame.K_r:
                 if player.health <= 0:
                     playing = True
+
                     particles_g = pygame.sprite.Group()
                     bullets_g = pygame.sprite.Group()
                     enemies_g = pygame.sprite.Group()
+                    items_g = pygame.sprite.Group()
 
                     player_g = pygame.sprite.Group()
                     player = Player(bullets_g, particles_g, player_g)
 
                     enemy_spawn = EnemySpawn(enemies_g, particles_g, bullets_g,
-                                             player)
+                                             items_g, player)
 
             if event.key == pygame.K_ESCAPE:
                 if player.health:

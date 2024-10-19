@@ -110,9 +110,16 @@ class Triangle(Sprite):
                                      generate_particles('death_particle'),
                                      50, 30,
                                      self.particles_g)
-                    item = HealthBox(self.player, self.rect.center,
-                                     2, self.particles_g, self.items_g)
-                    self.items_g.add(item)
+                    item_type = random.choices(['health', 'ammo', ''],
+                                               weights=(1, 1, 17), k=1)[0]
+                    if item_type:
+                        if item_type == 'health':
+                            item = HealthBox(self.player, self.rect.center,
+                                             2, self.particles_g, self.items_g)
+                        if item_type == 'ammo':
+                            item = AmmoBox(self.player, self.rect.center,
+                                             10, self.particles_g, self.items_g)
+                        self.items_g.add(item)
                     self.kill()
 
     def player_check(self):
