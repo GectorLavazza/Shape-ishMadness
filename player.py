@@ -13,6 +13,10 @@ class Player(Sprite):
         self.image = load_image('player')
         self.rect = self.image.get_rect()
         self.rect.center = SW // 2, SH // 2
+        self.hitbox = pygame.Rect(0, 0, 46, 46)
+        self.hitbox.topleft = (
+            self.rect.centerx + - self.hitbox.w // 2,
+            self.rect.centery + - self.hitbox.h // 2)
         self.score = 0
         self.speed = 5
         self.health = 10
@@ -25,6 +29,7 @@ class Player(Sprite):
         self.cooldown = 0
         self.c_time = 9
         self.hold_mode = False
+        self.sprint = False
 
     def update(self, screen_rect, dt):
         direction = pygame.Vector2(self.dx, self.dy)
@@ -32,11 +37,21 @@ class Player(Sprite):
             direction = direction.normalize()
         if 0 <= self.rect.x + direction.x * self.speed * dt <= SW - self.rect.w:
             self.rect.centerx += direction.x * self.speed * dt
+            self.hitbox.centerx += direction.x * self.speed * dt
         if 0 <= self.rect.y + direction.y * self.speed * dt <= SH - self.rect.h:
             self.rect.centery += direction.y * self.speed * dt
+            self.hitbox.centery += direction.y * self.speed * dt
 
         if self.cooldown < self.c_time:
             self.cooldown += dt
+
+        if self.sprint:
+            if not self.hold:
+                self.speed = 8
+            else:
+                self.speed = 5
+        else:
+            self.speed = 5
 
     def shoot(self, mouse_pos):
         if self.cooldown >= self.c_time:

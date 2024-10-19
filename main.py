@@ -29,6 +29,7 @@ enemy_spawn = EnemySpawn(enemies_g, particles_g, bullets_g, player)
 
 score_label = Text(screen, size, 40, pos=(SW // 2, 10))
 health = ValueBar(screen, size, player.max_health, 'heart',(10, 10))
+fps_label = Text(screen, size, 10, pos=(40, SH - 20))
 
 play_music('stains_of_time', 0.3)
 
@@ -76,7 +77,7 @@ while running:
                     fps = 120
 
             if event.key == pygame.K_LSHIFT:
-                player.speed = 8
+                player.sprint = True
 
             if event.key == pygame.K_w:
                 player.dy = -1
@@ -97,7 +98,7 @@ while running:
                 player.dx = 0
 
             if event.key == pygame.K_LSHIFT:
-                player.speed = 5
+                player.sprint = False
 
         if event.type == pygame.MOUSEBUTTONDOWN:
             if event.button == 3:
@@ -130,8 +131,11 @@ while running:
     enemies_g.draw(screen)
     player_g.draw(screen)
 
+    render_hitbox(screen, player, enemies_g, False, False)
+
     score_label.update(player.score)
     health.update(player.health)
+    fps_label.update(f'FPS: {round(clock.get_fps())}')
 
 
     pygame.display.update()

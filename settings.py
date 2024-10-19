@@ -2,8 +2,8 @@ import pygame
 
 pygame.display.init()
 screen_info = pygame.display.Info()
-SW, SH = screen_info.current_w, screen_info.current_h
-# SW, SH = 800, 800
+# SW, SH = screen_info.current_w, screen_info.current_h
+SW, SH = 1080, 720
 
 
 def play_sound(filename, volume=0.5):
@@ -24,3 +24,17 @@ def set_screen(size):
     screen_rect = (0, 0, size[0], size[1])
 
     return screen, size, screen_rect
+
+
+def render_hitbox(screen, player, npcs, rect=True, hitbox=True):
+    if rect:
+        pygame.draw.rect(screen, pygame.Color('blue'), player.rect)
+
+    for npc in npcs:
+        if rect:
+            pygame.draw.rect(screen, pygame.Color('purple'), npc.rect)
+        if hitbox:
+            pygame.draw.rect(screen, pygame.Color('red'), npc.hitbox)
+
+    if hitbox:
+        pygame.draw.rect(screen, pygame.Color('green'), player.hitbox)

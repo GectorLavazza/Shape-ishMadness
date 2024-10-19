@@ -23,7 +23,8 @@ class Triangle(Sprite):
         self.health = 2
         self.max_health = 2
         self.damage = 1
-        self.score_weight = int(self.max_speed + self.health + self.damage) // 2
+        self.score_weight = int(
+            self.max_speed + self.health + self.damage) // 2
 
         self.dx = 0
         self.dy = 0
@@ -33,6 +34,11 @@ class Triangle(Sprite):
         self.player = player
 
         self.damage_timer = 0
+
+        self.hitbox = pygame.Rect(0, 0, 30, 30)
+        self.hitbox.topleft = (
+            self.rect.centerx + - self.hitbox.w // 2,
+            self.rect.centery + - self.hitbox.h // 2)
 
     def update(self, screen, screen_rect, target_pos, dt):
         self.move(target_pos, dt)
@@ -51,6 +57,8 @@ class Triangle(Sprite):
             direction = direction.normalize()
         self.rect.centerx += direction.x * self.speed * dt
         self.rect.centery += direction.y * self.speed * dt
+        self.hitbox.centerx += direction.x * self.speed * dt
+        self.hitbox.centery += direction.y * self.speed * dt
 
     def bullet_check(self):
 
@@ -75,7 +83,7 @@ class Triangle(Sprite):
 
     def player_check(self):
         if self.damage_timer >= 120:
-            if self.rect.colliderect(self.player.rect):
+            if self.hitbox.colliderect(self.player.hitbox):
                 self.player.health -= self.damage
                 self.damage_timer = 0
                 self.speed = 1
@@ -103,11 +111,12 @@ class Square(Triangle):
         self.rect.center = pos
 
         self.elapsed_time = 0
-        self.speed = random.randint(10, 30) / 10
+        self.speed = random.randint(10, 20) / 10
         self.health = 4
         self.max_health = 4
         self.damage = 2
-        self.score_weight = int(self.max_speed + self.health + self.damage) // 2
+        self.score_weight = int(
+            self.max_speed + self.health + self.damage) // 2
 
         self.dx = 0
         self.dy = 0
@@ -117,6 +126,11 @@ class Square(Triangle):
         self.player = player
 
         self.damage_timer = 0
+
+        self.hitbox = pygame.Rect(0, 0, 40, 40)
+        self.hitbox.topleft = (
+            self.rect.centerx + - self.hitbox.w // 2,
+            self.rect.centery + - self.hitbox.h // 2)
 
 
 class EnemySpawn:
@@ -131,7 +145,7 @@ class EnemySpawn:
     def update(self, dt):
         self.elapsed_time += dt
 
-        if self.elapsed_time >= self.spawn_time and len(self.group) < 20:
+        if self.elapsed_time >= self.spawn_time and len(self.group) < 10:
             self.elapsed_time = 0
 
             x = chain(range(-SW - 400, -SW - 200),
@@ -140,7 +154,8 @@ class EnemySpawn:
                       range(SH + 200, SH + 400))
             pos = random.choice(list(x)), random.choice(list(y))
 
-            enemy_type = random.choices(['square', 'triangle'], weights=(3, 7), k=1)[0]
+            enemy_type = \
+            random.choices(['square', 'triangle'], weights=(3, 7), k=1)[0]
             if enemy_type == 'square':
                 enemy = Square(pos, self.particles_g, self.bullet_g,
                                self.player, self.group)
