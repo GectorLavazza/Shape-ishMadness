@@ -8,7 +8,7 @@ from settings import *
 
 
 class Player(Sprite):
-    def __init__(self, bullets_g, particles_g, *group):
+    def __init__(self, bullets_g, particles_g, enemy_bullet_g, *group):
         super().__init__(*group)
         self.image = load_image('player')
         self.rect = self.image.get_rect()
@@ -29,6 +29,7 @@ class Player(Sprite):
         self.dy = 0
         self.bullets_g = bullets_g
         self.particles_g = particles_g
+        self.enemy_bullet_g = enemy_bullet_g
         self.hold = False
         self.cooldown = 0
         self.c_time = 9
@@ -75,6 +76,16 @@ class Player(Sprite):
         else:
             self.max_speed = 5
 
+        for bullet in self.enemy_bullet_g:
+            if self.hitbox.colliderect(bullet.rect):
+                self.health -= 1
+                create_particles(self.rect.center,
+                                 generate_particles('hit_particle'),
+                                 50, 20,
+                                 self.particles_g)
+                play_sound('hit')
+                bullet.kill()
+
     def shoot(self, mouse_pos):
         if self.cooldown >= self.c_time:
             play_sound('shoot2', 0.2)
@@ -93,8 +104,8 @@ class Bullet(Sprite):
         self.rect.center = pos
 
         self.elapsed_time = 0
-        self.existence_time = 60
         self.speed = 10
+        self.existence_time = 60
 
         self.particles_g = particles_g
 
@@ -117,5 +128,30 @@ class Bullet(Sprite):
             self.kill()
 
 
+class EnemyBullet(Bullet):
+    def __init__(self, pos, target_pos, particles_g, *group):
+        super().__init__(pos, target_pos, particles_g, *group)
+        self.image = load_image('bullet')
+        self.rect = self.image.get_rect()
+        self.rect.center = pos
+        self.existence_time = 120
+
+    def update(self, screen_rect, dt):
+        self.rect.centerx += self.direction.x * self.speed * dt
+        self.rect.centery += self.direction.y * self.speed * dt
+
+        self.elapsed_time += dt
+
+        if self.elapsed_time >= self.existence_time:
+            create_particles(self.rect.center,
+                             generate_particles('bullet_particle3'),
+                             10, 10,
+                             self.particles_g)
+            play_sound('bullet_explosion', 0.2)
+            self.kill()
+
 def create_bullet(position, target_pos, particles_g, group):
     Bullet(position, target_pos, particles_g, group)
+
+def create_enemy_bullet(position, target_pos, particles_g, group):
+    EnemyBullet(position, target_pos, particles_g, group)

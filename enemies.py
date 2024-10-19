@@ -8,6 +8,7 @@ from load_image import load_image
 
 from settings import *
 from items import *
+from player import create_bullet, Bullet, create_enemy_bullet
 
 
 class Triangle(Sprite):
@@ -20,8 +21,7 @@ class Triangle(Sprite):
         self.rect.center = pos
 
         self.elapsed_time = 0
-        self.max_speed = random.randint(30, 50) / 10
-        self.speed = self.max_speed
+        self.max_speed = random.randint(4, 7)
         self.health = 2
         self.max_health = 2
         self.damage = 1
@@ -59,7 +59,6 @@ class Triangle(Sprite):
             self.damage_timer += dt
             self.recovering = True
         else:
-            self.speed = self.max_speed
             self.recovering = False  # Stop recovering when cooldown is done
 
     def move(self, target_pos, dt):
@@ -154,7 +153,7 @@ class Square(Triangle):
         self.rect.center = pos
 
         self.elapsed_time = 0
-        self.speed = random.randint(10, 20) / 10
+        self.max_speed = random.randint(2, 4)
         self.health = 4
         self.max_health = 4
         self.damage = 2
@@ -180,8 +179,111 @@ class Square(Triangle):
         self.velocity = pygame.Vector2(0, 0)  # Current velocity
 
 
+class Pentagon(Triangle):
+    def __init__(self, pos, particles_g, bullet_g, items_g, enemy_bullet_g, player, *group):
+        super().__init__(pos, particles_g, bullet_g, items_g, player, *group)
+        self.image = load_image('pentagon')
+        self.name = 'pentagon'
+        self.rect = self.image.get_rect()
+
+        self.rect.center = pos
+
+        self.elapsed_time = 0
+        self.max_speed = 1
+        self.health = 100
+        self.max_health = 100
+        self.damage = 2
+        self.score_weight = int(
+            self.max_speed + self.health + self.damage) // 2
+
+        self.dx = 0
+        self.dy = 0
+
+        self.particles_g = particles_g
+        self.bullet_g = bullet_g
+        self.player = player
+        self.enemy_bullet_g = enemy_bullet_g
+
+        self.damage_timer = 0
+
+        self.hitbox = pygame.Rect(0, 0, 60, 60)
+        self.hitbox.topleft = (
+            self.rect.centerx + - self.hitbox.w // 2,
+            self.rect.centery + - self.hitbox.h // 2)
+
+        self.acceleration = 0.025 # How quickly the player accelerates
+        self.deceleration = 0.0125  # How quickly the player decelerates
+        self.velocity = pygame.Vector2(0, 0)  # Current velocity
+
+        self.cooldown = 0
+        self.c_time = 60
+
+    def update(self, screen, screen_rect, target_pos, dt):
+        self.move(target_pos, dt)
+        self.bullet_check()
+        self.draw_health_bar(screen)
+        self.player_check()
+
+        # Handle damage cooldown and recovery
+        if self.damage_timer < 120:
+            self.damage_timer += dt
+            self.recovering = True
+        else:
+            self.recovering = False  # Stop recovering when cooldown is done
+
+        if self.cooldown < self.c_time:
+            self.cooldown += dt
+
+        self.shoot()
+
+    def draw_health_bar(self, screen):
+        pygame.draw.rect(screen, pygame.Color('#306230'),
+                         pygame.Rect(self.rect.centerx - 30, self.rect.y - 10,
+                                     60, 5))
+        pygame.draw.rect(screen, pygame.Color('#8bac0f'),
+                         pygame.Rect(self.rect.centerx - 30, self.rect.y - 10,
+                                     60 / self.max_health * self.health, 5))
+
+    def bullet_check(self):
+        for bullet in self.bullet_g:
+            if self.hitbox.colliderect(bullet.rect):
+                self.health -= 1
+                bullet.kill()
+                if self.health:
+                    play_sound('enemy_hit')
+                    create_particles(self.rect.center,
+                                     generate_particles(f'{self.name}_particle'),
+                                     60, 30,
+                                     self.particles_g)
+                else:
+                    self.player.score += self.score_weight
+                    play_sound('explosion')
+                    create_particles(self.rect.center,
+                                     generate_particles('death_particle'),
+                                     100, 60,
+                                     self.particles_g)
+                    item_type = random.choices(['health', 'ammo', ''],
+                                               weights=(1, 1, 17), k=1)[0]
+                    if item_type:
+                        if item_type == 'health':
+                            item = HealthBox(self.player, self.rect.center,
+                                             2, self.particles_g, self.items_g)
+                        if item_type == 'ammo':
+                            item = AmmoBox(self.player, self.rect.center,
+                                             10, self.particles_g, self.items_g)
+                        self.items_g.add(item)
+                    self.kill()
+
+    def shoot(self):
+        if self.cooldown >= self.c_time:
+            play_sound('shoot', 0.2)
+            create_enemy_bullet(self.rect.center, self.player.rect.center,
+                          self.particles_g, self.enemy_bullet_g)
+            self.cooldown = 0
+
+
 class EnemySpawn:
-    def __init__(self, group, particles_g, bullet_g, items_g, player):
+    def __init__(self, group, particles_g, bullet_g, items_g, enemy_bullet_g, player):
         self.elapsed_time = 0
         self.spawn_time = 30
         self.group = group
@@ -189,6 +291,7 @@ class EnemySpawn:
         self.bullet_g = bullet_g
         self.player = player
         self.items_g = items_g
+        self.enemy_bullet_g = enemy_bullet_g
 
     def update(self, dt):
         self.elapsed_time += dt
@@ -203,13 +306,18 @@ class EnemySpawn:
             pos = random.choice(list(x)), random.choice(list(y))
 
             enemy_type = \
-            random.choices(['square', 'triangle'], weights=(3, 7), k=1)[0]
+            random.choices(['square', 'triangle', 'pentagon'], weights=(3, 7, 0), k=1)[0]
             if enemy_type == 'square':
                 enemy = Square(pos, self.particles_g, self.bullet_g,
                                self.items_g,
                                self.player, self.group)
-            else:
+            elif enemy_type == 'triangle':
                 enemy = Triangle(pos, self.particles_g, self.bullet_g,
                                  self.items_g,
                                  self.player, self.group)
+            else:
+                enemy = Pentagon(pos, self.particles_g, self.bullet_g,
+                                 self.items_g, self.enemy_bullet_g,
+                                 self.player, self.group)
+
             self.group.add(enemy)
