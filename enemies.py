@@ -40,28 +40,56 @@ class Triangle(Sprite):
             self.rect.centerx + - self.hitbox.w // 2,
             self.rect.centery + - self.hitbox.h // 2)
 
+        self.acceleration = 0.7  # How quickly the enemy accelerates
+        self.deceleration = 0.3  # How quickly the enemy decelerates
+        self.velocity = pygame.Vector2(0, 0)  # Current velocity
+        self.recovering = False  # Track if the enemy is recovering after the hit
+
     def update(self, screen, screen_rect, target_pos, dt):
         self.move(target_pos, dt)
         self.bullet_check()
         self.draw_health_bar(screen)
         self.player_check()
+
+        # Handle damage cooldown and recovery
         if self.damage_timer < 120:
             self.damage_timer += dt
+            self.recovering = True
         else:
             self.speed = self.max_speed
+            self.recovering = False  # Stop recovering when cooldown is done
 
     def move(self, target_pos, dt):
-        direction = pygame.Vector2(target_pos) - pygame.Vector2(
-            self.rect.center)
+        direction = pygame.Vector2(target_pos) - pygame.Vector2(self.rect.center)
+
         if direction.length() > 0:
             direction = direction.normalize()
-        self.rect.centerx += direction.x * self.speed * dt
-        self.rect.centery += direction.y * self.speed * dt
-        self.hitbox.centerx += direction.x * self.speed * dt
-        self.hitbox.centery += direction.y * self.speed * dt
+
+            # If recovering (after hitting the player), decelerate
+            if self.recovering:
+                self.velocity.x -= self.velocity.x * self.deceleration * 0.5 * dt
+                self.velocity.y -= self.velocity.y * self.deceleration * 0.5 * dt
+            else:
+                # Normal acceleration towards the target
+                self.velocity.x += direction.x * self.acceleration * dt
+                self.velocity.y += direction.y * self.acceleration * dt
+        else:
+            # Decelerate when no input
+            if self.velocity.length() > 0:
+                self.velocity.x -= self.velocity.x * self.deceleration * dt
+                self.velocity.y -= self.velocity.y * self.deceleration * dt
+
+        # Cap velocity to max speed
+        if self.velocity.length() > self.max_speed:
+            self.velocity = self.velocity.normalize() * self.max_speed
+
+        # Update position based on velocity
+        self.rect.centerx += self.velocity.x * dt
+        self.hitbox.centerx += self.velocity.x * dt
+        self.rect.centery += self.velocity.y * dt
+        self.hitbox.centery += self.velocity.y * dt
 
     def bullet_check(self):
-
         for bullet in self.bullet_g:
             if self.rect.colliderect(bullet.rect):
                 self.health -= 1
@@ -86,7 +114,7 @@ class Triangle(Sprite):
             if self.hitbox.colliderect(self.player.hitbox):
                 self.player.health -= self.damage
                 self.damage_timer = 0
-                self.speed = 1
+                self.recovering = True  # Start recovering after hitting the player
                 play_sound('hit')
                 create_particles(self.player.rect.center,
                                  generate_particles('particle'),
@@ -100,6 +128,7 @@ class Triangle(Sprite):
         pygame.draw.rect(screen, pygame.Color('#8bac0f'),
                          pygame.Rect(self.rect.centerx - 15, self.rect.y - 10,
                                      30 / self.max_health * self.health, 5))
+
 
 
 class Square(Triangle):
@@ -131,6 +160,10 @@ class Square(Triangle):
         self.hitbox.topleft = (
             self.rect.centerx + - self.hitbox.w // 2,
             self.rect.centery + - self.hitbox.h // 2)
+
+        self.acceleration = 0.1  # How quickly the player accelerates
+        self.deceleration = 0.05  # How quickly the player decelerates
+        self.velocity = pygame.Vector2(0, 0)  # Current velocity
 
 
 class EnemySpawn:

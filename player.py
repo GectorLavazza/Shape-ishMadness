@@ -15,16 +15,20 @@ class Player(Sprite):
         self.rect.center = SW // 2, SH // 2
         self.hitbox = pygame.Rect(0, 0, 46, 46)
         self.hitbox.topleft = (
-            self.rect.centerx + - self.hitbox.w // 2,
-            self.rect.centery + - self.hitbox.h // 2)
+            self.rect.centerx + -self.hitbox.w // 2,
+            self.rect.centery + -self.hitbox.h // 2)
         self.score = 0
-        self.speed = 5
+        self.speed = 5  # Base speed
+        self.max_speed = 8  # Maximum speed with sprint
+        self.acceleration = 0.5  # How quickly the player accelerates
+        self.deceleration = 0.1  # How quickly the player decelerates
+        self.velocity = pygame.Vector2(0, 0)  # Current velocity
         self.health = 10
         self.max_health = 10
         self.dx = 0
         self.dy = 0
         self.bullets_g = bullets_g
-        self.paticles_g = particles_g
+        self.particles_g = particles_g
         self.hold = False
         self.cooldown = 0
         self.c_time = 9
@@ -32,33 +36,52 @@ class Player(Sprite):
         self.sprint = False
 
     def update(self, screen_rect, dt):
-        direction = pygame.Vector2(self.dx, self.dy)
-        if direction.length() > 0:
-            direction = direction.normalize()
-        if 0 <= self.rect.x + direction.x * self.speed * dt <= SW - self.rect.w:
-            self.rect.centerx += direction.x * self.speed * dt
-            self.hitbox.centerx += direction.x * self.speed * dt
-        if 0 <= self.rect.y + direction.y * self.speed * dt <= SH - self.rect.h:
-            self.rect.centery += direction.y * self.speed * dt
-            self.hitbox.centery += direction.y * self.speed * dt
+        input_direction = pygame.Vector2(self.dx, self.dy)
 
+        if input_direction.length() > 0:
+            input_direction = input_direction.normalize()
+
+            # Accelerate towards input direction
+            self.velocity.x += input_direction.x * self.acceleration * dt
+            self.velocity.y += input_direction.y * self.acceleration * dt
+        else:
+            # Decelerate when no input
+            if self.velocity.length() > 0:
+                self.velocity.x -= self.velocity.x * self.deceleration * dt
+                self.velocity.y -= self.velocity.y * self.deceleration * dt
+
+        # Cap velocity to max speed
+        if self.velocity.length() > self.max_speed:
+            self.velocity = self.velocity.normalize() * self.max_speed
+
+        # Update player position based on velocity
+        if 0 <= self.rect.x + self.velocity.x * dt <= SW - self.rect.w:
+            self.rect.centerx += self.velocity.x * dt
+            self.hitbox.centerx += self.velocity.x * dt
+        if 0 <= self.rect.y + self.velocity.y * dt <= SH - self.rect.h:
+            self.rect.centery += self.velocity.y * dt
+            self.hitbox.centery += self.velocity.y * dt
+
+        # Handle shooting cooldown
         if self.cooldown < self.c_time:
             self.cooldown += dt
 
+        # Sprint toggle
         if self.sprint:
             if not self.hold:
-                self.speed = 8
+                self.max_speed = 8
             else:
-                self.speed = 5
+                self.max_speed = 5
         else:
-            self.speed = 5
+            self.max_speed = 5
 
     def shoot(self, mouse_pos):
         if self.cooldown >= self.c_time:
             play_sound('shoot2', 0.2)
             create_bullet(self.rect.center, mouse_pos,
-                        self.paticles_g, self.bullets_g)
+                          self.particles_g, self.bullets_g)
             self.cooldown = 0
+
 
 
 class Bullet(Sprite):
