@@ -110,9 +110,10 @@ class Bullet(Sprite):
 
         if self.elapsed_time >= self.existence_time:
             create_particles(self.rect.center,
-                             generate_particles('particle'),
+                             generate_particles('bullet_particle'),
                              10, 10,
                              self.particles_g)
+            play_sound('bullet_explosion', 0.3)
             self.kill()
 
 

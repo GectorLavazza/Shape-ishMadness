@@ -39,6 +39,6 @@ def create_particles(position, particles, particle_count, existence_time, *group
 
 def generate_particles(filename):
     particles = [load_image(filename)]
-    for scale in [1, 2, 5]:
+    for scale in [5, 10, 15]:
         particles.append(pygame.transform.scale(particles[0], (scale, scale)))
     return particles

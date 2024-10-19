@@ -7,12 +7,14 @@ from sprites import Sprite
 from load_image import load_image
 
 from settings import *
+from items import *
 
 
 class Triangle(Sprite):
-    def __init__(self, pos, particles_g, bullet_g, player, *group):
+    def __init__(self, pos, particles_g, bullet_g, items_g, player, *group):
         super().__init__(*group)
         self.image = load_image('triangle')
+        self.name = 'triangle'
         self.rect = self.image.get_rect()
 
         self.rect.center = pos
@@ -32,6 +34,7 @@ class Triangle(Sprite):
         self.particles_g = particles_g
         self.bullet_g = bullet_g
         self.player = player
+        self.items_g = items_g
 
         self.damage_timer = 0
 
@@ -97,16 +100,19 @@ class Triangle(Sprite):
                 if self.health:
                     play_sound('enemy_hit')
                     create_particles(self.rect.center,
-                                     generate_particles('particle'),
+                                     generate_particles(f'{self.name}_particle'),
                                      30, 15,
                                      self.particles_g)
                 else:
                     self.player.score += self.score_weight
                     play_sound('explosion')
                     create_particles(self.rect.center,
-                                     generate_particles('particle'),
+                                     generate_particles('death_particle'),
                                      50, 30,
                                      self.particles_g)
+                    item = HealthBox(self.player, self.rect.center,
+                                     2, self.particles_g, self.items_g)
+                    self.items_g.add(item)
                     self.kill()
 
     def player_check(self):
@@ -117,7 +123,7 @@ class Triangle(Sprite):
                 self.recovering = True  # Start recovering after hitting the player
                 play_sound('hit')
                 create_particles(self.player.rect.center,
-                                 generate_particles('particle'),
+                                 generate_particles('hit_particle'),
                                  50, 20,
                                  self.particles_g)
 
@@ -132,9 +138,10 @@ class Triangle(Sprite):
 
 
 class Square(Triangle):
-    def __init__(self, pos, particles_g, bullet_g, player, *group):
-        super().__init__(pos, particles_g, bullet_g, player, *group)
+    def __init__(self, pos, particles_g, bullet_g, items_g, player, *group):
+        super().__init__(pos, particles_g, bullet_g, items_g, player, *group)
         self.image = load_image('square')
+        self.name = 'square'
         self.rect = self.image.get_rect()
 
         self.rect.center = pos
@@ -167,13 +174,14 @@ class Square(Triangle):
 
 
 class EnemySpawn:
-    def __init__(self, group, particles_g, bullet_g, player):
+    def __init__(self, group, particles_g, bullet_g, items_g, player):
         self.elapsed_time = 0
         self.spawn_time = 30
         self.group = group
         self.particles_g = particles_g
         self.bullet_g = bullet_g
         self.player = player
+        self.items_g = items_g
 
     def update(self, dt):
         self.elapsed_time += dt
@@ -191,8 +199,10 @@ class EnemySpawn:
             random.choices(['square', 'triangle'], weights=(3, 7), k=1)[0]
             if enemy_type == 'square':
                 enemy = Square(pos, self.particles_g, self.bullet_g,
+                               self.items_g,
                                self.player, self.group)
             else:
                 enemy = Triangle(pos, self.particles_g, self.bullet_g,
+                                 self.items_g,
                                  self.player, self.group)
             self.group.add(enemy)
