@@ -18,6 +18,9 @@ class Player(Sprite):
         self.dy = 0
         self.bullets_g = bullets_g
         self.paticles_g = particles_g
+        self.hold = False
+        self.hold_cooldown = 0
+        self.hold_mode = False
 
     def update(self, screen_rect, dt):
         direction = pygame.Vector2(self.dx, self.dy)

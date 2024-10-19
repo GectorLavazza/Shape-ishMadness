@@ -7,17 +7,18 @@ from sprites import Sprite
 from load_image import load_image
 
 
-class Enemy(Sprite):
-    def __init__(self, pos, particles_g, bullet_g, image, speed, *group):
+class Triangle(Sprite):
+    def __init__(self, pos, particles_g, bullet_g, *group):
         super().__init__(*group)
-        self.image = load_image(image)
+        self.image = load_image('triangle')
         self.rect = self.image.get_rect()
 
         self.rect.center = pos
 
         self.elapsed_time = 0
-        self.speed = speed
-        self.health = 3
+        self.speed = random.randint(30, 50) / 10
+        self.health = 2
+        self.max_health = 2
 
         self.dx = 0
         self.dy = 0
@@ -62,8 +63,27 @@ class Enemy(Sprite):
                                      30, 5))
         pygame.draw.rect(screen, pygame.Color('red'),
                          pygame.Rect(self.rect.centerx - 15, self.rect.y - 10,
-                                     10 * self.health, 5))
+                                     30 / self.max_health * self.health, 5))
 
+
+class Square(Triangle):
+    def __init__(self, pos, particles_g, bullet_g, *group):
+        super().__init__(pos, particles_g, bullet_g, *group)
+        self.image = load_image('square')
+        self.rect = self.image.get_rect()
+
+        self.rect.center = pos
+
+        self.elapsed_time = 0
+        self.speed = random.randint(10, 30) / 10
+        self.health = 4
+        self.max_health = 4
+
+        self.dx = 0
+        self.dy = 0
+
+        self.particles_g = particles_g
+        self.bullet_g = bullet_g
 
 
 class EnemySpawn:
@@ -83,8 +103,11 @@ class EnemySpawn:
             x = chain(range(-400, -200), range(1000, 1200))
             y = chain(range(-400, -200), range(1000, 1200))
             pos = random.choice(list(x)), random.choice(list(y))
-            image = random.choice(['square', 'triangle'])
-            speed = random.randint(10, 50) / 10
-            enemy = Enemy(pos, self.particles_g, self.bullet_g,
-                          image, speed, self.group)
+
+            enemy_type = random.choices(['square', 'triangle'], weights=(3, 7), k=1)[0]
+            if enemy_type == 'square':
+                enemy = Square(pos, self.particles_g, self.bullet_g, self.group)
+            else:
+                enemy = Triangle(pos, self.particles_g, self.bullet_g,
+                               self.group)
             self.group.add(enemy)

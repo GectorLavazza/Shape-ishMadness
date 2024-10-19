@@ -2,7 +2,7 @@ import pygame
 import time
 from particles import *
 
-from enemies import EnemySpawn, Enemy
+from enemies import *
 from player import Player
 
 
@@ -32,11 +32,16 @@ player = Player(bullets_g, particles_g, player_g)
 
 enemy_spawn = EnemySpawn(enemies_g, particles_g, bullets_g)
 
+shooting = False
+shooting_cooldown = 0
+
 while running:
 
     dt = time.time() - last_time
     dt *= 60
     last_time = time.time()
+
+    mouse_pos = pygame.mouse.get_pos()
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -45,6 +50,9 @@ while running:
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_q:
                 running = False
+
+            if event.key == pygame.K_e:
+                player.hold_mode = not player.hold_mode
 
             if event.key == pygame.K_F1:
                 if fps == 120:
@@ -72,9 +80,24 @@ while running:
             if event.key == pygame.K_d:
                 player.dx = 0
 
-        if event.type == pygame.MOUSEBUTTONDOWN:
-            if event.button == 1:
-                player.shoot(pygame.mouse.get_pos())
+        if player.hold_mode:
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                if event.button == 1:
+                    player.hold = True
+            if event.type == pygame.MOUSEBUTTONUP:
+                if event.button == 1:
+                    player.hold = False
+        else:
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                if event.button == 1:
+                    player.shoot(mouse_pos)
+
+    if player.hold_mode:
+        if player.hold:
+            player.hold_cooldown += dt
+            if player.hold_cooldown >= 10:
+                player.shoot(mouse_pos)
+                player.hold_cooldown = 0
 
     screen.fill(pygame.Color('#0f380f'))
 
