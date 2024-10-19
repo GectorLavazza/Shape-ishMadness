@@ -5,19 +5,14 @@ from particles import *
 from enemies import *
 from player import Player
 
-
-def set_screen(size):
-    pygame.display.set_caption('Shapish Madness')
-    screen = pygame.display.set_mode(size)
-    screen_rect = (0, 0, size[0], size[1])
-
-    return screen, size, screen_rect
+from settings import *
+from ui import *
 
 
 pygame.init()
 clock = pygame.time.Clock()
 fps = 60
-screen, size, screen_rect = set_screen((800, 800))
+screen, size, screen_rect = set_screen((SW, SH))
 
 last_time = time.time()
 
@@ -30,10 +25,14 @@ enemies_g = pygame.sprite.Group()
 player_g = pygame.sprite.Group()
 player = Player(bullets_g, particles_g, player_g)
 
-enemy_spawn = EnemySpawn(enemies_g, particles_g, bullets_g)
+enemy_spawn = EnemySpawn(enemies_g, particles_g, bullets_g, player)
 
-shooting = False
-shooting_cooldown = 0
+score_label = Text(screen, size, 40, pos=(SW // 2, 10))
+health = ValueBar(screen, size, player.max_health, 'heart',(10, 10))
+
+play_music('stains_of_time', 0.3)
+
+playing = True
 
 while running:
 
@@ -51,8 +50,22 @@ while running:
             if event.key == pygame.K_q:
                 running = False
 
-            if event.key == pygame.K_e:
-                player.hold_mode = not player.hold_mode
+            if event.key == pygame.K_r:
+                if player.health <= 0:
+                    playing = True
+                    particles_g = pygame.sprite.Group()
+                    bullets_g = pygame.sprite.Group()
+                    enemies_g = pygame.sprite.Group()
+
+                    player_g = pygame.sprite.Group()
+                    player = Player(bullets_g, particles_g, player_g)
+
+                    enemy_spawn = EnemySpawn(enemies_g, particles_g, bullets_g,
+                                             player)
+
+            if event.key == pygame.K_ESCAPE:
+                if player.health:
+                    playing = not playing
 
             if event.key == pygame.K_F1:
                 if fps == 120:
@@ -61,6 +74,9 @@ while running:
                     fps = 10
                 elif fps == 10:
                     fps = 120
+
+            if event.key == pygame.K_LSHIFT:
+                player.speed = 8
 
             if event.key == pygame.K_w:
                 player.dy = -1
@@ -80,37 +96,42 @@ while running:
             if event.key == pygame.K_d:
                 player.dx = 0
 
-        if player.hold_mode:
-            if event.type == pygame.MOUSEBUTTONDOWN:
-                if event.button == 1:
-                    player.hold = True
-            if event.type == pygame.MOUSEBUTTONUP:
-                if event.button == 1:
-                    player.hold = False
-        else:
-            if event.type == pygame.MOUSEBUTTONDOWN:
-                if event.button == 1:
-                    player.shoot(mouse_pos)
+            if event.key == pygame.K_LSHIFT:
+                player.speed = 5
 
-    if player.hold_mode:
-        if player.hold:
-            player.hold_cooldown += dt
-            if player.hold_cooldown >= 10:
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            if event.button == 3:
+                player.hold = True
+
+            elif event.button == 1:
                 player.shoot(mouse_pos)
-                player.hold_cooldown = 0
+
+        if event.type == pygame.MOUSEBUTTONUP:
+            if event.button == 3:
+                player.hold = False
+
+    if player.hold:
+        player.shoot(mouse_pos)
+
+    if player.health <= 0:
+        playing = False
 
     screen.fill(pygame.Color('#0f380f'))
 
-    particles_g.update(screen_rect, dt, fps)
-    player_g.update(screen_rect, dt)
-    bullets_g.update(screen_rect, dt)
-    enemies_g.update(screen, screen_rect, (player.rect.x, player.rect.y), dt)
-    enemy_spawn.update(dt)
+    if playing:
+        particles_g.update(screen_rect, dt, fps)
+        player_g.update(screen_rect, dt)
+        bullets_g.update(screen_rect, dt)
+        enemies_g.update(screen, screen_rect, (player.rect.x, player.rect.y), dt)
+        enemy_spawn.update(dt)
 
     bullets_g.draw(screen)
-    player_g.draw(screen)
     particles_g.draw(screen)
     enemies_g.draw(screen)
+    player_g.draw(screen)
+
+    score_label.update(player.score)
+    health.update(player.health)
 
 
     pygame.display.update()
