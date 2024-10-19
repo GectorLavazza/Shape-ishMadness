@@ -19,7 +19,7 @@ def play_music(filename, volume=0.5):
     pygame.mixer.music.play(-1)
 
 def set_screen(size):
-    pygame.display.set_caption('Shapish Madness')
+    pygame.display.set_caption('Shape-ish Madness')
     screen = pygame.display.set_mode(size)
     screen_rect = (0, 0, size[0], size[1])
 

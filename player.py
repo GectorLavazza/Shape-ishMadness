@@ -131,10 +131,10 @@ class Bullet(Sprite):
 class EnemyBullet(Bullet):
     def __init__(self, pos, target_pos, particles_g, *group):
         super().__init__(pos, target_pos, particles_g, *group)
-        self.image = load_image('bullet')
+        self.image = load_image('enemy_bullet')
         self.rect = self.image.get_rect()
         self.rect.center = pos
-        self.existence_time = 120
+        self.existence_time = 150
 
     def update(self, screen_rect, dt):
         self.rect.centerx += self.direction.x * self.speed * dt
@@ -144,10 +144,10 @@ class EnemyBullet(Bullet):
 
         if self.elapsed_time >= self.existence_time:
             create_particles(self.rect.center,
-                             generate_particles('bullet_particle3'),
+                             generate_particles('enemy_bullet_particle'),
                              10, 10,
                              self.particles_g)
-            play_sound('bullet_explosion', 0.2)
+            play_sound('enemy_bullet_explosion', 0.2)
             self.kill()
 
 def create_bullet(position, target_pos, particles_g, group):

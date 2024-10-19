@@ -21,7 +21,7 @@ class Triangle(Sprite):
         self.rect.center = pos
 
         self.elapsed_time = 0
-        self.max_speed = random.randint(4, 7)
+        self.max_speed = random.randint(4, 6)
         self.health = 2
         self.max_health = 2
         self.damage = 1
@@ -192,7 +192,7 @@ class Pentagon(Triangle):
         self.max_speed = 1
         self.health = 100
         self.max_health = 100
-        self.damage = 2
+        self.damage = 5
         self.score_weight = int(
             self.max_speed + self.health + self.damage) // 2
 
@@ -253,14 +253,14 @@ class Pentagon(Triangle):
                     play_sound('enemy_hit')
                     create_particles(self.rect.center,
                                      generate_particles(f'{self.name}_particle'),
-                                     60, 30,
+                                     40, 30,
                                      self.particles_g)
                 else:
                     self.player.score += self.score_weight
                     play_sound('explosion')
                     create_particles(self.rect.center,
                                      generate_particles('death_particle'),
-                                     100, 60,
+                                     80, 60,
                                      self.particles_g)
                     item_type = random.choices(['health', 'ammo', ''],
                                                weights=(1, 1, 17), k=1)[0]
@@ -276,7 +276,7 @@ class Pentagon(Triangle):
 
     def shoot(self):
         if self.cooldown >= self.c_time:
-            play_sound('shoot', 0.2)
+            play_sound('enemy_bullet', 0.2)
             create_enemy_bullet(self.rect.center, self.player.rect.center,
                           self.particles_g, self.enemy_bullet_g)
             self.cooldown = 0
@@ -292,6 +292,7 @@ class EnemySpawn:
         self.player = player
         self.items_g = items_g
         self.enemy_bullet_g = enemy_bullet_g
+        self.pentagon_count = 0
 
     def update(self, dt):
         self.elapsed_time += dt
@@ -306,18 +307,21 @@ class EnemySpawn:
             pos = random.choice(list(x)), random.choice(list(y))
 
             enemy_type = \
-            random.choices(['square', 'triangle', 'pentagon'], weights=(3, 7, 0), k=1)[0]
+            random.choices(['square', 'triangle', 'pentagon'], weights=(3, 7, 1), k=1)[0]
             if enemy_type == 'square':
                 enemy = Square(pos, self.particles_g, self.bullet_g,
                                self.items_g,
                                self.player, self.group)
+                self.group.add(enemy)
             elif enemy_type == 'triangle':
                 enemy = Triangle(pos, self.particles_g, self.bullet_g,
                                  self.items_g,
                                  self.player, self.group)
+                self.group.add(enemy)
             else:
-                enemy = Pentagon(pos, self.particles_g, self.bullet_g,
-                                 self.items_g, self.enemy_bullet_g,
-                                 self.player, self.group)
+                if not any([e.name == 'pentagon' for e in self.group]):
+                    enemy = Pentagon(pos, self.particles_g, self.bullet_g,
+                                     self.items_g, self.enemy_bullet_g,
+                                     self.player, self.group)
 
-            self.group.add(enemy)
+                    self.group.add(enemy)
