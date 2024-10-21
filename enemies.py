@@ -21,7 +21,8 @@ class Triangle(Sprite):
         self.rect.center = pos
 
         self.elapsed_time = 0
-        self.max_speed = random.randint(4, 6)
+        self.max_speed = random.choices(range(4, 9),
+                                        weights=(1, 2, 3, 2, 1), k=1)[0]
         self.health = 2
         self.max_health = 2
         self.damage = 1
@@ -62,7 +63,8 @@ class Triangle(Sprite):
             self.recovering = False  # Stop recovering when cooldown is done
 
     def move(self, target_pos, dt):
-        direction = pygame.Vector2(target_pos) - pygame.Vector2(self.rect.center)
+        direction = pygame.Vector2(target_pos) - pygame.Vector2(
+            self.rect.center)
 
         if direction.length() > 0:
             direction = direction.normalize()
@@ -99,7 +101,8 @@ class Triangle(Sprite):
                 if self.health:
                     play_sound('enemy_hit')
                     create_particles(self.rect.center,
-                                     generate_particles(f'{self.name}_particle'),
+                                     generate_particles(
+                                         f'{self.name}_particle'),
                                      30, 15,
                                      self.particles_g)
                 else:
@@ -117,7 +120,7 @@ class Triangle(Sprite):
                                              2, self.particles_g, self.items_g)
                         if item_type == 'ammo':
                             item = AmmoBox(self.player, self.rect.center,
-                                             10, self.particles_g, self.items_g)
+                                           10, self.particles_g, self.items_g)
                         self.items_g.add(item)
                     self.kill()
 
@@ -142,7 +145,6 @@ class Triangle(Sprite):
                                      30 / self.max_health * self.health, 5))
 
 
-
 class Square(Triangle):
     def __init__(self, pos, particles_g, bullet_g, items_g, player, *group):
         super().__init__(pos, particles_g, bullet_g, items_g, player, *group)
@@ -153,7 +155,8 @@ class Square(Triangle):
         self.rect.center = pos
 
         self.elapsed_time = 0
-        self.max_speed = random.randint(2, 4)
+        self.max_speed = random.choices(range(2, 7),
+                                        weights=(3, 3, 2, 2, 1), k=1)[0]
         self.health = 4
         self.max_health = 4
         self.damage = 2
@@ -180,7 +183,8 @@ class Square(Triangle):
 
 
 class Pentagon(Triangle):
-    def __init__(self, pos, particles_g, bullet_g, items_g, enemy_bullet_g, player, *group):
+    def __init__(self, pos, particles_g, bullet_g, items_g, enemy_bullet_g,
+                 player, *group):
         super().__init__(pos, particles_g, bullet_g, items_g, player, *group)
         self.image = load_image('pentagon')
         self.name = 'pentagon'
@@ -211,12 +215,13 @@ class Pentagon(Triangle):
             self.rect.centerx + - self.hitbox.w // 2,
             self.rect.centery + - self.hitbox.h // 2)
 
-        self.acceleration = 0.025 # How quickly the player accelerates
+        self.acceleration = 0.025  # How quickly the player accelerates
         self.deceleration = 0.0125  # How quickly the player decelerates
         self.velocity = pygame.Vector2(0, 0)  # Current velocity
 
         self.cooldown = 0
-        self.c_time = 60
+        self.c_time = random.choices(range(30, 61),
+                                     weights=range(1, 32), k=1)[0]
 
     def update(self, screen, screen_rect, target_pos, dt):
         self.move(target_pos, dt)
@@ -252,7 +257,8 @@ class Pentagon(Triangle):
                 if self.health:
                     play_sound('enemy_hit')
                     create_particles(self.rect.center,
-                                     generate_particles(f'{self.name}_particle'),
+                                     generate_particles(
+                                         f'{self.name}_particle'),
                                      40, 30,
                                      self.particles_g)
                 else:
@@ -270,7 +276,7 @@ class Pentagon(Triangle):
                                              2, self.particles_g, self.items_g)
                         if item_type == 'ammo':
                             item = AmmoBox(self.player, self.rect.center,
-                                             10, self.particles_g, self.items_g)
+                                           10, self.particles_g, self.items_g)
                         self.items_g.add(item)
                     self.kill()
 
@@ -278,12 +284,13 @@ class Pentagon(Triangle):
         if self.cooldown >= self.c_time:
             play_sound('enemy_bullet', 0.2)
             create_enemy_bullet(self.rect.center, self.player.rect.center,
-                          self.particles_g, self.enemy_bullet_g)
+                                self.particles_g, self.enemy_bullet_g)
             self.cooldown = 0
 
 
 class EnemySpawn:
-    def __init__(self, group, particles_g, bullet_g, items_g, enemy_bullet_g, player):
+    def __init__(self, group, particles_g, bullet_g, items_g, enemy_bullet_g,
+                 player):
         self.elapsed_time = 0
         self.spawn_time = 30
         self.group = group
@@ -307,7 +314,8 @@ class EnemySpawn:
             pos = random.choice(list(x)), random.choice(list(y))
 
             enemy_type = \
-            random.choices(['square', 'triangle', 'pentagon'], weights=(3, 7, 1), k=1)[0]
+                random.choices(['square', 'triangle', 'pentagon'],
+                               weights=(3, 7, 1), k=1)[0]
             if enemy_type == 'square':
                 enemy = Square(pos, self.particles_g, self.bullet_g,
                                self.items_g,

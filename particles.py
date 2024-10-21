@@ -4,7 +4,6 @@ import random
 from load_image import load_image
 
 
-
 class Particle(Sprite):
     def __init__(self, pos, dx, dy, particles, existence_time, *group):
         super().__init__(*group)
@@ -19,7 +18,6 @@ class Particle(Sprite):
         self.existence_time = existence_time
 
     def update(self, screen_rect, dt, fps):
-
         self.rect.x += self.velocity[0] * dt
         self.rect.y += self.velocity[1] * dt
 
@@ -29,7 +27,8 @@ class Particle(Sprite):
             self.kill()
 
 
-def create_particles(position, particles, particle_count, existence_time, *group):
+def create_particles(position, particles, particle_count, existence_time,
+                     *group):
     for _ in range(particle_count):
         dx = random.randint(-5, 5)
         dy = random.randint(-5, 5)

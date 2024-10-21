@@ -9,7 +9,6 @@ from player import Player
 from settings import *
 from ui import *
 
-
 pygame.init()
 clock = pygame.time.Clock()
 fps = 60
@@ -28,13 +27,14 @@ enemy_bullet_g = pygame.sprite.Group()
 player_g = pygame.sprite.Group()
 player = Player(bullets_g, particles_g, enemy_bullet_g, player_g)
 
-enemy_spawn = EnemySpawn(enemies_g, particles_g, bullets_g, items_g, enemy_bullet_g, player)
+enemy_spawn = EnemySpawn(enemies_g, particles_g, bullets_g, items_g,
+                         enemy_bullet_g, player)
 
 score_label = Text(screen, size, 40, pos=(SW // 2, 10))
-health = ValueBar(screen, size, player.max_health, 'heart',(10, 10))
+health = ValueBar(screen, size, player.max_health, 'heart', (10, 10))
 fps_label = Text(screen, size, 10, pos=(40, SH - 20))
 
-play_music('metal shape', 0.3)
+play_music('metal_shape_v2', 0.3)
 
 playing = True
 
@@ -65,7 +65,8 @@ while running:
                     enemy_bullet_g = pygame.sprite.Group()
 
                     player_g = pygame.sprite.Group()
-                    player = Player(bullets_g, particles_g, enemy_bullet_g, player_g)
+                    player = Player(bullets_g, particles_g, enemy_bullet_g,
+                                    player_g)
 
                     enemy_spawn = EnemySpawn(enemies_g, particles_g, bullets_g,
                                              items_g, enemy_bullet_g, player)
@@ -128,7 +129,8 @@ while running:
     if playing:
         particles_g.update(screen_rect, dt, fps)
         bullets_g.update(screen_rect, dt)
-        enemies_g.update(screen, screen_rect, (player.rect.x, player.rect.y), dt)
+        enemies_g.update(screen, screen_rect, (player.rect.x, player.rect.y),
+                         dt)
         enemy_spawn.update(dt)
         items_g.update(dt)
         enemy_bullet_g.update(screen_rect, dt)

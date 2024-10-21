@@ -94,7 +94,6 @@ class Player(Sprite):
             self.cooldown = 0
 
 
-
 class Bullet(Sprite):
     def __init__(self, pos, target_pos, particles_g, *group):
         super().__init__(*group)
@@ -150,8 +149,10 @@ class EnemyBullet(Bullet):
             play_sound('enemy_bullet_explosion', 0.2)
             self.kill()
 
+
 def create_bullet(position, target_pos, particles_g, group):
     Bullet(position, target_pos, particles_g, group)
+
 
 def create_enemy_bullet(position, target_pos, particles_g, group):
     EnemyBullet(position, target_pos, particles_g, group)
