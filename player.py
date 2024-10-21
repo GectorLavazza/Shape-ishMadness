@@ -68,13 +68,13 @@ class Player(Sprite):
             self.cooldown += dt
 
         # Sprint toggle
-        if self.sprint:
-            if not self.hold:
+        if not self.hold:
+            if self.sprint:
                 self.max_speed = 8
             else:
                 self.max_speed = 5
         else:
-            self.max_speed = 5
+            self.max_speed = 4
 
         for bullet in self.enemy_bullet_g:
             if self.hitbox.colliderect(bullet.rect):

@@ -27,15 +27,29 @@ def set_screen(size):
     return screen, size, screen_rect
 
 
-def render_hitbox(screen, player, npcs, rect=True, hitbox=True):
+def render_hitbox(screen, player, enemies, p_bullets, e_bullets, items, rect=True, hitbox=True):
     if rect:
         pygame.draw.rect(screen, pygame.Color('blue'), player.rect)
 
-    for npc in npcs:
+    for enemy in enemies:
         if rect:
-            pygame.draw.rect(screen, pygame.Color('purple'), npc.rect)
+            pygame.draw.rect(screen, pygame.Color('purple'), enemy.rect)
         if hitbox:
-            pygame.draw.rect(screen, pygame.Color('red'), npc.hitbox)
+            pygame.draw.rect(screen, pygame.Color('red'), enemy.hitbox)
+
+    for bullet in p_bullets:
+        if rect or hitbox:
+            pygame.draw.rect(screen, pygame.Color('yellow'), bullet.rect)
+
+    for bullet in e_bullets:
+        if rect or hitbox:
+            pygame.draw.rect(screen, pygame.Color('orange'), bullet.rect)
+
+    for item in items:
+        if hitbox:
+            pygame.draw.rect(screen, pygame.Color('white'), item.hitbox)
+        if rect:
+            pygame.draw.rect(screen, pygame.Color('grey'), item.rect)
 
     if hitbox:
         pygame.draw.rect(screen, pygame.Color('green'), player.hitbox)

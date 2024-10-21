@@ -54,7 +54,8 @@ class Text(Ui):
 
     def update(self, message):
         self.render = self.font.render(str(message), True, self.color)
-        pos = (self.pos[0] - self.render.get_width() // 2, self.pos[1])
+        pos = (self.pos[0] - self.render.get_width() // 2,
+               self.pos[1] - self.render.get_height() // 2)
         self.screen.blit(self.render, pos)
 
 

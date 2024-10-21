@@ -14,6 +14,10 @@ class HealthBox(Sprite):
         self.rect = self.image.get_rect()
         self.rect.center = pos
         self.orig_pos = pos
+        self.hitbox = pygame.Rect(0, 0, 60, 60)
+        self.hitbox.topleft = (
+            self.rect.centerx + - self.hitbox.w // 2,
+            self.rect.centery + - self.hitbox.h // 2)
         self.player = player
         self.heal = heal
         self.particles_g = particles_g
@@ -26,7 +30,8 @@ class HealthBox(Sprite):
         if self.rect.y < self.orig_pos[1] - self.offset:
             self.direction = 1
         self.rect.y += 1 * dt * self.direction
-        if self.rect.colliderect(self.player.hitbox):
+        self.hitbox.y += 1 * dt * self.direction
+        if self.hitbox.colliderect(self.player.rect):
             if self.player.health + self.heal <= self.player.max_health:
                 self.player.health += self.heal
             else:
@@ -47,6 +52,10 @@ class AmmoBox(Sprite):
         self.rect = self.image.get_rect()
         self.rect.center = pos
         self.orig_pos = pos
+        self.hitbox = pygame.Rect(0, 0, 60, 60)
+        self.hitbox.topleft = (
+            self.rect.centerx + - self.hitbox.w // 2,
+            self.rect.centery + - self.hitbox.h // 2)
         self.player = player
         self.ammo = ammo
         self.particles_g = particles_g
@@ -59,7 +68,8 @@ class AmmoBox(Sprite):
         if self.rect.y < self.orig_pos[1] - self.offset:
             self.direction = 1
         self.rect.y += 1 * dt * self.direction
-        if self.rect.colliderect(self.player.hitbox):
+        self.hitbox.y += 1 * dt * self.direction
+        if self.hitbox.colliderect(self.player.rect):
             create_particles(self.rect.center,
                              generate_particles('ammo_particle'),
                              20, 30,

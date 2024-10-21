@@ -30,11 +30,17 @@ player = Player(bullets_g, particles_g, enemy_bullet_g, player_g)
 enemy_spawn = EnemySpawn(enemies_g, particles_g, bullets_g, items_g,
                          enemy_bullet_g, player)
 
-score_label = Text(screen, size, 40, pos=(SW // 2, 10))
+score_label = Text(screen, size, 40, pos=(SW // 2, 25))
 health = ValueBar(screen, size, player.max_health, 'heart', (10, 10))
-fps_label = Text(screen, size, 10, pos=(40, SH - 20))
+fps_label = Text(screen, size, 10, pos=(40, SH - 15))
+
+hint_label = Text(screen, size, 12, pos=(SW // 2, SH - 15))
 
 play_music('metal_shape_v2', 0.3)
+
+show_hint = True
+show_hitbox = False
+show_rect = False
 
 playing = True
 
@@ -82,6 +88,15 @@ while running:
                     fps = 10
                 elif fps == 10:
                     fps = 120
+
+            if event.key == pygame.K_F2:
+                show_hint = not show_hint
+
+            if event.key == pygame.K_F3:
+                show_hitbox = not show_hitbox
+
+            if event.key == pygame.K_F4:
+                show_rect = not show_rect
 
             if event.key == pygame.K_LSHIFT:
                 player.sprint = True
@@ -143,11 +158,22 @@ while running:
     items_g.draw(screen)
     player_g.draw(screen)
 
-    render_hitbox(screen, player, enemies_g, False, False)
+    render_hitbox(screen, player, enemies_g,
+                  bullets_g, enemy_bullet_g, items_g,
+                  show_rect, show_hitbox)
 
     score_label.update(player.score)
-    health.update(player.health)
+
+    if player.health > 0:
+        health_msg = player.health
+    else:
+        health_msg = 0
+    health.update(health_msg)
+
     fps_label.update(f'FPS: {round(clock.get_fps())}')
+    if show_hint:
+        hint_label.update('[Q] - quit. [R] - restart (upon death). '
+                          '[Esc] - pause/unpause. [F2] - toggle hint.')
 
     pygame.display.update()
     clock.tick(fps)
