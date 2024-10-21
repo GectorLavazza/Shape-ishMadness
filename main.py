@@ -34,7 +34,7 @@ score_label = Text(screen, size, 40, pos=(SW // 2, 10))
 health = ValueBar(screen, size, player.max_health, 'heart',(10, 10))
 fps_label = Text(screen, size, 10, pos=(40, SH - 20))
 
-# play_music('stains_of_time', 0.3)
+play_music('metal shape', 0.3)
 
 playing = True
 
