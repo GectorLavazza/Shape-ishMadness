@@ -36,7 +36,7 @@ fps_label = Text(screen, size, 10, pos=(40, SH - 15))
 
 hint_label = Text(screen, size, 12, pos=(SW // 2, SH - 15))
 
-play_music('metal_shape_v2', 0.3)
+play_music(SONGS[2], 0.3)
 
 show_hint = True
 show_hitbox = False

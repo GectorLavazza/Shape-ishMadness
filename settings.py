@@ -5,6 +5,8 @@ screen_info = pygame.display.Info()
 # SW, SH = screen_info.current_w, screen_info.current_h
 SW, SH = 1080, 720
 
+SONGS = ['stains_of_time', 'metal_shape_synth_ver', 'metal_shape_v2']
+
 
 def play_sound(filename, volume=0.5):
     sfx = pygame.mixer.Sound(f'assets/sfx/{filename}.wav')
