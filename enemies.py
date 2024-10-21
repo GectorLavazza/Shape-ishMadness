@@ -18,11 +18,26 @@ class Triangle(Sprite):
         self.name = 'triangle'
         self.rect = self.image.get_rect()
 
+        self.particles_g = particles_g
+        self.bullet_g = bullet_g
+        self.player = player
+        self.items_g = items_g
+
         self.rect.center = pos
 
         self.elapsed_time = 0
-        self.max_speed = random.choices(range(4, 9),
-                                        weights=(1, 2, 3, 2, 1), k=1)[0]
+
+        self.quotient = (5 + self.player.score // 400 -
+                         self.player.score // 1600) / 10
+        if self.quotient > 1:
+            self.quotient = 1
+
+        self.max_speed = int(random.choices(range(4, 9),
+                                            weights=(1, 2, 3, 2, 1), k=1)[0] *
+                             self.quotient)
+        if self.max_speed < 4:
+            self.max_speed = 4
+
         self.health = 2
         self.max_health = 2
         self.damage = 1
@@ -31,11 +46,6 @@ class Triangle(Sprite):
 
         self.dx = 0
         self.dy = 0
-
-        self.particles_g = particles_g
-        self.bullet_g = bullet_g
-        self.player = player
-        self.items_g = items_g
 
         self.damage_timer = 0
 
@@ -155,31 +165,34 @@ class Square(Triangle):
         self.rect.center = pos
 
         self.elapsed_time = 0
-        self.max_speed = random.choices(range(2, 7),
-                                        weights=(3, 3, 2, 2, 1), k=1)[0]
+
+        self.quotient = (5 + self.player.score // 400 -
+                         self.player.score // 1600) / 10
+        if self.quotient > 1:
+            self.quotient = 1
+
+        self.max_speed = int(random.choices(range(2, 7),
+                                            weights=(3, 3, 2, 2, 1), k=1)[0] *
+                             self.quotient)
+
+        if self.max_speed < 2:
+            self.max_speed = 2
+
         self.health = 4
         self.max_health = 4
         self.damage = 2
+
         self.score_weight = int(
             self.max_speed + self.health + self.damage) // 2
-
-        self.dx = 0
-        self.dy = 0
-
-        self.particles_g = particles_g
-        self.bullet_g = bullet_g
-        self.player = player
-
-        self.damage_timer = 0
 
         self.hitbox = pygame.Rect(0, 0, 40, 40)
         self.hitbox.topleft = (
             self.rect.centerx + - self.hitbox.w // 2,
             self.rect.centery + - self.hitbox.h // 2)
 
-        self.acceleration = 0.1  # How quickly the player accelerates
-        self.deceleration = 0.05  # How quickly the player decelerates
-        self.velocity = pygame.Vector2(0, 0)  # Current velocity
+        self.acceleration = 0.1
+        self.deceleration = 0.05
+        self.velocity = pygame.Vector2(0, 0)
 
 
 class Pentagon(Triangle):
@@ -220,8 +233,9 @@ class Pentagon(Triangle):
         self.velocity = pygame.Vector2(0, 0)  # Current velocity
 
         self.cooldown = 0
-        self.c_time = random.choices(range(30, 61),
-                                     weights=range(1, 32), k=1)[0]
+        self.c_time = 60 - self.player.score // 200
+        if self.c_time < 30:
+            self.c_time = 30
 
     def update(self, screen, screen_rect, target_pos, dt):
         self.move(target_pos, dt)
@@ -268,16 +282,20 @@ class Pentagon(Triangle):
                                      generate_particles('death_particle'),
                                      80, 60,
                                      self.particles_g)
-                    item_type = random.choices(['health', 'ammo', ''],
-                                               weights=(1, 1, 17), k=1)[0]
-                    if item_type:
-                        if item_type == 'health':
-                            item = HealthBox(self.player, self.rect.center,
-                                             2, self.particles_g, self.items_g)
-                        if item_type == 'ammo':
-                            item = AmmoBox(self.player, self.rect.center,
-                                           10, self.particles_g, self.items_g)
-                        self.items_g.add(item)
+                    for i in range(random.randint(4, 6)):
+                        item_type = random.choice(['health', 'ammo'])
+                        if item_type:
+                            pos = (self.rect.centerx + random.randint(0, 50),
+                                   self.rect.centery + random.randint(0, 50))
+                            if item_type == 'health':
+                                item = HealthBox(self.player, pos,
+                                                 2, self.particles_g,
+                                                 self.items_g)
+                            if item_type == 'ammo':
+                                item = AmmoBox(self.player, pos,
+                                               10, self.particles_g,
+                                               self.items_g)
+                            self.items_g.add(item)
                     self.kill()
 
     def shoot(self):
@@ -292,7 +310,7 @@ class EnemySpawn:
     def __init__(self, group, particles_g, bullet_g, items_g, enemy_bullet_g,
                  player):
         self.elapsed_time = 0
-        self.spawn_time = 30
+        self.spawn_time = 10
         self.group = group
         self.particles_g = particles_g
         self.bullet_g = bullet_g
@@ -300,11 +318,23 @@ class EnemySpawn:
         self.items_g = items_g
         self.enemy_bullet_g = enemy_bullet_g
         self.pentagon_count = 0
+        self.score = 0
+        self.max_enemy_count = 5
 
     def update(self, dt):
         self.elapsed_time += dt
 
-        if self.elapsed_time >= self.spawn_time and len(self.group) < 10:
+        self.score = self.player.score
+        self.max_enemy_count = 5 + self.score // 200 - self.score // 800
+        if self.max_enemy_count > 20:
+            self.max_enemy_count = 20
+
+        self.spawn_time = 5 + 5 * (self.score // 100 - self.score // 500)
+        if self.spawn_time > 30:
+            self.spawn_time = 30
+
+        if self.elapsed_time >= self.spawn_time and len(
+                self.group) < self.max_enemy_count:
             self.elapsed_time = 0
 
             x = chain(range(-SW - 400, -SW - 200),
@@ -316,17 +346,22 @@ class EnemySpawn:
             enemy_type = \
                 random.choices(['square', 'triangle', 'pentagon'],
                                weights=(3, 7, 1), k=1)[0]
-            if enemy_type == 'square':
-                enemy = Square(pos, self.particles_g, self.bullet_g,
-                               self.items_g,
-                               self.player, self.group)
-                self.group.add(enemy)
-            elif enemy_type == 'triangle':
-                enemy = Triangle(pos, self.particles_g, self.bullet_g,
-                                 self.items_g,
-                                 self.player, self.group)
-                self.group.add(enemy)
-            else:
+
+            self.generate_enemy(pos, enemy_type)
+
+    def generate_enemy(self, pos, enemy_type):
+        if enemy_type == 'square':
+            enemy = Square(pos, self.particles_g, self.bullet_g,
+                           self.items_g,
+                           self.player, self.group)
+            self.group.add(enemy)
+        elif enemy_type == 'triangle':
+            enemy = Triangle(pos, self.particles_g, self.bullet_g,
+                             self.items_g,
+                             self.player, self.group)
+            self.group.add(enemy)
+        else:
+            if self.score > 500:
                 if not any([e.name == 'pentagon' for e in self.group]):
                     enemy = Pentagon(pos, self.particles_g, self.bullet_g,
                                      self.items_g, self.enemy_bullet_g,
