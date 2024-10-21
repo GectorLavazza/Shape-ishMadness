@@ -36,6 +36,9 @@ fps_label = Text(screen, size, 10, pos=(40, SH - 15))
 
 hint_label = Text(screen, size, 12, pos=(SW // 2, SH - 15))
 
+pause_label = Text(screen, size, 60, pos=(SW // 2, SH // 2))
+dead_label = Text(screen, size, 60, pos=(SW // 2, SH // 2))
+
 play_music(SONGS[2], 0.3)
 
 show_hint = True
@@ -174,6 +177,12 @@ while running:
     if show_hint:
         hint_label.update('[Q] - quit. [R] - restart (upon death). '
                           '[Esc] - pause/unpause. [F2] - toggle hint.')
+
+    if not playing:
+        if player.health:
+            pause_label.update('Paused')
+        else:
+            dead_label.update('Defeated')
 
     pygame.display.update()
     clock.tick(fps)
