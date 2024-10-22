@@ -39,7 +39,7 @@ hint_label = Text(screen, size, 12, pos=(SW // 2, SH - 15))
 pause_label = Text(screen, size, 60, pos=(SW // 2, SH // 2))
 dead_label = Text(screen, size, 60, pos=(SW // 2, SH // 2))
 
-play_music(SONGS[2], 0.3)
+play_music(SONGS[1], 0.3)
 
 show_hint = True
 show_hitbox = False

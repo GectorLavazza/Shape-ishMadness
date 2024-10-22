@@ -285,8 +285,8 @@ class Pentagon(Triangle):
                     for i in range(random.randint(4, 6)):
                         item_type = random.choice(['health', 'ammo'])
                         if item_type:
-                            pos = (self.rect.centerx + random.randint(0, 50),
-                                   self.rect.centery + random.randint(0, 50))
+                            pos = (self.rect.centerx + random.randint(0, 100),
+                                   self.rect.centery + random.randint(0, 100))
                             if item_type == 'health':
                                 item = HealthBox(self.player, pos,
                                                  2, self.particles_g,
