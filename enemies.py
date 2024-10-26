@@ -2,7 +2,8 @@ import pygame
 import random
 from itertools import *
 
-from particles import create_particles, generate_particles
+from particles import create_particles, generate_particles, \
+    generate_text_particles
 from sprites import Sprite
 from load_image import load_image
 
@@ -108,7 +109,9 @@ class Triangle(Sprite):
     def bullet_check(self):
         for bullet in self.bullet_g:
             if self.rect.colliderect(bullet.rect):
+
                 self.health -= bullet.damage
+
                 bullet.kill()
                 if self.health > 0:
                     self.take_damage()
@@ -127,6 +130,12 @@ class Triangle(Sprite):
         if item_type == 'ammo':
             item = AmmoBox(self.player, pos,
                            10, self.particles_g, self.items_g)
+        if item_type == 'speed':
+            item = SpeedBoost(self.player, pos,
+                              self.particles_g, self.items_g)
+        if item_type == 'shield':
+            item = Shield(self.player, pos,
+                              self.particles_g, self.items_g)
         self.items_g.add(item)
 
     def death(self):
@@ -138,8 +147,9 @@ class Triangle(Sprite):
                          50, 30,
                          self.particles_g)
 
-        item_type = random.choices(['health', 'ammo', ''],
-                                   weights=(1, 2, 17), k=1)[0]
+        item_type = random.choices(['health', 'ammo', 'speed', 'shield', ''],
+                                   weights=(1, 2, 2, 1, 17), k=1)[0]
+        # weights=(1, 2, 2, 1, 17)
         if item_type:
             pos = (self.rect.centerx + random.randint(0, 10),
                    self.rect.centery + random.randint(0, 10))
@@ -154,15 +164,9 @@ class Triangle(Sprite):
     def player_check(self):
         if self.damage_timer >= 120:
             if self.hitbox.colliderect(self.player.hitbox):
-                self.player.health -= self.damage
+                self.player.take_damage(self.damage)
                 self.damage_timer = 0
                 self.recovering = True
-                play_sound('hit')
-                create_particles(self.player.rect.center,
-                                 generate_particles('hit_particle'),
-                                 50, 20,
-                                 self.particles_g)
-
 
     def draw_health_bar(self, screen):
         pygame.draw.rect(screen, pygame.Color('#306230'),
@@ -179,6 +183,7 @@ class Triangle(Sprite):
                              f'{self.name}_particle'),
                          30, 15,
                          self.particles_g)
+
 
 
 class Square(Triangle):

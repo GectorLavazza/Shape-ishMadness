@@ -91,6 +91,76 @@ class AmmoBox(Sprite):
             self.kill()
 
 
+class SpeedBoost(Sprite):
+    def __init__(self, player, pos, particles_g, *group):
+        super().__init__(*group)
+        self.image = load_image('speed_boost')
+        self.rect = self.image.get_rect()
+        self.rect.center = pos
+        self.orig_pos = pos
+        self.hitbox = pygame.Rect(0, 0, 60, 60)
+        self.hitbox.topleft = (
+            self.rect.centerx + - self.hitbox.w // 2,
+            self.rect.centery + - self.hitbox.h // 2)
+        self.player = player
+        self.particles_g = particles_g
+        self.offset = 20
+        self.direction = 1
+
+    def update(self, dt):
+        if self.rect.y > self.orig_pos[1] + self.offset:
+            self.direction = -1
+        if self.rect.y < self.orig_pos[1] - self.offset:
+            self.direction = 1
+        self.rect.y += 1 * dt * self.direction
+        self.hitbox.y += 1 * dt * self.direction
+
+        if self.hitbox.colliderect(self.player.rect):
+            self.player.speed_boost = 2
+            self.player.speed_boost_timer = self.player.max_speed_boost_time
+            create_particles(self.rect.center,
+                             generate_particles('speed_particle'),
+                             20, 30,
+                             self.particles_g)
+            play_sound('speed_boost')
+            self.kill()
+
+
+class Shield(Sprite):
+    def __init__(self, player, pos, particles_g, *group):
+        super().__init__(*group)
+        self.image = load_image('shield')
+        self.rect = self.image.get_rect()
+        self.rect.center = pos
+        self.orig_pos = pos
+        self.hitbox = pygame.Rect(0, 0, 60, 60)
+        self.hitbox.topleft = (
+            self.rect.centerx + - self.hitbox.w // 2,
+            self.rect.centery + - self.hitbox.h // 2)
+        self.player = player
+        self.particles_g = particles_g
+        self.offset = 20
+        self.direction = 1
+
+    def update(self, dt):
+        if self.rect.y > self.orig_pos[1] + self.offset:
+            self.direction = -1
+        if self.rect.y < self.orig_pos[1] - self.offset:
+            self.direction = 1
+        self.rect.y += 1 * dt * self.direction
+        self.hitbox.y += 1 * dt * self.direction
+
+        if self.hitbox.colliderect(self.player.rect):
+            self.player.shield = True
+            self.player.shield_timer = self.player.max_shield_time
+            create_particles(self.rect.center,
+                             generate_particles('shield_particle'),
+                             20, 30,
+                             self.particles_g)
+            play_sound('shield')
+            self.kill()
+
+
 class Coin(Sprite):
     def __init__(self, player, pos, particles_g, *group):
         super().__init__(*group)

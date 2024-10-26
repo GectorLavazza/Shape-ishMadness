@@ -31,8 +31,11 @@ enemy_spawn = EnemySpawn(enemies_g, particles_g, bullets_g, items_g,
                          enemy_bullet_g, player)
 
 score_label = Text(screen, size, 40, pos=(SW // 2, 25))
+
 health = ValueBar(screen, size, player.max_health, 'heart', (10, 10))
-ammo = ValueBar(screen, size, 20, 'ammo_ui', (10, 50))
+
+ammo = ValueBar(screen, size, 20, 'ammo', (10, 50))
+
 fps_label = Text(screen, size, 10, pos=(40, SH - 15))
 
 hint_label = Text(screen, size, 12, pos=(SW // 2, SH - 15))
@@ -179,16 +182,12 @@ while running:
 
     score_label.update(player.score)
 
-    if player.health > 0:
-        health_msg = player.health
-    else:
-        health_msg = 0
-    health.update(health_msg)
+    health.update(player.health)
 
     ammo_msg = player.weapons[player.mode]['ammo']
     ammo.max = player.weapons[player.mode]['max_ammo']
-    if ammo_msg <= 0:
-        ammo_msg = 0
+    ammo.image = load_image(['ammo', 'shotgun_ammo', 'riffle_ammo'][player.mode])
+
     ammo.update(ammo_msg)
 
     fps_label.update(f'FPS: {round(clock.get_fps())}')

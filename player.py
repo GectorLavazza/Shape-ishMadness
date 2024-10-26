@@ -1,3 +1,5 @@
+import random
+
 import pygame
 from pygame import Vector2
 
@@ -40,7 +42,13 @@ class Player(Sprite):
         self.coins = 0
         self.weapons = {0: {'damage': 1, 'c_time': 9, 'e_time': 60, 'ammo': 100, 'max_ammo': 100},
                         1: {'damage': 3, 'c_time': 60, 'e_time': 20, 'ammo': 20, 'max_ammo': 20},
-                        2: {'damage': 50, 'c_time': 120, 'e_time': 360, 'ammo': 5, 'max_ammo': 5}}
+                        2: {'damage': 20, 'c_time': 120, 'e_time': 360, 'ammo': 5, 'max_ammo': 5}}
+        self.speed_boost_timer = 600
+        self.shield_timer = 600
+        self.max_speed_boost_time = 600
+        self.max_shield_time = 600
+        self.speed_boost = 0
+        self.shield = False
 
     def update(self, screen, screen_rect, dt):
         input_direction = pygame.Vector2(self.dx, self.dy)
@@ -78,15 +86,28 @@ class Player(Sprite):
         # Sprint toggle
         if not self.hold:
             if self.sprint:
-                self.max_speed = self.speed_mode[self.mode][1]
+                self.max_speed = self.speed_mode[self.mode][1] + self.speed_boost
             else:
-                self.max_speed = self.speed_mode[self.mode][0]
+                self.max_speed = self.speed_mode[self.mode][0] + self.speed_boost
         else:
-            self.max_speed = self.speed_mode[self.mode][0]
+            self.max_speed = self.speed_mode[self.mode][0] + self.speed_boost
+
+        if self.speed_boost_timer > 0 and self.speed_boost:
+            self.speed_boost_timer -= dt
+            self.draw_speed_boost_bar(screen)
+        else:
+            self.speed_boost = 0
+
+        if self.shield_timer > 0 and self.shield:
+            self.shield_timer -= dt
+            self.draw_shield(screen)
+        else:
+            self.shield = False
 
         for bullet in self.enemy_bullet_g:
             if self.hitbox.colliderect(bullet.rect):
-                self.health -= 1
+                if not self.shield:
+                    self.health -= 1
                 create_particles(self.rect.center,
                                  generate_particles('hit_particle'),
                                  50, 20,
@@ -94,11 +115,29 @@ class Player(Sprite):
                 play_sound('hit')
                 bullet.kill()
 
+    def take_damage(self, damage):
+        if not self.shield:
+            self.health -= damage
+            play_sound('hit')
+            create_particles(self.rect.center,
+                             generate_particles('hit_particle'),
+                             50, 20,
+                             self.particles_g)
+        else:
+            play_sound('shield_hit')
+            create_particles(self.rect.center,
+                             generate_particles('shield_hit_particle'),
+                             50, 20,
+                             self.particles_g)
+
     def shoot(self, mouse_pos):
+        damage = self.weapons[self.mode]['damage']
+
+        if random.randint(1, 10) == 10:
+            damage = self.weapons[self.mode]['damage'] * 2
 
         c_time = self.weapons[self.mode]['c_time']
         e_time = self.weapons[self.mode]['e_time']
-        damage = self.weapons[self.mode]['damage']
         ammo = self.weapons[self.mode]['ammo']
 
         if self.cooldown >= c_time and ammo:
@@ -113,7 +152,7 @@ class Player(Sprite):
                     y = mouse_pos[1] - i * 2
                     target = Vector2(x, y)
                     damage = 3 - abs(i) // 30
-                    create_bullet(self.rect.center, target, damage, e_time,
+                    create_bullet(self.rect.center, target, damage, e_time - abs(i) // 10,
                                   self.particles_g, self.bullets_g)
 
             elif self.mode == 2:
@@ -131,6 +170,25 @@ class Player(Sprite):
         pygame.draw.rect(screen, pygame.Color('#8bac0f'),
                          pygame.Rect(self.rect.centerx - 15, self.rect.y - 10,
                                      30 / c_time * cooldown, 5))
+
+    def draw_speed_boost_bar(self, screen):
+        pygame.draw.rect(screen, pygame.Color('#306230'),
+                         pygame.Rect(self.rect.centerx - 15, self.rect.y - 20,
+                                     30, 5))
+        pygame.draw.rect(screen, pygame.Color('#8bac0f'),
+                         pygame.Rect(self.rect.centerx - 15, self.rect.y - 20,
+                                     30 / self.max_speed_boost_time * self.speed_boost_timer, 5))
+
+    def draw_shield(self, screen):
+        pygame.draw.rect(screen, pygame.Color('#306230'),
+                         pygame.Rect(self.rect.centerx - 15, self.rect.y - 30,
+                                     30, 5))
+        pygame.draw.rect(screen, pygame.Color('#8bac0f'),
+                         pygame.Rect(self.rect.centerx - 15, self.rect.y - 30,
+                                     30 / self.max_shield_time * self.shield_timer, 5))
+        image = load_image('shield_cover')
+        screen.blit(image, (self.rect.centerx - image.get_width() // 2,
+                            self.rect.centery - image.get_height() // 2))
 
 
 class Bullet(Sprite):

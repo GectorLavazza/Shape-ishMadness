@@ -82,11 +82,14 @@ class ValueBar(Text):
         self.image = load_image(image)
 
     def update(self, message):
+        msg = message
+        if message <= 0:
+            msg = 0
         pygame.draw.rect(self.screen, pygame.Color('#306230'),
                          pygame.Rect(*self.pos, 200, 20))
         pygame.draw.rect(self.screen, pygame.Color('#8bac0f'),
-                         pygame.Rect(*self.pos, 200 / self.max * message, 20))
-        self.render = self.font.render(f'{message}/{self.max}', True, self.color)
+                         pygame.Rect(*self.pos, 200 / self.max * msg, 20))
+        self.render = self.font.render(f'{msg}/{self.max}', True, self.color)
 
         self.screen.blit(self.render, (110 - self.render.get_width() // 2, self.pos[1]))
         self.screen.blit(self.image, (6, self.pos[1] - 6))
