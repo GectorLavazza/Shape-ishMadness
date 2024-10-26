@@ -36,7 +36,6 @@ class Player(Sprite):
         self.c_time = 9
         self.hold_mode = False
         self.sprint = False
-        self.damage = 1
         self.mode = 0
 
     def update(self, screen_rect, dt):
@@ -93,30 +92,36 @@ class Player(Sprite):
         if self.cooldown >= self.c_time:
             play_sound('shoot2', 0.2)
             if self.mode == 0:
-                create_bullet(self.rect.center, mouse_pos,
+                self.c_time = 9
+                damage = 1
+                create_bullet(self.rect.center, mouse_pos, damage,
                               self.particles_g, self.bullets_g)
+
             elif self.mode == 1:
-                for i in range(-30, 31, 10):
+                self.c_time = 60
+                for i in range(-90, 91, 30):
                     x = mouse_pos[0] - i
                     y = mouse_pos[1] - i
-                    create_bullet(self.rect.center, (x, y),
+                    damage = 4 - abs(i) // 30
+                    create_bullet(self.rect.center, (x, y), damage,
                                   self.particles_g, self.bullets_g)
+
             elif self.mode == 2:
-                for i in range(-30, 31, 10):
-                    x = mouse_pos[0] - i
-                    y = mouse_pos[1] - i
-                    create_bullet(self.rect.center, (x, y),
-                                  self.particles_g, self.bullets_g)
+                self.c_time = 120
+                damage = 10
+                create_bullet(self.rect.center, mouse_pos, damage,
+                              self.particles_g, self.bullets_g)
             self.cooldown = 0
 
 
 class Bullet(Sprite):
-    def __init__(self, pos, target_pos, particles_g, *group):
+    def __init__(self, pos, target_pos, particles_g, damage, *group):
         super().__init__(*group)
         self.image = load_image('bullet')
         self.rect = self.image.get_rect()
 
         self.rect.center = pos
+        self.damage = damage
 
         self.elapsed_time = 0
         self.speed = 10
@@ -166,8 +171,8 @@ class EnemyBullet(Bullet):
             self.kill()
 
 
-def create_bullet(position, target_pos, particles_g, group):
-    Bullet(position, target_pos, particles_g, group)
+def create_bullet(position, target_pos, damage, particles_g, group):
+    Bullet(position, target_pos, particles_g, damage, group)
 
 
 def create_enemy_bullet(position, target_pos, particles_g, group):

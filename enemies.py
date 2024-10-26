@@ -108,9 +108,9 @@ class Triangle(Sprite):
     def bullet_check(self):
         for bullet in self.bullet_g:
             if self.rect.colliderect(bullet.rect):
-                self.health -= self.player.damage
+                self.health -= bullet.damage
                 bullet.kill()
-                if self.health:
+                if self.health > 0:
                     self.take_damage()
                 else:
                     self.death()
@@ -263,9 +263,9 @@ class Pentagon(Triangle):
     def bullet_check(self):
         for bullet in self.bullet_g:
             if self.hitbox.colliderect(bullet.rect):
-                self.health -= self.player.damage
+                self.health -= bullet.damage
                 bullet.kill()
-                if self.health:
+                if self.health > 0:
                     self.take_damage()
                 else:
                     self.death()

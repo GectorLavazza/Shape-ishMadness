@@ -112,6 +112,14 @@ while running:
                 player.dx = -1
             if event.key == pygame.K_d:
                 player.dx = 1
+
+            if event.key == pygame.K_1:
+                player.mode = 0
+            if event.key == pygame.K_2:
+                player.mode = 1
+            if event.key == pygame.K_3:
+                player.mode = 2
+
         if event.type == pygame.KEYUP:
             if event.key == pygame.K_w:
                 player.dy = 0
