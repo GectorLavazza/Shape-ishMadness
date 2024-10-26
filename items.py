@@ -1,3 +1,5 @@
+import random
+
 import pygame
 
 from particles import create_particles, generate_particles
@@ -48,7 +50,9 @@ class HealthBox(Sprite):
 class AmmoBox(Sprite):
     def __init__(self, player, pos, ammo, particles_g, *group):
         super().__init__(*group)
-        self.image = load_image('ammo')
+        self.type = random.choices((0, 1, 2), weights=(3, 2, 1), k=1)[0]
+        images = ['ammo', 'shotgun_ammo', 'riffle_ammo']
+        self.image = load_image(images[self.type])
         self.rect = self.image.get_rect()
         self.rect.center = pos
         self.orig_pos = pos
@@ -57,7 +61,7 @@ class AmmoBox(Sprite):
             self.rect.centerx + - self.hitbox.w // 2,
             self.rect.centery + - self.hitbox.h // 2)
         self.player = player
-        self.ammo = ammo
+        self.ammo = [20, 10, 1]
         self.particles_g = particles_g
         self.offset = 20
         self.direction = 1
@@ -75,6 +79,15 @@ class AmmoBox(Sprite):
                              20, 30,
                              self.particles_g)
             play_sound('ammo')
+
+            ma = self.player.weapons[self.type]['max_ammo']
+            a = self.player.weapons[self.type]['ammo']
+            if ma >= a + self.ammo[self.type]:
+                self.player.weapons[self.type]['ammo'] += self.ammo[self.type]
+            else:
+                self.player.weapons[self.type]['ammo'] = (
+                    self.player.weapons[self.type]['max_ammo'])
+
             self.kill()
 
 
@@ -102,6 +115,7 @@ class Coin(Sprite):
         self.rect.y += 1 * dt * self.direction
         self.hitbox.y += 1 * dt * self.direction
         if self.hitbox.colliderect(self.player.rect):
+            self.player.coins += 1
             create_particles(self.rect.center,
                              generate_particles('coin_particle'),
                              20, 30,

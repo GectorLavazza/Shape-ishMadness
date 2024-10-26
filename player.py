@@ -33,10 +33,14 @@ class Player(Sprite):
         self.enemy_bullet_g = enemy_bullet_g
         self.hold = False
         self.cooldown = 0
-        self.c_time = 9
         self.hold_mode = False
         self.sprint = False
         self.mode = 0
+        self.speed_mode = [(5, 8), (4, 6), (3, 5)]
+        self.coins = 0
+        self.weapons = {0: {'damage': 1, 'c_time': 9, 'e_time': 60, 'ammo': 100, 'max_ammo': 100},
+                        1: {'damage': 3, 'c_time': 60, 'e_time': 20, 'ammo': 20, 'max_ammo': 20},
+                        2: {'damage': 50, 'c_time': 120, 'e_time': 360, 'ammo': 5, 'max_ammo': 5}}
 
     def update(self, screen_rect, dt):
         input_direction = pygame.Vector2(self.dx, self.dy)
@@ -66,17 +70,18 @@ class Player(Sprite):
             self.hitbox.centery += self.velocity.y * dt
 
         # Handle shooting cooldown
-        if self.cooldown < self.c_time:
+        c_time = self.weapons[self.mode]['c_time']
+        if self.cooldown < c_time:
             self.cooldown += dt
 
         # Sprint toggle
         if not self.hold:
             if self.sprint:
-                self.max_speed = 8
+                self.max_speed = self.speed_mode[self.mode][1]
             else:
-                self.max_speed = 5
+                self.max_speed = self.speed_mode[self.mode][0]
         else:
-            self.max_speed = 4
+            self.max_speed = self.speed_mode[self.mode][0]
 
         for bullet in self.enemy_bullet_g:
             if self.hitbox.colliderect(bullet.rect):
@@ -89,33 +94,37 @@ class Player(Sprite):
                 bullet.kill()
 
     def shoot(self, mouse_pos):
-        if self.cooldown >= self.c_time:
+
+        c_time = self.weapons[self.mode]['c_time']
+        e_time = self.weapons[self.mode]['e_time']
+        damage = self.weapons[self.mode]['damage']
+        ammo = self.weapons[self.mode]['ammo']
+
+        if self.cooldown >= c_time and ammo:
             play_sound('shoot2', 0.2)
             if self.mode == 0:
-                self.c_time = 9
-                damage = 1
-                create_bullet(self.rect.center, mouse_pos, damage,
+                create_bullet(self.rect.center, mouse_pos, damage, e_time,
                               self.particles_g, self.bullets_g)
 
             elif self.mode == 1:
-                self.c_time = 60
-                for i in range(-90, 91, 30):
-                    x = mouse_pos[0] - i
-                    y = mouse_pos[1] - i
-                    damage = 4 - abs(i) // 30
-                    create_bullet(self.rect.center, (x, y), damage,
+                for i in range(-60, 61, 30):
+                    x = mouse_pos[0] - i * 2
+                    y = mouse_pos[1] - i * 2
+                    target = Vector2(x, y)
+                    damage = 3 - abs(i) // 30
+                    create_bullet(self.rect.center, target, damage, e_time,
                                   self.particles_g, self.bullets_g)
 
             elif self.mode == 2:
-                self.c_time = 120
-                damage = 10
-                create_bullet(self.rect.center, mouse_pos, damage,
+                create_bullet(self.rect.center, mouse_pos, damage, e_time,
                               self.particles_g, self.bullets_g)
             self.cooldown = 0
 
+            self.weapons[self.mode]['ammo'] -= 1
+
 
 class Bullet(Sprite):
-    def __init__(self, pos, target_pos, particles_g, damage, *group):
+    def __init__(self, pos, target_pos, particles_g, e_time, damage, *group):
         super().__init__(*group)
         self.image = load_image('bullet')
         self.rect = self.image.get_rect()
@@ -125,7 +134,7 @@ class Bullet(Sprite):
 
         self.elapsed_time = 0
         self.speed = 10
-        self.existence_time = 60
+        self.existence_time = e_time
 
         self.particles_g = particles_g
 
@@ -150,11 +159,10 @@ class Bullet(Sprite):
 
 class EnemyBullet(Bullet):
     def __init__(self, pos, target_pos, particles_g, *group):
-        super().__init__(pos, target_pos, particles_g, *group)
+        super().__init__(pos, target_pos, particles_g, 150, 1, *group)
         self.image = load_image('enemy_bullet')
         self.rect = self.image.get_rect()
         self.rect.center = pos
-        self.existence_time = 150
 
     def update(self, screen_rect, dt):
         self.rect.centerx += self.direction.x * self.speed * dt
@@ -171,8 +179,8 @@ class EnemyBullet(Bullet):
             self.kill()
 
 
-def create_bullet(position, target_pos, damage, particles_g, group):
-    Bullet(position, target_pos, particles_g, damage, group)
+def create_bullet(position, target_pos, damage, e_time, particles_g, group):
+    Bullet(position, target_pos, particles_g, e_time, damage, group)
 
 
 def create_enemy_bullet(position, target_pos, particles_g, group):
