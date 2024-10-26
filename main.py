@@ -179,7 +179,7 @@ while running:
                           '[Esc] - pause/unpause. [F2] - toggle hint.')
 
     if not playing:
-        if player.health:
+        if player.health > 0:
             pause_label.update('Paused')
         else:
             dead_label.update('Defeated')
