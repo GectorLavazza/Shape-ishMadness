@@ -147,12 +147,26 @@ class Player(Sprite):
                               self.particles_g, self.bullets_g)
 
             elif self.mode == 1:
-                for i in range(-60, 61, 30):
-                    x = mouse_pos[0] - i * 2
-                    y = mouse_pos[1] - i * 2
-                    target = Vector2(x, y)
-                    damage = 3 - abs(i) // 30
-                    create_bullet(self.rect.center, target, damage, e_time - abs(i) // 10,
+                spread_angle = 45
+                num_bullets = 5
+
+                direction = Vector2(mouse_pos) - Vector2(self.rect.center)
+                distance = direction.length()
+                if distance > 0:
+                    direction = direction.normalize()
+
+                for i in range(num_bullets):
+                    angle_offset = spread_angle * (i / (num_bullets - 1) - 0.5)
+                    rotated_direction = direction.rotate(angle_offset)
+
+                    target = Vector2(
+                        self.rect.center) + rotated_direction * distance
+
+                    bullet_damage = 3 - abs(i - (num_bullets // 2))
+                    bullet_e_time = e_time - abs(i - (num_bullets // 2)) // 10
+
+                    create_bullet(self.rect.center, target, bullet_damage,
+                                  bullet_e_time,
                                   self.particles_g, self.bullets_g)
 
             elif self.mode == 2:
