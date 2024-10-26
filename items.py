@@ -50,7 +50,7 @@ class HealthBox(Sprite):
 class AmmoBox(Sprite):
     def __init__(self, player, pos, ammo, particles_g, *group):
         super().__init__(*group)
-        self.type = random.choices((0, 1, 2), weights=(3, 2, 1), k=1)[0]
+        self.type = random.choices((0, 1, 2), weights=(10, 5, 1), k=1)[0]
         images = ['ammo', 'shotgun_ammo', 'riffle_ammo']
         self.image = load_image(images[self.type])
         self.rect = self.image.get_rect()

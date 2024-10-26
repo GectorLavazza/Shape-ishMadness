@@ -42,7 +42,7 @@ class Player(Sprite):
                         1: {'damage': 3, 'c_time': 60, 'e_time': 20, 'ammo': 20, 'max_ammo': 20},
                         2: {'damage': 50, 'c_time': 120, 'e_time': 360, 'ammo': 5, 'max_ammo': 5}}
 
-    def update(self, screen_rect, dt):
+    def update(self, screen, screen_rect, dt):
         input_direction = pygame.Vector2(self.dx, self.dy)
 
         if input_direction.length() > 0:
@@ -73,6 +73,7 @@ class Player(Sprite):
         c_time = self.weapons[self.mode]['c_time']
         if self.cooldown < c_time:
             self.cooldown += dt
+            self.draw_cooldown_bar(screen, self.cooldown)
 
         # Sprint toggle
         if not self.hold:
@@ -121,6 +122,15 @@ class Player(Sprite):
             self.cooldown = 0
 
             self.weapons[self.mode]['ammo'] -= 1
+
+    def draw_cooldown_bar(self, screen, cooldown):
+        c_time = self.weapons[self.mode]['c_time']
+        pygame.draw.rect(screen, pygame.Color('#306230'),
+                         pygame.Rect(self.rect.centerx - 15, self.rect.y - 10,
+                                     30, 5))
+        pygame.draw.rect(screen, pygame.Color('#8bac0f'),
+                         pygame.Rect(self.rect.centerx - 15, self.rect.y - 10,
+                                     30 / c_time * cooldown, 5))
 
 
 class Bullet(Sprite):

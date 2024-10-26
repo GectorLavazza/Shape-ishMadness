@@ -41,3 +41,12 @@ def generate_particles(filename):
     for scale in [5, 10, 15]:
         particles.append(pygame.transform.scale(particles[0], (scale, scale)))
     return particles
+
+
+def generate_text_particles():
+    font = pygame.font.Font('assets/fonts/PixelOperator8-Bold.ttf',
+                            30)
+    particles = [font.render('1', True, 'white')]
+    for scale in [5, 10, 15]:
+        particles.append(pygame.transform.scale(particles[0], (scale, scale)))
+    return particles

@@ -141,9 +141,13 @@ class Triangle(Sprite):
         item_type = random.choices(['health', 'ammo', ''],
                                    weights=(1, 2, 17), k=1)[0]
         if item_type:
-            self.generate_item(item_type, self.rect.center)
+            pos = (self.rect.centerx + random.randint(0, 10),
+                   self.rect.centery + random.randint(0, 10))
+            self.generate_item(item_type, pos)
         else:
-            self.generate_coin(self.rect.center)
+            pos = (self.rect.centerx + random.randint(0, 10),
+                   self.rect.centery + random.randint(0, 10))
+            self.generate_coin(pos)
 
         self.kill()
 
@@ -158,6 +162,7 @@ class Triangle(Sprite):
                                  generate_particles('hit_particle'),
                                  50, 20,
                                  self.particles_g)
+
 
     def draw_health_bar(self, screen):
         pygame.draw.rect(screen, pygame.Color('#306230'),

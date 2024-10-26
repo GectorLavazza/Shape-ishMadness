@@ -164,7 +164,7 @@ while running:
         enemy_spawn.update(dt)
         items_g.update(dt)
         enemy_bullet_g.update(screen_rect, dt)
-        player_g.update(screen_rect, dt)
+        player_g.update(screen, screen_rect, dt)
 
     bullets_g.draw(screen)
     enemy_bullet_g.draw(screen)
