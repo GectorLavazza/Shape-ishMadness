@@ -30,6 +30,7 @@ class Triangle(Sprite):
         self.bullet_g = bullet_g
         self.player = player
         self.items_g = items_g
+        self.all_enemies = group[0]
 
         self.elapsed_time = 0
 
@@ -61,12 +62,14 @@ class Triangle(Sprite):
         self.deceleration = 0.3
         self.velocity = pygame.Vector2(0, 0)
         self.recovering = False  # Track if the enemy is recovering after the hit
+        self.push_strength = 0.5
 
     def update(self, screen, screen_rect, target_pos, dt):
         self.move(target_pos, dt)
         self.bullet_check()
         self.draw_health_bar(screen)
         self.player_check()
+        self.handle_overlap(self.all_enemies, dt)
 
         # Handle damage cooldown and recovery
         if self.damage_timer < 120:
@@ -74,6 +77,21 @@ class Triangle(Sprite):
             self.recovering = True
         else:
             self.recovering = False  # Stop recovering when cooldown is done
+
+    def handle_overlap(self, all_enemies, dt):
+        for other in all_enemies:
+            if other != self and self.rect.colliderect(other.rect):
+                # Calculate the push direction
+                push_direction = pygame.Vector2(
+                    self.rect.center) - pygame.Vector2(other.rect.center)
+
+                # Normalize to avoid scaling with distance, then apply push strength
+                if push_direction.length() > 0:
+                    push_direction = push_direction.normalize()
+
+                # Apply a small force to each enemy to separate them
+                self.velocity += push_direction * self.push_strength * dt
+                other.velocity -= push_direction * self.push_strength * dt
 
     def move(self, target_pos, dt):
         direction = pygame.Vector2(target_pos) - pygame.Vector2(
@@ -167,8 +185,8 @@ class Triangle(Sprite):
                 self.player.take_damage(self.damage)
                 self.damage_timer = 0
                 self.recovering = True
-                print([w['ammo'] for w in self.player.weapons.values()],
-                      any(filter(lambda s: type(s) != AmmoBox, self.items_g)))
+                # print([w['ammo'] for w in self.player.weapons.values()],
+                #       any(filter(lambda s: type(s) != AmmoBox, self.items_g)))
                 if (not any([w['ammo'] for w in self.player.weapons.values()]) and
                         not any(filter(lambda s: type(s) != AmmoBox, self.items_g))):
                     pos = (self.rect.centerx + random.randint(0, 10),

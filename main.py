@@ -53,11 +53,15 @@ show_rect = False
 
 playing = True
 
+mouse_wheel_cd = 0
+
 while running:
 
     dt = time.time() - last_time
     dt *= 60
     last_time = time.time()
+
+    mouse_wheel_cd += dt
 
     mouse_pos = pygame.mouse.get_pos()
 
@@ -120,13 +124,6 @@ while running:
             if event.key == pygame.K_d:
                 player.dx = 1
 
-            if event.key == pygame.K_1:
-                player.mode = 0
-            if event.key == pygame.K_2:
-                player.mode = 1
-            if event.key == pygame.K_3:
-                player.mode = 2
-
         if event.type == pygame.KEYUP:
             if event.key == pygame.K_w:
                 player.dy = 0
@@ -150,6 +147,20 @@ while running:
         if event.type == pygame.MOUSEBUTTONUP:
             if event.button == 3:
                 player.hold = False
+
+        if event.type == pygame.MOUSEWHEEL:
+            if mouse_wheel_cd >= 10:
+                mouse_wheel_cd = 0
+                if event.y == -1:
+                    if 0 <= player.mode - event.y <= 2:
+                        player.mode -= event.y
+                    else:
+                        player.mode = 0
+                else:
+                    if 2 >= player.mode - event.y >= 0:
+                        player.mode -= event.y
+                    else:
+                        player.mode = 2
 
     if player.hold:
         player.shoot(mouse_pos)
