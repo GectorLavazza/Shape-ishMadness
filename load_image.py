@@ -7,6 +7,7 @@ def load_image(name, color_key=None):
 
     try:
         image = pygame.image.load(fullname).convert_alpha()
+        # image = pygame.transform.scale2x(image)
     except pygame.error as e:
         print(f"Err: {e}")
         raise SystemExit(e)

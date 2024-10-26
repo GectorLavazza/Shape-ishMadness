@@ -1,4 +1,5 @@
 import pygame
+from pygame import Vector2
 
 from particles import create_particles, generate_particles
 from sprites import Sprite
@@ -35,6 +36,8 @@ class Player(Sprite):
         self.c_time = 9
         self.hold_mode = False
         self.sprint = False
+        self.damage = 1
+        self.mode = 0
 
     def update(self, screen_rect, dt):
         input_direction = pygame.Vector2(self.dx, self.dy)
@@ -89,8 +92,21 @@ class Player(Sprite):
     def shoot(self, mouse_pos):
         if self.cooldown >= self.c_time:
             play_sound('shoot2', 0.2)
-            create_bullet(self.rect.center, mouse_pos,
-                          self.particles_g, self.bullets_g)
+            if self.mode == 0:
+                create_bullet(self.rect.center, mouse_pos,
+                              self.particles_g, self.bullets_g)
+            elif self.mode == 1:
+                for i in range(-30, 31, 10):
+                    x = mouse_pos[0] - i
+                    y = mouse_pos[1] - i
+                    create_bullet(self.rect.center, (x, y),
+                                  self.particles_g, self.bullets_g)
+            elif self.mode == 2:
+                for i in range(-30, 31, 10):
+                    x = mouse_pos[0] - i
+                    y = mouse_pos[1] - i
+                    create_bullet(self.rect.center, (x, y),
+                                  self.particles_g, self.bullets_g)
             self.cooldown = 0
 
 
@@ -123,7 +139,7 @@ class Bullet(Sprite):
                              generate_particles('bullet_particle3'),
                              10, 10,
                              self.particles_g)
-            play_sound('bullet_explosion', 0.2)
+            play_sound('bullet_explosion', 0.05)
             self.kill()
 
 

@@ -76,3 +76,35 @@ class AmmoBox(Sprite):
                              self.particles_g)
             play_sound('ammo')
             self.kill()
+
+
+class Coin(Sprite):
+    def __init__(self, player, pos, particles_g, *group):
+        super().__init__(*group)
+        self.image = load_image('coin')
+        self.rect = self.image.get_rect()
+        self.rect.center = pos
+        self.orig_pos = pos
+        self.hitbox = pygame.Rect(0, 0, 60, 60)
+        self.hitbox.topleft = (
+            self.rect.centerx + - self.hitbox.w // 2,
+            self.rect.centery + - self.hitbox.h // 2)
+        self.player = player
+        self.particles_g = particles_g
+        self.offset = 20
+        self.direction = 1
+
+    def update(self, dt):
+        if self.rect.y > self.orig_pos[1] + self.offset:
+            self.direction = -1
+        if self.rect.y < self.orig_pos[1] - self.offset:
+            self.direction = 1
+        self.rect.y += 1 * dt * self.direction
+        self.hitbox.y += 1 * dt * self.direction
+        if self.hitbox.colliderect(self.player.rect):
+            create_particles(self.rect.center,
+                             generate_particles('coin_particle'),
+                             20, 30,
+                             self.particles_g)
+            play_sound('coin', 0.2)
+            self.kill()
