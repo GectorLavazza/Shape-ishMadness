@@ -27,8 +27,12 @@ class Triangle(Sprite):
 
         self.elapsed_time = 0
 
-        self.quotient = (5 + self.player.score // 400 -
-                         self.player.score // 1600) / 10
+        self.quotient = (5 + self.player.score // 50 -
+                         3 * self.player.score // 200 -
+                         3 * self.player.score // 1000 -
+                         3 * self.player.score // 2000 -
+                         2 * self.player.score // 5000 -
+                         1 * self.player.score // 10000) / 10
         if self.quotient > 1:
             self.quotient = 1
 
@@ -41,9 +45,7 @@ class Triangle(Sprite):
         self.health = 2
         self.max_health = 2
         self.damage = 1
-        self.score_weight = int(
-            self.max_speed + self.health + self.damage) // 2
-
+        self.score_weight = 5
         self.dx = 0
         self.dy = 0
 
@@ -166,8 +168,6 @@ class Square(Triangle):
 
         self.elapsed_time = 0
 
-        self.quotient = (5 + self.player.score // 400 -
-                         self.player.score // 1600) / 10
         if self.quotient > 1:
             self.quotient = 1
 
@@ -182,8 +182,7 @@ class Square(Triangle):
         self.max_health = 4
         self.damage = 2
 
-        self.score_weight = int(
-            self.max_speed + self.health + self.damage) // 2
+        self.score_weight = 10
 
         self.hitbox = pygame.Rect(0, 0, 40, 40)
         self.hitbox.topleft = (
@@ -210,8 +209,7 @@ class Pentagon(Triangle):
         self.health = 100
         self.max_health = 100
         self.damage = 5
-        self.score_weight = int(
-            self.max_speed + self.health + self.damage) // 2
+        self.score_weight = 100
 
         self.dx = 0
         self.dy = 0
@@ -233,9 +231,12 @@ class Pentagon(Triangle):
         self.velocity = pygame.Vector2(0, 0)  # Current velocity
 
         self.cooldown = 0
-        self.c_time = 60 - self.player.score // 200
+        # self.c_time = 60 - (self.player.score - 200) // 50
+        self.c_time = 60
         if self.c_time < 30:
             self.c_time = 30
+        if self.c_time > 60:
+            self.c_time = 60
 
     def update(self, screen, screen_rect, target_pos, dt):
         self.move(target_pos, dt)
@@ -310,7 +311,7 @@ class EnemySpawn:
     def __init__(self, group, particles_g, bullet_g, items_g, enemy_bullet_g,
                  player):
         self.elapsed_time = 0
-        self.spawn_time = 10
+        self.spawn_time = 5
         self.group = group
         self.particles_g = particles_g
         self.bullet_g = bullet_g
@@ -325,11 +326,20 @@ class EnemySpawn:
         self.elapsed_time += dt
 
         self.score = self.player.score
-        self.max_enemy_count = 5 + self.score // 200 - self.score // 800
+        self.max_enemy_count = (5 + self.player.score // 20 -
+                                4 * self.player.score // 100 -
+                                1 * self.player.score // 200 -
+                                2 * self.player.score // 1000 -
+                                5 * self.player.score // 2000)
         if self.max_enemy_count > 20:
             self.max_enemy_count = 20
 
-        self.spawn_time = 5 + 5 * (self.score // 100 - self.score // 500)
+        # self.spawn_time = 5 * (self.player.score // 20 -
+        #                        4 * self.player.score // 100 -
+        #                        1 * self.player.score // 200 -
+        #                        2 * self.player.score // 1000 -
+        #                        6 * self.player.score // 2000)
+
         if self.spawn_time > 30:
             self.spawn_time = 30
 
@@ -361,7 +371,7 @@ class EnemySpawn:
                              self.player, self.group)
             self.group.add(enemy)
         else:
-            if self.score > 500:
+            if self.score > 200:
                 if not any([e.name == 'pentagon' for e in self.group]):
                     enemy = Pentagon(pos, self.particles_g, self.bullet_g,
                                      self.items_g, self.enemy_bullet_g,

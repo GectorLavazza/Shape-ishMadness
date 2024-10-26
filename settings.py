@@ -2,8 +2,8 @@ import pygame
 
 pygame.display.init()
 screen_info = pygame.display.Info()
-# SW, SH = screen_info.current_w, screen_info.current_h
-SW, SH = 1080, 720
+SW, SH = screen_info.current_w // 2, screen_info.current_h // 2
+# SW, SH = 1920, 1080
 
 SONGS = ['stains_of_time', 'metal_shape_synth_ver', 'metal_shape_v2']
 
