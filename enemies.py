@@ -320,8 +320,10 @@ class Pentagon(Triangle):
                          80, 60,
                          self.particles_g)
 
-        for i in range(random.randint(4, 6)):
-            item_type = random.choice(['health', 'ammo'])
+        for i in range(random.randint(3, 6)):
+            item_type = \
+            random.choices(['health', 'ammo', 'speed', 'shield'],
+                           weights=(2, 3, 1, 1), k=1)[0]
             pos = (self.rect.centerx + random.randint(0, 100),
                    self.rect.centery + random.randint(0, 100))
             self.generate_item(item_type, pos)
