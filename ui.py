@@ -45,7 +45,7 @@ class Text(Ui):
                  pos=(0, 0)):
         super().__init__(screen, screen_size)
         self.font = pygame.font.Font('assets/fonts/PixelOperator8-Bold.ttf',
-                                     font_size)
+                                     int(font_size * RATIO))
         self.pos = pos
         self.color = pygame.Color(color)
 
@@ -85,13 +85,13 @@ class ValueBar(Text):
         if message <= 0:
             msg = 0
         pygame.draw.rect(self.screen, pygame.Color('#306230'),
-                         pygame.Rect(*self.pos, 200, 20))
+                         pygame.Rect(*self.pos, 200 * RATIO, 20 * RATIO))
         pygame.draw.rect(self.screen, pygame.Color('#8bac0f'),
-                         pygame.Rect(*self.pos, 200 / self.max * msg, 20))
+                         pygame.Rect(*self.pos, 200 / self.max * msg * RATIO, 20 * RATIO))
         if show_value:
             self.render = self.font.render(f'{msg}/{self.max}', True, self.color)
 
-            self.screen.blit(self.render, (110 - self.render.get_width() // 2, self.pos[1]))
+            self.screen.blit(self.render, (110 * RATIO - self.render.get_width() // 2 * RATIO, self.pos[1]))
 
         self.screen.blit(self.image, (6, self.pos[1] - 6))
 

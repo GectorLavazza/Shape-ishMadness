@@ -6,7 +6,7 @@ from particles import create_particles, generate_particles
 from sprites import Sprite
 from load_image import load_image
 
-from settings import play_sound
+from settings import play_sound, RATIO
 
 
 class Item(Sprite):
@@ -16,7 +16,7 @@ class Item(Sprite):
         self.rect = self.image.get_rect()
         self.rect.center = pos
         self.orig_pos = pos
-        self.hitbox = pygame.Rect(0, 0, 60, 60)
+        self.hitbox = pygame.Rect(0, 0, self.rect.w * 2, self.rect.h * 2)
         self.hitbox.topleft = (
             self.rect.centerx + - self.hitbox.w // 2,
             self.rect.centery + - self.hitbox.h // 2)
@@ -30,8 +30,8 @@ class Item(Sprite):
             self.direction = -1
         if self.rect.y < self.orig_pos[1] - self.offset:
             self.direction = 1
-        self.rect.y += dt * self.direction
-        self.hitbox.y += dt * self.direction
+        self.rect.y += dt * self.direction * RATIO
+        self.hitbox.y += dt * self.direction * RATIO
 
         if self.hitbox.colliderect(self.player.rect):
             self.on_collide()

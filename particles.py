@@ -1,4 +1,6 @@
 import pygame
+
+from settings import RATIO
 from sprites import Sprite
 import random
 from load_image import load_image
@@ -18,8 +20,8 @@ class Particle(Sprite):
         self.existence_time = existence_time
 
     def update(self, screen_rect, dt, fps):
-        self.rect.x += self.velocity[0] * dt
-        self.rect.y += self.velocity[1] * dt
+        self.rect.x += self.velocity[0] * dt * RATIO
+        self.rect.y += self.velocity[1] * dt * RATIO
 
         self.elapsed_time += dt
 
@@ -39,7 +41,8 @@ def create_particles(position, particles, particle_count, existence_time,
 def generate_particles(filename):
     particles = [load_image(filename)]
     for scale in [5, 10, 15]:
-        particles.append(pygame.transform.scale(particles[0], (scale, scale)))
+        particles.append(pygame.transform.scale(particles[0],
+                                                (scale * RATIO, scale * RATIO)))
     return particles
 
 

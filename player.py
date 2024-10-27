@@ -16,7 +16,7 @@ class Player(Sprite):
         self.image = load_image('player')
         self.rect = self.image.get_rect()
         self.rect.center = SW // 2, SH // 2
-        self.hitbox = pygame.Rect(0, 0, 46, 46)
+        self.hitbox = pygame.Rect(0, 0, self.rect.w * 0.72, self.rect.h * 0.72)
         self.hitbox.topleft = (
             self.rect.centerx + -self.hitbox.w // 2,
             self.rect.centery + -self.hitbox.h // 2)
@@ -51,31 +51,7 @@ class Player(Sprite):
         self.shield = False
 
     def update(self, screen, screen_rect, dt):
-        input_direction = pygame.Vector2(self.dx, self.dy)
-
-        if input_direction.length() > 0:
-            input_direction = input_direction.normalize()
-
-            # Accelerate towards input direction
-            self.velocity.x += input_direction.x * self.acceleration * dt
-            self.velocity.y += input_direction.y * self.acceleration * dt
-        else:
-            # Decelerate when no input
-            if self.velocity.length() > 0:
-                self.velocity.x -= self.velocity.x * self.deceleration * dt
-                self.velocity.y -= self.velocity.y * self.deceleration * dt
-
-        # Cap velocity to max speed
-        if self.velocity.length() > self.max_speed:
-            self.velocity = self.velocity.normalize() * self.max_speed
-
-        # Update player position based on velocity
-        if 0 <= self.rect.x + self.velocity.x * dt <= SW - self.rect.w:
-            self.rect.centerx += self.velocity.x * dt
-            self.hitbox.centerx += self.velocity.x * dt
-        if 0 <= self.rect.y + self.velocity.y * dt <= SH - self.rect.h:
-            self.rect.centery += self.velocity.y * dt
-            self.hitbox.centery += self.velocity.y * dt
+        self.move(dt)
 
         # Handle shooting cooldown
         c_time = self.weapons[self.mode]['c_time']
@@ -180,30 +156,43 @@ class Player(Sprite):
     def draw_cooldown_bar(self, screen, cooldown):
         c_time = self.weapons[self.mode]['c_time']
         pygame.draw.rect(screen, pygame.Color('#306230'),
-                         pygame.Rect(self.rect.centerx - 15, self.rect.y - 10,
-                                     30, 5))
+                         pygame.Rect(self.rect.centerx - 15 * RATIO, self.rect.y - 10 * RATIO,
+                                     30 * RATIO, 5 * RATIO))
         pygame.draw.rect(screen, pygame.Color('#8bac0f'),
-                         pygame.Rect(self.rect.centerx - 15, self.rect.y - 10,
-                                     30 / c_time * cooldown, 5))
-
-    def draw_speed_boost_bar(self, screen):
-        pygame.draw.rect(screen, pygame.Color('#306230'),
-                         pygame.Rect(self.rect.centerx - 15, self.rect.y - 20,
-                                     30, 5))
-        pygame.draw.rect(screen, pygame.Color('#8bac0f'),
-                         pygame.Rect(self.rect.centerx - 15, self.rect.y - 20,
-                                     30 / self.max_speed_boost_time * self.speed_boost_timer, 5))
+                         pygame.Rect(self.rect.centerx - 15 * RATIO, self.rect.y - 10 * RATIO,
+                                     30 / c_time * cooldown * RATIO, 5 * RATIO))
 
     def draw_shield(self, screen):
-        # pygame.draw.rect(screen, pygame.Color('#306230'),
-        #                  pygame.Rect(self.rect.centerx - 15, self.rect.y - 30,
-        #                              30, 5))
-        # pygame.draw.rect(screen, pygame.Color('#8bac0f'),
-        #                  pygame.Rect(self.rect.centerx - 15, self.rect.y - 30,
-        #                              30 / self.max_shield_time * self.shield_timer, 5))
         image = load_image('shield_cover')
         screen.blit(image, (self.rect.centerx - image.get_width() // 2,
                             self.rect.centery - image.get_height() // 2))
+
+    def move(self, dt):
+        input_direction = pygame.Vector2(self.dx, self.dy)
+
+        if input_direction.length() > 0:
+            input_direction = input_direction.normalize()
+
+            # Accelerate towards input direction
+            self.velocity.x += input_direction.x * self.acceleration * dt * RATIO
+            self.velocity.y += input_direction.y * self.acceleration * dt * RATIO
+        else:
+            # Decelerate when no input
+            if self.velocity.length() > 0:
+                self.velocity.x -= self.velocity.x * self.deceleration * dt * RATIO
+                self.velocity.y -= self.velocity.y * self.deceleration * dt * RATIO
+
+        # Cap velocity to max speed
+        if self.velocity.length() > self.max_speed:
+            self.velocity = self.velocity.normalize() * self.max_speed
+
+        # Update player position based on velocity
+        if 0 <= self.rect.x + self.velocity.x * dt * RATIO <= SW - self.rect.w:
+            self.rect.centerx += self.velocity.x * dt * RATIO
+            self.hitbox.centerx += self.velocity.x * dt * RATIO
+        if 0 <= self.rect.y + self.velocity.y * dt * RATIO <= SH - self.rect.h:
+            self.rect.centery += self.velocity.y * dt * RATIO
+            self.hitbox.centery += self.velocity.y * dt * RATIO
 
 
 class Bullet(Sprite):
@@ -226,8 +215,8 @@ class Bullet(Sprite):
             self.direction = self.direction.normalize()
 
     def update(self, screen_rect, dt):
-        self.rect.centerx += self.direction.x * self.speed * dt
-        self.rect.centery += self.direction.y * self.speed * dt
+        self.rect.centerx += self.direction.x * self.speed * dt * RATIO
+        self.rect.centery += self.direction.y * self.speed * dt * RATIO
 
         self.elapsed_time += dt
 
@@ -248,8 +237,8 @@ class EnemyBullet(Bullet):
         self.rect.center = pos
 
     def update(self, screen_rect, dt):
-        self.rect.centerx += self.direction.x * self.speed * dt
-        self.rect.centery += self.direction.y * self.speed * dt
+        self.rect.centerx += self.direction.x * self.speed * dt * RATIO
+        self.rect.centery += self.direction.y * self.speed * dt * RATIO
 
         self.elapsed_time += dt
 

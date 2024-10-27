@@ -90,8 +90,8 @@ class Triangle(Sprite):
                     push_direction = push_direction.normalize()
 
                 # Apply a small force to each enemy to separate them
-                self.velocity += push_direction * self.push_strength * dt
-                other.velocity -= push_direction * self.push_strength * dt
+                self.velocity += push_direction * self.push_strength * dt * RATIO
+                other.velocity -= push_direction * self.push_strength * dt * RATIO
 
     def move(self, target_pos, dt):
         direction = pygame.Vector2(target_pos) - pygame.Vector2(
@@ -102,27 +102,27 @@ class Triangle(Sprite):
 
             # If recovering (after hitting the player), decelerate
             if self.recovering:
-                self.velocity.x -= self.velocity.x * self.deceleration * 0.5 * dt
-                self.velocity.y -= self.velocity.y * self.deceleration * 0.5 * dt
+                self.velocity.x -= self.velocity.x * self.deceleration * 0.5 * dt * RATIO
+                self.velocity.y -= self.velocity.y * self.deceleration * 0.5 * dt * RATIO
             else:
                 # Normal acceleration towards the target
-                self.velocity.x += direction.x * self.acceleration * dt
-                self.velocity.y += direction.y * self.acceleration * dt
+                self.velocity.x += direction.x * self.acceleration * dt * RATIO
+                self.velocity.y += direction.y * self.acceleration * dt * RATIO
         else:
             # Decelerate when no input
             if self.velocity.length() > 0:
-                self.velocity.x -= self.velocity.x * self.deceleration * dt
-                self.velocity.y -= self.velocity.y * self.deceleration * dt
+                self.velocity.x -= self.velocity.x * self.deceleration * dt * RATIO
+                self.velocity.y -= self.velocity.y * self.deceleration * dt * RATIO
 
         # Cap velocity to max speed
         if self.velocity.length() > self.max_speed:
             self.velocity = self.velocity.normalize() * self.max_speed
 
         # Update position based on velocity
-        self.rect.centerx += self.velocity.x * dt
-        self.hitbox.centerx += self.velocity.x * dt
-        self.rect.centery += self.velocity.y * dt
-        self.hitbox.centery += self.velocity.y * dt
+        self.rect.centerx += self.velocity.x * dt * RATIO
+        self.hitbox.centerx += self.velocity.x * dt * RATIO
+        self.rect.centery += self.velocity.y * dt * RATIO
+        self.hitbox.centery += self.velocity.y * dt * RATIO
 
     def bullet_check(self):
         for bullet in self.bullet_g:
@@ -193,11 +193,11 @@ class Triangle(Sprite):
 
     def draw_health_bar(self, screen):
         pygame.draw.rect(screen, pygame.Color('#306230'),
-                         pygame.Rect(self.rect.centerx - 15, self.rect.y - 10,
-                                     30, 5))
+                         pygame.Rect(self.rect.centerx - 15 * RATIO, self.rect.y - 10 * RATIO,
+                                     30 * RATIO, 5 * RATIO))
         pygame.draw.rect(screen, pygame.Color('#8bac0f'),
-                         pygame.Rect(self.rect.centerx - 15, self.rect.y - 10,
-                                     30 / self.max_health * self.health, 5))
+                         pygame.Rect(self.rect.centerx - 15 * RATIO, self.rect.y - 10 * RATIO,
+                                     30 / self.max_health * self.health * RATIO, 5 * RATIO))
 
     def take_damage(self):
         play_sound('enemy_hit')
