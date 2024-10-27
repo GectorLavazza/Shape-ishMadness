@@ -36,6 +36,10 @@ health = ValueBar(screen, size, player.max_health, 'heart', (10, 10))
 
 ammo = ValueBar(screen, size, 20, 'ammo', (10, 50))
 
+speed_boost_bar = ValueBar(screen, size, player.max_speed_boost_time, 'speed_boost', (10, 0))
+shield_bar = ValueBar(screen, size, player.max_speed_boost_time, 'shield', (10, 0))
+
+
 fps_label = Text(screen, size, 10, pos=(40, SH - 15))
 
 hint_label = Text(screen, size, 12, pos=(SW // 2, SH - 15))
@@ -201,6 +205,27 @@ while running:
     score_label.update(player.score)
 
     health.update(player.health)
+
+    active_effects = []
+
+    if player.shield and shield_bar not in active_effects:
+        active_effects.append(shield_bar)
+    if player.speed_boost and speed_boost_bar not in active_effects:
+        active_effects.append(speed_boost_bar)
+
+    if not player.shield and shield_bar in active_effects:
+        active_effects.remove(shield_bar)
+    if not player.speed_boost and speed_boost_bar in active_effects:
+        active_effects.remove(speed_boost_bar)
+
+    for index, effect_bar in enumerate(active_effects):
+        effect_bar.pos = (10, 90 + index * 40)
+        if effect_bar == speed_boost_bar:
+            effect_bar.update(player.speed_boost_timer,
+                              False)
+        elif effect_bar == shield_bar:
+            effect_bar.update(player.shield_timer,
+                              False)
 
     ammo_msg = player.weapons[player.mode]['ammo']
     ammo.max = player.weapons[player.mode]['max_ammo']

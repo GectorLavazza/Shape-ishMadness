@@ -94,7 +94,6 @@ class Player(Sprite):
 
         if self.speed_boost_timer > 0 and self.speed_boost:
             self.speed_boost_timer -= dt
-            self.draw_speed_boost_bar(screen)
         else:
             self.speed_boost = 0
 
@@ -194,12 +193,12 @@ class Player(Sprite):
                                      30 / self.max_speed_boost_time * self.speed_boost_timer, 5))
 
     def draw_shield(self, screen):
-        pygame.draw.rect(screen, pygame.Color('#306230'),
-                         pygame.Rect(self.rect.centerx - 15, self.rect.y - 30,
-                                     30, 5))
-        pygame.draw.rect(screen, pygame.Color('#8bac0f'),
-                         pygame.Rect(self.rect.centerx - 15, self.rect.y - 30,
-                                     30 / self.max_shield_time * self.shield_timer, 5))
+        # pygame.draw.rect(screen, pygame.Color('#306230'),
+        #                  pygame.Rect(self.rect.centerx - 15, self.rect.y - 30,
+        #                              30, 5))
+        # pygame.draw.rect(screen, pygame.Color('#8bac0f'),
+        #                  pygame.Rect(self.rect.centerx - 15, self.rect.y - 30,
+        #                              30 / self.max_shield_time * self.shield_timer, 5))
         image = load_image('shield_cover')
         screen.blit(image, (self.rect.centerx - image.get_width() // 2,
                             self.rect.centery - image.get_height() // 2))
