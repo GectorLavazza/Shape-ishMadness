@@ -40,9 +40,9 @@ class Player(Sprite):
         self.mode = 0
         self.speed_mode = [(5, 8), (4, 6), (3, 5)]
         self.coins = 0
-        self.weapons = {0: {'damage': 1, 'c_time': 9, 'e_time': 60, 'ammo': 0, 'max_ammo': 100},
-                        1: {'damage': 3, 'c_time': 60, 'e_time': 20, 'ammo': 0, 'max_ammo': 20},
-                        2: {'damage': 20, 'c_time': 120, 'e_time': 360, 'ammo': 0, 'max_ammo': 5}}
+        self.weapons = {0: {'damage': 1, 'c_time': 9, 'e_time': 60, 'ammo': 100, 'max_ammo': 100},
+                        1: {'damage': 3, 'c_time': 60, 'e_time': 20, 'ammo': 20, 'max_ammo': 20},
+                        2: {'damage': 20, 'c_time': 120, 'e_time': 360, 'ammo': 5, 'max_ammo': 5}}
         self.speed_boost_timer = 600
         self.shield_timer = 600
         self.max_speed_boost_time = 600
