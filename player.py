@@ -40,9 +40,9 @@ class Player(Sprite):
         self.mode = 0
         self.speed_mode = [(5, 8), (4, 6), (3, 5)]
         self.coins = 0
-        self.weapons = {0: {'damage': 1, 'c_time': 9, 'e_time': 60, 'ammo': 100, 'max_ammo': 100},
-                        1: {'damage': 3, 'c_time': 60, 'e_time': 20, 'ammo': 20, 'max_ammo': 20},
-                        2: {'damage': 20, 'c_time': 120, 'e_time': 360, 'ammo': 5, 'max_ammo': 5}}
+        self.weapons = {0: {'damage': 1, 'c_time': 30, 'e_time': 60, 'ammo': 50, 'max_ammo': 50},
+                        1: {'damage': 3, 'c_time': 120, 'e_time': 20, 'ammo': 10, 'max_ammo': 10},
+                        2: {'damage': 20, 'c_time': 240, 'e_time': 360, 'ammo': 3, 'max_ammo': 3}}
         self.speed_boost_timer = 600
         self.shield_timer = 600
         self.max_speed_boost_time = 600
@@ -140,12 +140,13 @@ class Player(Sprite):
         ammo = self.weapons[self.mode]['ammo']
 
         if self.cooldown >= c_time and ammo:
-            play_sound('shoot2', 0.2)
             if self.mode == 0:
+                play_sound('shoot2', 0.2)
                 create_bullet(self.rect.center, mouse_pos, damage, e_time,
                               self.particles_g, self.bullets_g)
 
             elif self.mode == 1:
+                play_sound('shotgun_shoot2', 0.2)
                 spread_angle = 45
                 num_bullets = 5
 
@@ -169,6 +170,7 @@ class Player(Sprite):
                                   self.particles_g, self.bullets_g)
 
             elif self.mode == 2:
+                play_sound('rifle_shoot', 0.2)
                 create_bullet(self.rect.center, mouse_pos, damage, e_time,
                               self.particles_g, self.bullets_g)
             self.cooldown = 0

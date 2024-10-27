@@ -81,6 +81,7 @@ while running:
 
         if event.type == pygame.MOUSEWHEEL:
             if mouse_wheel_cd >= 10:
+                player.cooldown = 0
                 mouse_wheel_cd = 0
                 if event.y == -1:
                     if 0 <= player.mode - event.y <= 2:
@@ -154,10 +155,13 @@ while running:
 
             if event.key == pygame.K_1:
                 player.mode = 0
+                player.cooldown = 0
             if event.key == pygame.K_2:
                 player.mode = 1
+                player.cooldown = 0
             if event.key == pygame.K_3:
                 player.mode = 2
+                player.cooldown = 0
 
         if event.type == pygame.KEYUP:
             if event.key == pygame.K_w:
