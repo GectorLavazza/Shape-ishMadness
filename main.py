@@ -23,6 +23,9 @@ bullets_g = pygame.sprite.Group()
 enemies_g = pygame.sprite.Group()
 items_g = pygame.sprite.Group()
 enemy_bullet_g = pygame.sprite.Group()
+buttons_g = pygame.sprite.Group()
+
+player_button = Button(load_image('player_button'), (0, 0), buttons_g)
 
 player_g = pygame.sprite.Group()
 player = Player(bullets_g, particles_g, enemy_bullet_g, player_g)
@@ -49,6 +52,8 @@ dead_label = Text(screen, size, 60, pos=(SW // 2, SH // 2))
 
 coin_label = CoinsCount(screen, size, 30, 'white', pos=(SW - 50, 10))
 
+menu = Menu(screen, (SW, SH), buttons_g, (SW // 2, SH // 2))
+
 # play_music(SONGS[0], 0.3)
 
 show_hint = True
@@ -56,6 +61,7 @@ show_hitbox = False
 show_rect = False
 
 playing = True
+show_menu = False
 
 mouse_wheel_cd = 0
 
@@ -110,8 +116,12 @@ while running:
                                              items_g, enemy_bullet_g, player)
 
             if event.key == pygame.K_ESCAPE:
-                if player.health:
+                if player.health and not show_menu:
                     playing = not playing
+
+            if event.key == pygame.K_e:
+                if player.health and playing:
+                    show_menu = not show_menu
 
             if event.key == pygame.K_F1:
                 if fps == 120:
@@ -167,21 +177,23 @@ while running:
                 player.hold = True
 
             elif event.button == 1:
-                player.shoot(mouse_pos)
+                if playing and not show_menu:
+                    player.shoot(mouse_pos)
 
         if event.type == pygame.MOUSEBUTTONUP:
             if event.button == 3:
                 player.hold = False
 
-    if player.hold:
-        player.shoot(mouse_pos)
+    if playing and not show_menu:
+        if player.hold:
+            player.shoot(mouse_pos)
 
     if player.health <= 0:
         playing = False
 
     screen.fill(pygame.Color('#0f380f'))
 
-    if playing:
+    if playing and not show_menu:
         particles_g.update(screen_rect, dt, fps)
         bullets_g.update(screen_rect, dt)
         enemies_g.update(screen, screen_rect, (player.rect.x, player.rect.y),
@@ -243,6 +255,10 @@ while running:
             pause_label.update('Paused')
         else:
             dead_label.update('Defeated')
+
+    if show_menu:
+        menu.update()
+        buttons_g.draw(screen)
 
     coin_label.update(player.coins)
 

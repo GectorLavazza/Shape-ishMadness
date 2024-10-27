@@ -185,10 +185,8 @@ class Triangle(Sprite):
                 self.player.take_damage(self.damage)
                 self.damage_timer = 0
                 self.recovering = True
-                # print([w['ammo'] for w in self.player.weapons.values()],
-                #       any(filter(lambda s: type(s) != AmmoBox, self.items_g)))
                 if (not any([w['ammo'] for w in self.player.weapons.values()]) and
-                        not any(filter(lambda s: type(s) != AmmoBox, self.items_g))):
+                    not len(list(filter(lambda s: type(s) == AmmoBox, self.items_g)))):
                     pos = (self.rect.centerx + random.randint(0, 10),
                            self.rect.centery + random.randint(0, 10))
                     self.generate_item('ammo', pos)
