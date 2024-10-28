@@ -11,7 +11,7 @@ from settings import *
 from ui import *
 
 
-def main():
+async def main():
     pygame.init()
     clock = pygame.time.Clock()
     fps = 60
@@ -272,7 +272,7 @@ def main():
         pygame.display.flip()
         clock.tick(fps)
 
-        asyncio.sleep(0)
+        await asyncio.sleep(0)
 
     pygame.quit()
 
