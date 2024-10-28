@@ -4,30 +4,50 @@ from sprites import Sprite
 
 
 class Button(Sprite):
-    def __init__(self, image, pos=(0, 0), *group):
+    def __init__(self, screen, screen_size, image, highlighted, pos=(0, 0),
+                 *group):
         super().__init__(*group)
-        self.image = image
+        self.image = load_image(image)
         self.rect = self.image.get_rect()
-        self.orig = image
-        self.rect.x = pos[0]
-        self.rect.y = pos[1]
+        self.orig = load_image(image)
+        self.rect.centerx = pos[0]
+        self.rect.centery = pos[1]
         self.orig_pos = pos
+        self.highlighted = load_image(highlighted)
+        self.screen = screen
+        self.hidden_msg_font = pygame.font.Font(
+            'assets/fonts/PixelOperator8-Bold.ttf',
+            15)
 
     def update(self, *args):
         mouse_pos = pygame.mouse.get_pos()
         if self.rect.x <= mouse_pos[
             0] <= self.rect.x + self.orig.get_width() and self.rect.y <= \
                 mouse_pos[1] <= self.rect.y + self.orig.get_height():
-            self.image = pygame.transform.smoothscale_by(self.orig,
-                                                         (1.05, 1.05))
+            self.image = self.highlighted
         else:
             self.image = self.orig
 
         if (args and args[0].type == pygame.MOUSEBUTTONDOWN and
-                args[0].key == 1 and self.rect.collidepoint(args[0].pos)):
+                self.rect.collidepoint(args[0].pos)):
             return True
 
         return False
+
+    def draw_hint(self):
+        hint = 'sigmo'
+        hint_render = self.hidden_msg_font.render(hint,
+                                                  True,
+                                                  'white')
+        pygame.draw.rect(self.screen, pygame.Color('black'),
+                         pygame.Rect(
+                             pygame.mouse.get_pos()[0] + 14 - 70,
+                             pygame.mouse.get_pos()[1] + 14,
+                             hint_render.get_width() + 8,
+                             hint_render.get_height() + 8))
+        self.screen.blit(hint_render, (
+            pygame.mouse.get_pos()[0] + 14 + 4 - 70,
+            pygame.mouse.get_pos()[1] + 14 + 4))
 
 
 class Ui:
@@ -91,7 +111,8 @@ class ValueBar(Text):
                                            self.color)
 
             self.screen.blit(self.render, (
-            110 * RATIO - self.render.get_width() // 2 * RATIO, self.pos[1]))
+                110 * RATIO - self.render.get_width() // 2 * RATIO,
+                self.pos[1]))
 
         self.screen.blit(self.image, (6, self.pos[1] - 6))
 
@@ -112,3 +133,42 @@ class Menu(Ui):
         for button in self.buttons_g:
             button.orig_pos = (500, 500)
             button.update()
+
+
+class UpgradesMenu(Text):
+    def __init__(self, screen, screen_size, data):
+        super().__init__(screen, screen_size, 20)
+        self.image = load_image('menu')
+        self.data = data
+        self.pos = (self.width // 2 - self.image.get_width() // 2,
+                    self.height // 2 - self.image.get_height() // 2)
+        self.bg = pygame.Surface(
+            (self.width, self.height))
+        self.bg.set_alpha(128)
+        self.bg.fill((0, 0, 0))
+
+    def update(self, screen):
+        self.screen.blit(self.bg, (0, 0))
+        self.screen.blit(self.image, self.pos)
+
+        a = len(list(self.data.keys()))
+        for i in range(a):
+
+            heading = list(self.data.keys())[i]
+            x, y = (self.pos[0] * 1.25 + self.image.get_width() // a * i,
+                    self.pos[1] + 40)
+            render = Text(screen, (self.width, self.height), 20, pos=(x, y),
+                          color='red')
+            render.update(heading)
+
+            for j in range(len(list(self.data[heading].keys()))):
+                name = list(self.data[heading].keys())[j]
+                x, y = (self.pos[0] * 1.25 + self.image.get_width() // a * i,
+                        self.pos[1] + 80 + (150 * j + 1))
+                render = Text(screen, (self.width, self.height), 20,
+                              pos=(x, y))
+                render.update(name)
+                value = Text(screen, (self.width, self.height), 20,
+                             pos=(x, y + 50), color='#9bbc0f')
+                value.update(
+                    f'{self.data[heading][name][0]}/{self.data[heading][name][1]}')

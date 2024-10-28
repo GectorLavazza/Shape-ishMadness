@@ -21,9 +21,6 @@ async def main():
     enemies_g = pygame.sprite.Group()
     items_g = pygame.sprite.Group()
     enemy_bullet_g = pygame.sprite.Group()
-    buttons_g = pygame.sprite.Group()
-
-    player_button = Button(load_image('player_button'), (0, 0), buttons_g)
 
     player_g = pygame.sprite.Group()
     player = Player(bullets_g, particles_g, enemy_bullet_g, player_g)
@@ -50,7 +47,16 @@ async def main():
 
     coin_label = CoinsCount(screen, size, 30, 'white', pos=(SW - 50, 10))
 
-    menu = Menu(screen, (SW, SH), buttons_g, (SW // 2, SH // 2))
+    data = {
+        "Player": {"Spd": [1, 5, ], "Hp": [3, 5], "Crit %": [1, 5]},
+        "Blaster": {"Dmg": [1, 5], "Cooldown": [1, 5], 'Range': [1, 5]},
+        "Shotgun": {"Dmg": [1, 5], "Cooldown": [1, 5], 'Area': [1, 5]},
+        "Rifle": {"Dmg": [1, 5], "Cooldown": [1, 5], 'Range': [1, 5]},
+        "Speed Boost": {"Time": [1, 5]},
+        "Shield": {"Time": [1, 5]}
+    }
+
+    menu = UpgradesMenu(screen, (SW, SH), data)
 
     # play_music(SONGS[0], 0.3)
 
@@ -77,20 +83,21 @@ async def main():
             if event.type == pygame.QUIT:
                 running = False
 
-            if event.type == pygame.MOUSEWHEEL:
-                if mouse_wheel_cd >= 10:
-                    player.cooldown = 0
-                    mouse_wheel_cd = 0
-                    if event.y == -1:
-                        if 0 <= player.mode - event.y <= 2:
-                            player.mode -= event.y
+            if not show_menu:
+                if event.type == pygame.MOUSEWHEEL:
+                    if mouse_wheel_cd >= 10:
+                        player.cooldown = 0
+                        mouse_wheel_cd = 0
+                        if event.y == -1:
+                            if 0 <= player.mode - event.y <= 2:
+                                player.mode -= event.y
+                            else:
+                                player.mode = 0
                         else:
-                            player.mode = 0
-                    else:
-                        if 2 >= player.mode - event.y >= 0:
-                            player.mode -= event.y
-                        else:
-                            player.mode = 2
+                            if 2 >= player.mode - event.y >= 0:
+                                player.mode -= event.y
+                            else:
+                                player.mode = 2
 
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_q:
@@ -182,6 +189,7 @@ async def main():
                     if playing and not show_menu:
                         player.shoot(mouse_pos)
 
+
             if event.type == pygame.MOUSEBUTTONUP:
                 if event.button == 3:
                     player.hold = False
@@ -259,8 +267,7 @@ async def main():
                 dead_label.update('Defeated')
 
         if show_menu:
-            menu.update()
-            buttons_g.draw(screen)
+            menu.update(screen)
 
         coin_label.update(player.coins)
 

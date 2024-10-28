@@ -30,7 +30,7 @@ class Player(Sprite):
         self.deceleration = 0.1
         self.velocity = pygame.Vector2(0, 0)  # Current velocity
 
-        self.score = 200
+        self.score = 0
         self.coins = 0
         self.health = 10
         self.max_health = 10
