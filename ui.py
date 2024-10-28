@@ -1,10 +1,6 @@
-import pygame
-
-from sprites import Sprite
-from settings import *
-
-import pygame
 from load_image import load_image
+from settings import *
+from sprites import Sprite
 
 
 class Button(Sprite):
@@ -22,12 +18,13 @@ class Button(Sprite):
         if self.rect.x <= mouse_pos[
             0] <= self.rect.x + self.orig.get_width() and self.rect.y <= \
                 mouse_pos[1] <= self.rect.y + self.orig.get_height():
-            self.image = pygame.transform.smoothscale_by(self.orig, (1.05, 1.05))
+            self.image = pygame.transform.smoothscale_by(self.orig,
+                                                         (1.05, 1.05))
         else:
             self.image = self.orig
 
         if (args and args[0].type == pygame.MOUSEBUTTONDOWN and
-            args[0].key == 1 and self.rect.collidepoint(args[0].pos)):
+                args[0].key == 1 and self.rect.collidepoint(args[0].pos)):
             return True
 
         return False
@@ -87,11 +84,14 @@ class ValueBar(Text):
         pygame.draw.rect(self.screen, pygame.Color('#306230'),
                          pygame.Rect(*self.pos, 200 * RATIO, 20 * RATIO))
         pygame.draw.rect(self.screen, pygame.Color('#8bac0f'),
-                         pygame.Rect(*self.pos, 200 / self.max * msg * RATIO, 20 * RATIO))
+                         pygame.Rect(*self.pos, 200 / self.max * msg * RATIO,
+                                     20 * RATIO))
         if show_value:
-            self.render = self.font.render(f'{msg}/{self.max}', True, self.color)
+            self.render = self.font.render(f'{msg}/{self.max}', True,
+                                           self.color)
 
-            self.screen.blit(self.render, (110 * RATIO - self.render.get_width() // 2 * RATIO, self.pos[1]))
+            self.screen.blit(self.render, (
+            110 * RATIO - self.render.get_width() // 2 * RATIO, self.pos[1]))
 
         self.screen.blit(self.image, (6, self.pos[1] - 6))
 

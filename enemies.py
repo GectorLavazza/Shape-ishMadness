@@ -1,15 +1,6 @@
-import pygame
-import random
-from itertools import *
-
-from particles import create_particles, generate_particles, \
-    generate_text_particles
-from sprites import Sprite
-from load_image import load_image
-
-from settings import *
+from bullets import create_enemy_bullet
 from items import *
-from player import create_bullet, Bullet, create_enemy_bullet
+from settings import *
 
 
 class Triangle(Sprite):

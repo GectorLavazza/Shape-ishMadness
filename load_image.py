@@ -1,7 +1,9 @@
 import os
+
 import pygame
 
 from settings import RATIO
+
 
 def load_image(name, color_key=None, scale=(RATIO, RATIO)):
     fullname = os.path.join("assets/sprites/", name + '.png')

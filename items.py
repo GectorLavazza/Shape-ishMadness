@@ -2,11 +2,10 @@ import random
 
 import pygame
 
-from particles import create_particles, generate_particles
-from sprites import Sprite
 from load_image import load_image
-
+from particles import create_particles, generate_particles
 from settings import play_sound, RATIO
+from sprites import Sprite
 
 
 class Item(Sprite):

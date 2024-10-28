@@ -1,13 +1,8 @@
-import pygame
-import time
 import asyncio
-
-from particles import *
+import time
 
 from enemies import *
 from player import Player
-
-from settings import *
 from ui import *
 
 

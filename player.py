@@ -1,48 +1,45 @@
 import random
 
-import pygame
 from pygame import Vector2
 
-from particles import create_particles, generate_particles
-from sprites import Sprite
+from bullets import create_bullet
 from load_image import load_image
-
+from particles import create_particles, generate_particles
 from settings import *
+from sprites import Sprite
 
 
 class Player(Sprite):
     def __init__(self, bullets_g, particles_g, enemy_bullet_g, *group):
         super().__init__(*group)
         self.image = load_image('player')
+
         self.rect = self.image.get_rect()
         self.rect.center = SW // 2, SH // 2
         self.hitbox = pygame.Rect(0, 0, self.rect.w * 0.72, self.rect.h * 0.72)
         self.hitbox.topleft = (
             self.rect.centerx + -self.hitbox.w // 2,
             self.rect.centery + -self.hitbox.h // 2)
-        self.score = 0
-        self.speed = 5  # Base speed
-        self.max_speed = 8  # Maximum speed with sprint
-        self.acceleration = 0.5  # How quickly the player accelerates
-        self.deceleration = 0.1  # How quickly the player decelerates
-        self.velocity = pygame.Vector2(0, 0)  # Current velocity
-        self.health = 10
-        self.max_health = 10
+
         self.dx = 0
         self.dy = 0
-        self.bullets_g = bullets_g
-        self.particles_g = particles_g
-        self.enemy_bullet_g = enemy_bullet_g
+
+        self.speed = 5
+        self.max_speed = 8
+        self.acceleration = 0.5
+        self.deceleration = 0.1
+        self.velocity = pygame.Vector2(0, 0)  # Current velocity
+
+        self.score = 200
+        self.coins = 0
+        self.health = 10
+        self.max_health = 10
+
         self.hold = False
         self.cooldown = 0
         self.hold_mode = False
         self.sprint = False
-        self.mode = 0
-        self.speed_mode = [(5, 8), (4, 6), (3, 5)]
-        self.coins = 0
-        self.weapons = {0: {'damage': 1, 'c_time': 30, 'e_time': 60, 'ammo': 50, 'max_ammo': 50},
-                        1: {'damage': 3, 'c_time': 120, 'e_time': 20, 'ammo': 10, 'max_ammo': 10},
-                        2: {'damage': 20, 'c_time': 240, 'e_time': 360, 'ammo': 3, 'max_ammo': 3}}
+
         self.speed_boost_timer = 600
         self.shield_timer = 600
         self.max_speed_boost_time = 600
@@ -50,45 +47,27 @@ class Player(Sprite):
         self.speed_boost = 0
         self.shield = False
 
+        self.bullets_g = bullets_g
+        self.particles_g = particles_g
+        self.enemy_bullet_g = enemy_bullet_g
+
+        self.mode = 0
+        self.speed_mode = [(5, 8), (4, 6), (3, 5)]
+
+        self.weapons = {
+            0: {'damage': 1, 'c_time': 30, 'e_time': 60, 'ammo': 50,
+                'max_ammo': 50},
+            1: {'damage': 3, 'c_time': 120, 'e_time': 20, 'ammo': 10,
+                'max_ammo': 10},
+            2: {'damage': 20, 'c_time': 240, 'e_time': 360, 'ammo': 3,
+                'max_ammo': 3}}
+
     def update(self, screen, screen_rect, dt):
         self.move(dt)
+        self.bullet_check()
+        self.handle_sprint()
+        self.handle_timers(screen, dt)
 
-        # Handle shooting cooldown
-        c_time = self.weapons[self.mode]['c_time']
-        if self.cooldown < c_time:
-            self.cooldown += dt
-            self.draw_cooldown_bar(screen, self.cooldown)
-
-        # Sprint toggle
-        if not self.hold:
-            if self.sprint:
-                self.max_speed = self.speed_mode[self.mode][1] + self.speed_boost
-            else:
-                self.max_speed = self.speed_mode[self.mode][0] + self.speed_boost
-        else:
-            self.max_speed = self.speed_mode[self.mode][0] + self.speed_boost
-
-        if self.speed_boost_timer > 0 and self.speed_boost:
-            self.speed_boost_timer -= dt
-        else:
-            self.speed_boost = 0
-
-        if self.shield_timer > 0 and self.shield:
-            self.shield_timer -= dt
-            self.draw_shield(screen)
-        else:
-            self.shield = False
-
-        for bullet in self.enemy_bullet_g:
-            if self.hitbox.colliderect(bullet.rect):
-                if not self.shield:
-                    self.health -= 1
-                create_particles(self.rect.center,
-                                 generate_particles('hit_particle'),
-                                 50, 20,
-                                 self.particles_g)
-                play_sound('hit')
-                bullet.kill()
 
     def take_damage(self, damage):
         if not self.shield:
@@ -194,66 +173,40 @@ class Player(Sprite):
             self.rect.centery += self.velocity.y * dt * RATIO
             self.hitbox.centery += self.velocity.y * dt * RATIO
 
+    def handle_sprint(self):
+        if not self.hold:
+            if self.sprint:
+                self.max_speed = self.speed_mode[self.mode][1] + self.speed_boost
+            else:
+                self.max_speed = self.speed_mode[self.mode][0] + self.speed_boost
+        else:
+            self.max_speed = self.speed_mode[self.mode][0] + self.speed_boost
 
-class Bullet(Sprite):
-    def __init__(self, pos, target_pos, particles_g, e_time, damage, *group):
-        super().__init__(*group)
-        self.image = load_image('bullet')
-        self.rect = self.image.get_rect()
+    def bullet_check(self):
+        for bullet in self.enemy_bullet_g:
+            if self.hitbox.colliderect(bullet.rect):
+                if not self.shield:
+                    self.health -= 1
+                create_particles(self.rect.center,
+                                 generate_particles('hit_particle'),
+                                 50, 20,
+                                 self.particles_g)
+                play_sound('hit')
+                bullet.kill()
 
-        self.rect.center = pos
-        self.damage = damage
+    def handle_timers(self, screen, dt):
+        c_time = self.weapons[self.mode]['c_time']
+        if self.cooldown < c_time:
+            self.cooldown += dt
+            self.draw_cooldown_bar(screen, self.cooldown)
 
-        self.elapsed_time = 0
-        self.speed = 10
-        self.existence_time = e_time
+        if self.speed_boost_timer > 0 and self.speed_boost:
+            self.speed_boost_timer -= dt
+        else:
+            self.speed_boost = 0
 
-        self.particles_g = particles_g
-
-        self.direction = pygame.Vector2(target_pos) - pygame.Vector2(pos)
-        if self.direction.length() > 0:
-            self.direction = self.direction.normalize()
-
-    def update(self, screen_rect, dt):
-        self.rect.centerx += self.direction.x * self.speed * dt * RATIO
-        self.rect.centery += self.direction.y * self.speed * dt * RATIO
-
-        self.elapsed_time += dt
-
-        if self.elapsed_time >= self.existence_time:
-            create_particles(self.rect.center,
-                             generate_particles('bullet_particle3'),
-                             10, 10,
-                             self.particles_g)
-            play_sound('bullet_explosion', 0.05)
-            self.kill()
-
-
-class EnemyBullet(Bullet):
-    def __init__(self, pos, target_pos, particles_g, *group):
-        super().__init__(pos, target_pos, particles_g, 150, 1, *group)
-        self.image = load_image('enemy_bullet')
-        self.rect = self.image.get_rect()
-        self.rect.center = pos
-
-    def update(self, screen_rect, dt):
-        self.rect.centerx += self.direction.x * self.speed * dt * RATIO
-        self.rect.centery += self.direction.y * self.speed * dt * RATIO
-
-        self.elapsed_time += dt
-
-        if self.elapsed_time >= self.existence_time:
-            create_particles(self.rect.center,
-                             generate_particles('enemy_bullet_particle'),
-                             10, 10,
-                             self.particles_g)
-            play_sound('enemy_bullet_explosion', 0.2)
-            self.kill()
-
-
-def create_bullet(position, target_pos, damage, e_time, particles_g, group):
-    Bullet(position, target_pos, particles_g, e_time, damage, group)
-
-
-def create_enemy_bullet(position, target_pos, particles_g, group):
-    EnemyBullet(position, target_pos, particles_g, group)
+        if self.shield_timer > 0 and self.shield:
+            self.shield_timer -= dt
+            self.draw_shield(screen)
+        else:
+            self.shield = False
