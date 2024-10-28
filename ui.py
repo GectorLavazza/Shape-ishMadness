@@ -147,6 +147,8 @@ class UpgradesMenu(Text):
         self.bg.set_alpha(128)
         self.bg.fill((0, 0, 0))
 
+        self.current = [0, 0]
+
     def update(self, screen):
         self.screen.blit(self.bg, (0, 0))
         self.screen.blit(self.image, self.pos)
@@ -168,7 +170,13 @@ class UpgradesMenu(Text):
                 render = Text(screen, (self.width, self.height), 20,
                               pos=(x, y))
                 render.update(name)
+
+                if [i, j] == self.current:
+                    color = 'magenta'
+                else:
+                    color = '#9bbc0f'
+
                 value = Text(screen, (self.width, self.height), 20,
-                             pos=(x, y + 50), color='#9bbc0f')
+                             pos=(x, y + 50), color=color)
                 value.update(
                     f'{self.data[heading][name][0]}/{self.data[heading][name][1]}')

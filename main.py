@@ -149,14 +149,25 @@ async def main():
                 if event.key == pygame.K_LSHIFT:
                     player.sprint = True
 
-                if event.key == pygame.K_w:
-                    player.dy = -1
-                if event.key == pygame.K_s:
-                    player.dy = 1
-                if event.key == pygame.K_a:
-                    player.dx = -1
-                if event.key == pygame.K_d:
-                    player.dx = 1
+                if not show_menu:
+                    if event.key == pygame.K_w:
+                        player.dy = -1
+                    if event.key == pygame.K_s:
+                        player.dy = 1
+                    if event.key == pygame.K_a:
+                        player.dx = -1
+                    if event.key == pygame.K_d:
+                        player.dx = 1
+
+                elif show_menu:
+                    if event.key == pygame.K_w:
+                        menu.current[1] -= 1
+                    if event.key == pygame.K_s:
+                        menu.current[1] += 1
+                    if event.key == pygame.K_a:
+                        menu.current[0] -= 1
+                    if event.key == pygame.K_d:
+                        menu.current[0] += 1
 
                 if event.key == pygame.K_1:
                     player.mode = 0
