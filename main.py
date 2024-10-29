@@ -1,6 +1,8 @@
 import asyncio
 import time
 
+import pygame
+
 from enemies import *
 from player import Player
 from ui import *
@@ -48,12 +50,12 @@ async def main():
     coin_label = CoinsCount(screen, size, 30, 'white', pos=(SW - 50, 10))
 
     data = {
-        "Player": {"Spd": [1, 5, ], "Hp": [3, 5], "Crit %": [1, 5]},
-        "Blaster": {"Dmg": [1, 5], "Cooldown": [1, 5], 'Range': [1, 5]},
-        "Shotgun": {"Dmg": [1, 5], "Cooldown": [1, 5], 'Area': [1, 5]},
-        "Rifle": {"Dmg": [1, 5], "Cooldown": [1, 5], 'Range': [1, 5]},
-        "Speed Boost": {"Time": [1, 5]},
-        "Shield": {"Time": [1, 5]}
+        "Player": {"Hp": [10, 10, 20, 2, 50], "Crit %": [1, 1, 5, 1, 50]},
+        "Blaster": {"Dmg": [1, 1, 3, 1, 20], "Cooldown": [30, 30, 10, -5, 5], 'Range': [60, 60, 90, 10, 10], 'Max Ammo': [50, 50, 200, 50, 10]},
+        "Shotgun": {"Dmg": [3, 3, 6, 1, 30], "Cooldown": [120, 120, 60, -20, 10], 'Range': [20, 20, 40, 10, 20], 'Max Ammo': [10, 10, 40, 10, 20]},
+        "Rifle": {"Dmg": [20, 20, 40, 10, 40], "Cooldown": [240, 240, 120, -20, 20], 'Range': [60, 60, 90, 10, 30], 'Max Ammo': [50, 50, 200, 50, 30]},
+        "Speed Boost": {"Time": [600, 600, 1200, 100, 40]},
+        "Shield": {"Time": [600, 600, 1200, 100, 40]}
     }
 
     menu = UpgradesMenu(screen, (SW, SH), data)
@@ -168,6 +170,8 @@ async def main():
                         menu.current[0] -= 1
                     if event.key == pygame.K_d:
                         menu.current[0] += 1
+                    if event.key == pygame.K_SPACE:
+                        menu.buy()
 
                 if event.key == pygame.K_1:
                     player.mode = 0

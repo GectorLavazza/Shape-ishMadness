@@ -1,3 +1,5 @@
+import pygame.draw
+
 from load_image import load_image
 from settings import *
 from sprites import Sprite
@@ -154,6 +156,7 @@ class UpgradesMenu(Text):
         self.screen.blit(self.image, self.pos)
 
         a = len(list(self.data.keys()))
+
         for i in range(a):
 
             heading = list(self.data.keys())[i]
@@ -171,12 +174,47 @@ class UpgradesMenu(Text):
                               pos=(x, y))
                 render.update(name)
 
+                v = self.data[heading][name][0]
+                min_v = self.data[heading][name][1]
+                max_v = self.data[heading][name][2]
+                c = self.data[heading][name][3]
+                ml = abs(max_v - min_v) // abs(c) + 1
+                l = 1 + abs(v - min_v) // abs(c)
+                p = self.data[heading][name][4] * l
+
                 if [i, j] == self.current:
                     color = 'magenta'
+                    pygame.draw.rect(self.screen, 'magenta', (x - 18, y + 72, 40, 5))
+
+                    price = Text(screen, (self.width, self.height), 20,
+                                 pos=(x, y + 100), color='yellow')
+                    price.update(p)
                 else:
                     color = '#9bbc0f'
 
                 value = Text(screen, (self.width, self.height), 20,
                              pos=(x, y + 50), color=color)
-                value.update(
-                    f'{self.data[heading][name][0]}/{self.data[heading][name][1]}')
+
+                value.update(f'{l}/{ml}')
+
+
+    def buy(self):
+        i, j = self.current
+
+        heading = list(self.data.keys())[i]
+        name = list(self.data[heading].keys())[j]
+
+        v = self.data[heading][name][0]
+        min_v = self.data[heading][name][1]
+        max_v = self.data[heading][name][2]
+        c = self.data[heading][name][3]
+        ml = abs(max_v - min_v) // abs(c) + 1
+        l = 1 + abs(v - min_v) // abs(c)
+        p = self.data[heading][name][4] * l
+
+        if c > 0:
+            if v + c <= max_v:
+                self.data[heading][name][0] += c
+        elif c < 0:
+            if v + c >= max_v:
+                self.data[heading][name][0] += c

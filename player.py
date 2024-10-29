@@ -117,7 +117,7 @@ class Player(Sprite):
                     target = Vector2(
                         self.rect.center) + rotated_direction * distance
 
-                    bullet_damage = 3 - abs(i - (num_bullets // 2))
+                    bullet_damage = damage - abs(i - (num_bullets // 2))
                     bullet_e_time = e_time - abs(i - (num_bullets // 2)) // 10
 
                     create_bullet(self.rect.center, target, bullet_damage,
