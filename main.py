@@ -18,6 +18,24 @@ async def main():
 
     running = True
 
+    d = {
+        "Player": {"Hp": [10, 10, 20, 2, 50], "Crit %": [1, 1, 5, 1, 50]},
+        "Blaster": {"Dmg": [1, 1, 3, 1, 20], "Cooldown": [30, 30, 10, -5, 5],
+                    'Range': [60, 60, 90, 10, 10],
+                    'Max Ammo': [50, 50, 200, 50, 10]},
+        "Shotgun": {"Dmg": [3, 3, 6, 1, 30],
+                    "Cooldown": [120, 120, 60, -20, 10],
+                    'Range': [20, 20, 40, 10, 20],
+                    'Max Ammo': [10, 10, 40, 10, 20]},
+        "Rifle": {"Dmg": [20, 20, 40, 10, 40],
+                  "Cooldown": [240, 240, 120, -20, 20],
+                  'Range': [120, 120, 480, 120, 30],
+                  'Max Ammo': [5, 5, 15, 5, 30]},
+        "Speed Boost": {"Time": [600, 600, 1200, 100, 40]},
+        "Shield": {"Time": [600, 600, 1200, 100, 40]}
+    }
+    data = Data(d)
+
     particles_g = pygame.sprite.Group()
     bullets_g = pygame.sprite.Group()
     enemies_g = pygame.sprite.Group()
@@ -25,7 +43,7 @@ async def main():
     enemy_bullet_g = pygame.sprite.Group()
 
     player_g = pygame.sprite.Group()
-    player = Player(bullets_g, particles_g, enemy_bullet_g, player_g)
+    player = Player(bullets_g, particles_g, enemy_bullet_g, data, player_g)
 
     enemy_spawn = EnemySpawn(enemies_g, particles_g, bullets_g, items_g,
                              enemy_bullet_g, player)
@@ -49,16 +67,7 @@ async def main():
 
     coin_label = CoinsCount(screen, size, 30, 'white', pos=(SW - 50, 10))
 
-    data = {
-        "Player": {"Hp": [10, 10, 20, 2, 50], "Crit %": [1, 1, 5, 1, 50]},
-        "Blaster": {"Dmg": [1, 1, 3, 1, 20], "Cooldown": [30, 30, 10, -5, 5], 'Range': [60, 60, 90, 10, 10], 'Max Ammo': [50, 50, 200, 50, 10]},
-        "Shotgun": {"Dmg": [3, 3, 6, 1, 30], "Cooldown": [120, 120, 60, -20, 10], 'Range': [20, 20, 40, 10, 20], 'Max Ammo': [10, 10, 40, 10, 20]},
-        "Rifle": {"Dmg": [20, 20, 40, 10, 40], "Cooldown": [240, 240, 120, -20, 20], 'Range': [60, 60, 90, 10, 30], 'Max Ammo': [50, 50, 200, 50, 30]},
-        "Speed Boost": {"Time": [600, 600, 1200, 100, 40]},
-        "Shield": {"Time": [600, 600, 1200, 100, 40]}
-    }
-
-    menu = UpgradesMenu(screen, (SW, SH), data)
+    menu = UpgradesMenu(screen, (SW, SH), data, player)
 
     # play_music(SONGS[0], 0.3)
 
@@ -117,8 +126,30 @@ async def main():
                         enemy_bullet_g = pygame.sprite.Group()
 
                         player_g = pygame.sprite.Group()
+
+                        d = {
+                            "Player": {"Hp": [10, 10, 20, 2, 50],
+                                       "Crit %": [1, 1, 5, 1, 50]},
+                            "Blaster": {"Dmg": [1, 1, 3, 1, 20],
+                                        "Cooldown": [30, 30, 10, -5, 5],
+                                        'Range': [60, 60, 90, 10, 10],
+                                        'Max Ammo': [50, 50, 200, 50, 10]},
+                            "Shotgun": {"Dmg": [3, 3, 6, 1, 30],
+                                        "Cooldown": [120, 120, 60, -20, 10],
+                                        'Range': [20, 20, 40, 10, 20],
+                                        'Max Ammo': [10, 10, 40, 10, 20]},
+                            "Rifle": {"Dmg": [20, 20, 40, 10, 40],
+                                      "Cooldown": [240, 240, 120, -20, 20],
+                                      'Range': [120, 120, 480, 120, 30],
+                                      'Max Ammo': [5, 5, 15, 5, 30]},
+                            "Speed Boost": {"Time": [600, 600, 1200, 100, 40]},
+                            "Shield": {"Time": [600, 600, 1200, 100, 40]}
+                        }
+
+                        data = Data(d)
                         player = Player(bullets_g, particles_g, enemy_bullet_g,
-                                        player_g)
+                                        data, player_g)
+                        menu = UpgradesMenu(screen, (SW, SH), data, player)
 
                         enemy_spawn = EnemySpawn(enemies_g, particles_g, bullets_g,
                                                  items_g, enemy_bullet_g, player)
@@ -171,7 +202,14 @@ async def main():
                     if event.key == pygame.K_d:
                         menu.current[0] += 1
                     if event.key == pygame.K_SPACE:
-                        menu.buy()
+                        try:
+                            menu.buy()
+                            player.update_stats(data, menu)
+                            health.max = player.max_health
+                            shield_bar.max = player.max_shield_time
+                            speed_boost_bar.max = player.max_speed_boost_time
+                        except Exception as e:
+                            print(e)
 
                 if event.key == pygame.K_1:
                     player.mode = 0
@@ -264,8 +302,8 @@ async def main():
                 effect_bar.update(player.shield_timer,
                                   False)
 
-        ammo_msg = player.weapons[player.mode]['ammo']
-        ammo.max = player.weapons[player.mode]['max_ammo']
+        ammo_msg = player.ammo[player.mode]
+        ammo.max = player.weapons[player.mode]['Max Ammo'][0]
         ammo.image = load_image(['ammo', 'shotgun_ammo', 'riffle_ammo'][player.mode])
 
         ammo.update(ammo_msg)

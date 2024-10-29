@@ -10,7 +10,7 @@ from sprites import Sprite
 
 
 class Player(Sprite):
-    def __init__(self, bullets_g, particles_g, enemy_bullet_g, *group):
+    def __init__(self, bullets_g, particles_g, enemy_bullet_g, data, *group):
         super().__init__(*group)
         self.image = load_image('player')
 
@@ -30,10 +30,13 @@ class Player(Sprite):
         self.deceleration = 0.1
         self.velocity = pygame.Vector2(0, 0)  # Current velocity
 
+        self.data = data.data
+
         self.score = 0
         self.coins = 0
         self.health = 10
-        self.max_health = 10
+        self.max_health = self.data['Player']['Hp'][0]
+        self.crit_chance = self.data['Player']['Crit %'][0]
 
         self.hold = False
         self.cooldown = 0
@@ -54,13 +57,15 @@ class Player(Sprite):
         self.mode = 0
         self.speed_mode = [(5, 8), (4, 6), (3, 5)]
 
-        self.weapons = {
-            0: {'damage': 1, 'c_time': 30, 'e_time': 60, 'ammo': 50,
-                'max_ammo': 50},
-            1: {'damage': 3, 'c_time': 120, 'e_time': 20, 'ammo': 10,
-                'max_ammo': 10},
-            2: {'damage': 20, 'c_time': 240, 'e_time': 360, 'ammo': 3,
-                'max_ammo': 3}}
+        self.blaster = self.data['Blaster']
+        self.shotgun = self.data['Shotgun']
+        self.rifle = self.data['Rifle']
+
+        self.weapons = [self.blaster, self.shotgun, self.rifle]
+        self.ammo = [self.blaster['Max Ammo'][0],
+                     self.shotgun['Max Ammo'][0],
+                     self.rifle['Max Ammo'][0]]
+
 
     def update(self, screen, screen_rect, dt):
         self.move(dt)
@@ -85,14 +90,14 @@ class Player(Sprite):
                              self.particles_g)
 
     def shoot(self, mouse_pos):
-        damage = self.weapons[self.mode]['damage']
+        damage = self.weapons[self.mode]['Dmg'][0]
 
-        if random.randint(1, 10) == 10:
-            damage = self.weapons[self.mode]['damage'] * 2
+        if random.randint(1, 10) in range(1, self.crit_chance + 1):
+            damage *= 2
 
-        c_time = self.weapons[self.mode]['c_time']
-        e_time = self.weapons[self.mode]['e_time']
-        ammo = self.weapons[self.mode]['ammo']
+        c_time = self.weapons[self.mode]['Cooldown'][0]
+        e_time = self.weapons[self.mode]['Range'][0]
+        ammo = self.ammo[self.mode]
 
         if self.cooldown >= c_time and ammo:
             if self.mode == 0:
@@ -130,10 +135,10 @@ class Player(Sprite):
                               self.particles_g, self.bullets_g)
             self.cooldown = 0
 
-            self.weapons[self.mode]['ammo'] -= 1
+            self.ammo[self.mode] -= 1
 
     def draw_cooldown_bar(self, screen, cooldown):
-        c_time = self.weapons[self.mode]['c_time']
+        c_time = self.weapons[self.mode]['Cooldown'][0]
         pygame.draw.rect(screen, pygame.Color('#306230'),
                          pygame.Rect(self.rect.centerx - 15 * RATIO, self.rect.y - 10 * RATIO,
                                      30 * RATIO, 5 * RATIO))
@@ -195,7 +200,7 @@ class Player(Sprite):
                 bullet.kill()
 
     def handle_timers(self, screen, dt):
-        c_time = self.weapons[self.mode]['c_time']
+        c_time = self.weapons[self.mode]['Cooldown'][0]
         if self.cooldown < c_time:
             self.cooldown += dt
             self.draw_cooldown_bar(screen, self.cooldown)
@@ -210,3 +215,23 @@ class Player(Sprite):
             self.draw_shield(screen)
         else:
             self.shield = False
+
+    def update_stats(self, data, menu):
+        self.data = data.data
+        ch, cn = menu.current_heading, menu.current_name
+
+        self.max_health = self.data['Player']['Hp'][0]
+        self.health = self.max_health
+        self.crit_chance = self.data['Player']['Crit %'][0]
+
+        self.max_speed_boost_time = self.data['Speed Boost']['Time'][0]
+        self.max_shield_time = self.data['Shield']['Time'][0]
+
+        self.blaster = self.data['Blaster']
+        self.shotgun = self.data['Shotgun']
+        self.rifle = self.data['Rifle']
+
+        self.weapons = [self.blaster, self.shotgun, self.rifle]
+        k = list(self.data.keys())[1:4]
+        if ch in k and cn == 'Max Ammo':
+            self.ammo[k.index(ch)] = self.data[ch]['Max Ammo'][0]

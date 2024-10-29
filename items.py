@@ -73,13 +73,13 @@ class AmmoBox(Item):
                              self.particles_g)
             play_sound('ammo')
 
-            ma = self.player.weapons[self.type]['max_ammo']
-            a = self.player.weapons[self.type]['ammo']
+            ma = self.player.weapons[self.type]['Max Ammo'][0]
+            a = self.player.ammo[self.type]
             if ma >= a + self.ammo[self.type]:
-                self.player.weapons[self.type]['ammo'] += self.ammo[self.type]
+                self.player.ammo[self.type] += self.ammo[self.type]
             else:
-                self.player.weapons[self.type]['ammo'] = (
-                    self.player.weapons[self.type]['max_ammo'])
+                self.player.ammo[self.type] = (
+                    self.player.weapons[self.type]['Max Ammo'][0])
 
             self.kill()
 

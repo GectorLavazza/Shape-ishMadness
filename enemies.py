@@ -176,7 +176,7 @@ class Triangle(Sprite):
                 self.player.take_damage(self.damage)
                 self.damage_timer = 0
                 self.recovering = True
-                if (not any([w['ammo'] for w in self.player.weapons.values()]) and
+                if (not any(self.player.ammo) and
                     not len(list(filter(lambda s: type(s) == AmmoBox, self.items_g)))):
                     pos = (self.rect.centerx + random.randint(0, 10),
                            self.rect.centery + random.randint(0, 10))

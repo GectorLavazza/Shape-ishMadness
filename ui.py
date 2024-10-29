@@ -138,7 +138,7 @@ class Menu(Ui):
 
 
 class UpgradesMenu(Text):
-    def __init__(self, screen, screen_size, data):
+    def __init__(self, screen, screen_size, data, player):
         super().__init__(screen, screen_size, 20)
         self.image = load_image('menu')
         self.data = data
@@ -150,45 +150,53 @@ class UpgradesMenu(Text):
         self.bg.fill((0, 0, 0))
 
         self.current = [0, 0]
+        self.current_heading = ''
+        self.current_name = ''
+
+        self.player = player
 
     def update(self, screen):
         self.screen.blit(self.bg, (0, 0))
         self.screen.blit(self.image, self.pos)
 
-        a = len(list(self.data.keys()))
+        a = len(list(self.data.data.keys()))
 
         for i in range(a):
 
-            heading = list(self.data.keys())[i]
+            heading = list(self.data.data.keys())[i]
+            if i == self.current[0]:
+                self.current_heading = heading
             x, y = (self.pos[0] * 1.25 + self.image.get_width() // a * i,
                     self.pos[1] + 40)
             render = Text(screen, (self.width, self.height), 20, pos=(x, y),
                           color='red')
             render.update(heading)
 
-            for j in range(len(list(self.data[heading].keys()))):
-                name = list(self.data[heading].keys())[j]
+            for j in range(len(list(self.data.data[heading].keys()))):
+                name = list(self.data.data[heading].keys())[j]
+                if j == self.current[1] and i == self.current[0]:
+                    self.current_name = name
                 x, y = (self.pos[0] * 1.25 + self.image.get_width() // a * i,
                         self.pos[1] + 80 + (150 * j + 1))
                 render = Text(screen, (self.width, self.height), 20,
                               pos=(x, y))
                 render.update(name)
 
-                v = self.data[heading][name][0]
-                min_v = self.data[heading][name][1]
-                max_v = self.data[heading][name][2]
-                c = self.data[heading][name][3]
+                v = self.data.data[heading][name][0]
+                min_v = self.data.data[heading][name][1]
+                max_v = self.data.data[heading][name][2]
+                c = self.data.data[heading][name][3]
                 ml = abs(max_v - min_v) // abs(c) + 1
                 l = 1 + abs(v - min_v) // abs(c)
-                p = self.data[heading][name][4] * l
+                p = self.data.data[heading][name][4] * l
 
                 if [i, j] == self.current:
                     color = 'magenta'
                     pygame.draw.rect(self.screen, 'magenta', (x - 18, y + 72, 40, 5))
-
-                    price = Text(screen, (self.width, self.height), 20,
-                                 pos=(x, y + 100), color='yellow')
-                    price.update(p)
+                    if l < ml:
+                        price = Text(screen, (self.width, self.height), 20,
+                                     pos=(x, y + 100), color='yellow')
+                        price.update(p)
                 else:
                     color = '#9bbc0f'
 
@@ -201,20 +209,27 @@ class UpgradesMenu(Text):
     def buy(self):
         i, j = self.current
 
-        heading = list(self.data.keys())[i]
-        name = list(self.data[heading].keys())[j]
+        heading = list(self.data.data.keys())[i]
+        name = list(self.data.data[heading].keys())[j]
 
-        v = self.data[heading][name][0]
-        min_v = self.data[heading][name][1]
-        max_v = self.data[heading][name][2]
-        c = self.data[heading][name][3]
+        v = self.data.data[heading][name][0]
+        min_v = self.data.data[heading][name][1]
+        max_v = self.data.data[heading][name][2]
+        c = self.data.data[heading][name][3]
         ml = abs(max_v - min_v) // abs(c) + 1
         l = 1 + abs(v - min_v) // abs(c)
-        p = self.data[heading][name][4] * l
+        p = self.data.data[heading][name][4] * l
 
         if c > 0:
-            if v + c <= max_v:
-                self.data[heading][name][0] += c
+            if v + c <= max_v and self.player.coins - p >= 0:
+                self.data.data[heading][name][0] += c
+                self.player.coins -= p
         elif c < 0:
-            if v + c >= max_v:
-                self.data[heading][name][0] += c
+            if v + c >= max_v and self.player.coins - p >= 0:
+                self.data.data[heading][name][0] += c
+                self.player.coins -= p
+
+
+class Data:
+    def __init__(self, data):
+        self.data = data
