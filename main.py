@@ -111,9 +111,9 @@ async def main():
                                 player.mode = 2
 
             if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_q:
-                    if not playing:
-                        running = False
+                # if event.key == pygame.K_q:
+                #     if not playing:
+                #         running = False
 
                 if event.key == pygame.K_r:
                     if player.health <= 0:
