@@ -83,6 +83,7 @@ class Player(Sprite):
                              50, 20,
                              self.particles_g)
         else:
+            self.health -= int(damage * 0.1)
             play_sound('shield_hit')
             create_particles(self.rect.center,
                              generate_particles('shield_hit_particle'),
@@ -190,13 +191,7 @@ class Player(Sprite):
     def bullet_check(self):
         for bullet in self.enemy_bullet_g:
             if self.hitbox.colliderect(bullet.rect):
-                if not self.shield:
-                    self.health -= 1
-                create_particles(self.rect.center,
-                                 generate_particles('hit_particle'),
-                                 50, 20,
-                                 self.particles_g)
-                play_sound('hit')
+                self.take_damage(1)
                 bullet.kill()
 
     def handle_timers(self, screen, dt):

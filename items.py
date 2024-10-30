@@ -23,14 +23,16 @@ class Item(Sprite):
         self.particles_g = particles_g
         self.offset = 20
         self.direction = 1
+        self.velocity = 0
 
     def update(self, dt):
         if self.rect.y > self.orig_pos[1] + self.offset:
             self.direction = -1
         if self.rect.y < self.orig_pos[1] - self.offset:
             self.direction = 1
-        self.rect.y += dt * self.direction * RATIO
-        self.hitbox.y += dt * self.direction * RATIO
+        self.velocity = dt * self.direction * RATIO
+        self.rect.y += self.velocity
+        self.hitbox.y += self.velocity
 
         if self.hitbox.colliderect(self.player.rect):
             self.on_collide()
