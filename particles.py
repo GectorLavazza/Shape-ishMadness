@@ -19,7 +19,7 @@ class Particle(Sprite):
         self.elapsed_time = 0
         self.existence_time = existence_time
 
-    def update(self, screen_rect, dt, fps):
+    def update(self, screen_rect, dt):
         self.rect.x += self.velocity[0] * dt * RATIO
         self.rect.y += self.velocity[1] * dt * RATIO
 

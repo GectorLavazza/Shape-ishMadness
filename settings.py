@@ -3,6 +3,7 @@ import pygame
 pygame.display.init()
 screen_info = pygame.display.Info()
 
+FPS = 90
 
 DATA = {
         "Player": {"Hp": [10, 10, 30, 2, 50], "Crit %": [1, 1, 5, 1, 50]},

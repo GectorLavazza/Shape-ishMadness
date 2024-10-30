@@ -11,7 +11,6 @@ from ui import *
 async def main():
     pygame.init()
     clock = pygame.time.Clock()
-    fps = 60
     screen, size, screen_rect = set_screen((SW, SH))
 
     last_time = time.time()
@@ -216,7 +215,7 @@ async def main():
         screen.fill(pygame.Color('#0f380f'))
 
         if playing and not show_menu:
-            particles_g.update(screen_rect, dt, fps)
+            particles_g.update(screen_rect, dt)
             bullets_g.update(screen_rect, dt)
             enemies_g.update(screen, screen_rect, (player.rect.x, player.rect.y),
                              dt)
@@ -284,7 +283,7 @@ async def main():
         coin_label.update(player.coins)
 
         pygame.display.flip()
-        clock.tick(fps)
+        clock.tick(FPS)
 
         await asyncio.sleep(0)
 
