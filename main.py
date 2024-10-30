@@ -18,22 +18,7 @@ async def main():
 
     running = True
 
-    d = {
-        "Player": {"Hp": [10, 10, 20, 2, 50], "Crit %": [1, 1, 5, 1, 50]},
-        "Blaster": {"Dmg": [1, 1, 3, 1, 20], "Cooldown": [30, 30, 10, -5, 5],
-                    'Range': [60, 60, 90, 10, 10],
-                    'Max Ammo': [50, 50, 200, 50, 10]},
-        "Shotgun": {"Dmg": [3, 3, 6, 1, 30],
-                    "Cooldown": [120, 120, 60, -20, 10],
-                    'Range': [20, 20, 40, 10, 20],
-                    'Max Ammo': [10, 10, 40, 10, 20]},
-        "Rifle": {"Dmg": [20, 20, 40, 10, 40],
-                  "Cooldown": [240, 240, 120, -20, 20],
-                  'Range': [120, 120, 480, 120, 30],
-                  'Max Ammo': [5, 5, 15, 5, 30]},
-        "Speed Boost": {"Time": [600, 600, 1200, 100, 40]},
-        "Shield": {"Time": [600, 600, 1200, 100, 40]}
-    }
+    d = DATA.copy()
     data = Data(d)
 
     particles_g = pygame.sprite.Group()
@@ -127,24 +112,7 @@ async def main():
 
                         player_g = pygame.sprite.Group()
 
-                        d = {
-                            "Player": {"Hp": [10, 10, 20, 2, 50],
-                                       "Crit %": [1, 1, 5, 1, 50]},
-                            "Blaster": {"Dmg": [1, 1, 3, 1, 20],
-                                        "Cooldown": [30, 30, 10, -5, 5],
-                                        'Range': [60, 60, 90, 10, 10],
-                                        'Max Ammo': [50, 50, 200, 50, 10]},
-                            "Shotgun": {"Dmg": [3, 3, 6, 1, 30],
-                                        "Cooldown": [120, 120, 60, -20, 10],
-                                        'Range': [20, 20, 40, 10, 20],
-                                        'Max Ammo': [10, 10, 40, 10, 20]},
-                            "Rifle": {"Dmg": [20, 20, 40, 10, 40],
-                                      "Cooldown": [240, 240, 120, -20, 20],
-                                      'Range': [120, 120, 480, 120, 30],
-                                      'Max Ammo': [5, 5, 15, 5, 30]},
-                            "Speed Boost": {"Time": [600, 600, 1200, 100, 40]},
-                            "Shield": {"Time": [600, 600, 1200, 100, 40]}
-                        }
+                        d = DATA.copy()
 
                         data = Data(d)
                         player = Player(bullets_g, particles_g, enemy_bullet_g,
@@ -192,25 +160,6 @@ async def main():
                     if event.key == pygame.K_d:
                         player.dx = 1
 
-                elif show_menu:
-                    if event.key == pygame.K_w:
-                        menu.current[1] -= 1
-                    if event.key == pygame.K_s:
-                        menu.current[1] += 1
-                    if event.key == pygame.K_a:
-                        menu.current[0] -= 1
-                    if event.key == pygame.K_d:
-                        menu.current[0] += 1
-                    if event.key == pygame.K_SPACE:
-                        try:
-                            menu.buy()
-                            player.update_stats(data, menu)
-                            health.max = player.max_health
-                            shield_bar.max = player.max_shield_time
-                            speed_boost_bar.max = player.max_speed_boost_time
-                        except Exception as e:
-                            print(e)
-
                 if event.key == pygame.K_1:
                     player.mode = 0
                     player.cooldown = 0
@@ -242,6 +191,16 @@ async def main():
                     if playing and not show_menu:
                         player.shoot(mouse_pos)
 
+                if show_menu:
+                    if event.button == 1:
+                        try:
+                            menu.buy()
+                            player.update_stats(data, menu)
+                            health.max = player.max_health
+                            shield_bar.max = player.max_shield_time
+                            speed_boost_bar.max = player.max_speed_boost_time
+                        except Exception as e:
+                            print(e)
 
             if event.type == pygame.MOUSEBUTTONUP:
                 if event.button == 3:

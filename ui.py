@@ -69,9 +69,11 @@ class Text(Ui):
         self.color = pygame.Color(color)
 
         self.render = self.font.render('', True, self.color)
+        self.rect = self.render.get_rect()
 
     def update(self, message):
         self.render = self.font.render(str(message), True, self.color)
+        self.rect = self.render.get_rect()
         pos = (self.pos[0] - self.render.get_width() // 2,
                self.pos[1] - self.render.get_height() // 2)
         self.screen.blit(self.render, pos)
@@ -190,7 +192,10 @@ class UpgradesMenu(Text):
                 l = 1 + abs(v - min_v) // abs(c)
                 p = self.data.data[heading][name][4] * l
 
-                if [i, j] == self.current:
+                colliderect = pygame.Rect(x - 50, y, 100, 120)
+
+                if colliderect.collidepoint(pygame.mouse.get_pos()):
+                    self.current = [i, j]
                     color = 'magenta'
                     pygame.draw.rect(self.screen, 'magenta', (x - 18, y + 72, 40, 5))
                     if l < ml:
