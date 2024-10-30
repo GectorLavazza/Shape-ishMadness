@@ -40,9 +40,9 @@ class Triangle(Sprite):
         if self.max_speed < 4:
             self.max_speed = 4
 
-        self.health = 2
-        self.max_health = 2
-        self.damage = 1
+        self.max_health = 2 + self.player.score // 1000
+        self.health = 2 + self.player.score // 1000
+        self.damage = 1 + self.player.score // 2000
         self.score_weight = 5
         self.dx = 0
         self.dy = 0
@@ -221,9 +221,9 @@ class Square(Triangle):
         if self.max_speed < 2:
             self.max_speed = 2
 
-        self.health = 4
-        self.max_health = 4
-        self.damage = 2
+        self.max_health = 4 + 2 * self.player.score // 2000
+        self.health = 4 + 2 * self.player.score // 2000
+        self.damage = 2 + self.player.score // 2000
 
         self.score_weight = 10
 
@@ -246,9 +246,9 @@ class Pentagon(Triangle):
             self.rect.centery + - self.hitbox.h // 2)
 
         self.max_speed = 1
-        self.health = 100
-        self.max_health = 100
-        self.damage = 5
+        self.health = 100 + 50 * self.player.score // 2000
+        self.max_health = 100 + 50 * self.player.score // 2000
+        self.damage = 5 + self.player.score // 2000
         self.score_weight = 100
 
         self.enemy_bullet_g = enemy_bullet_g
@@ -257,13 +257,16 @@ class Pentagon(Triangle):
         self.deceleration = 0.0125
 
         self.cooldown = 0
-        self.c_time = 60
+        self.c_time = 60 - 2 * self.player.score // 1000
+        if self.c_time < 30:
+            self.c_time = 30
 
     def update(self, screen, screen_rect, target_pos, dt):
         self.move(target_pos, dt)
         self.bullet_check()
         self.draw_health_bar(screen)
         self.player_check()
+        self.handle_overlap(self.all_enemies, dt)
 
         if self.damage_timer < 120:
             self.damage_timer += dt
@@ -389,7 +392,8 @@ class EnemySpawn:
             self.group.add(enemy)
         else:
             if self.score > 200:
-                if not any([e.name == 'pentagon' for e in self.group]):
+                m = 1 + self.score // 2000
+                if [e.name == 'pentagon' for e in self.group].count(True) < m:
                     enemy = Pentagon(pos, self.particles_g, self.bullet_g,
                                      self.items_g, self.enemy_bullet_g,
                                      self.player, self.group)
