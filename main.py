@@ -300,9 +300,9 @@ async def main():
         ammo.update(ammo_msg)
 
         fps_label.update(f'FPS: {round(clock.get_fps())}')
-        if show_hint:
-            hint_label.update('[Q] - quit. [R] - restart (upon death). '
-                              '[Esc] - pause/unpause. [F2] - toggle hint.')
+        # if show_hint:
+        #     hint_label.update('[Q] - quit. [R] - restart (upon death). '
+        #                       '[Esc] - pause/unpause. [F2] - toggle hint.')
 
         if not playing:
             if player.health > 0:
