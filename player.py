@@ -219,9 +219,11 @@ class Player(Sprite):
     def update_stats(self, data, menu):
         self.data = data.data
         ch, cn = menu.current_heading, menu.current_name
+        print(ch, cn)
 
         self.max_health = self.data['Player']['Hp'][0]
-        self.health = self.max_health
+        if ch == 'Player' and cn == 'Max Ammo':
+            self.health = self.max_health
         self.crit_chance = self.data['Player']['Crit %'][0]
 
         self.max_speed_boost_time = self.data['Speed Boost']['Time'][0]
