@@ -198,11 +198,12 @@ class UpgradesMenu(Text):
                     pc = 'yellow'
                     if heading == 'Blaster +':
                         blaster = self.data.data['Blaster']
-                        blaster_check = [blaster[n][0] == blaster[n][2] for n
-                                         in blaster]
+                        blaster_check = [blaster['Dmg'][0] == 5,
+                                         blaster['Cooldown'][0] == 15,
+                                         blaster['Max Ammo'][0] == 200]
                         if not all(blaster_check):
                             color = 'gray'
-                            p = 'Fully upgrade Blaster first'
+                            p = 'Dmg lvl 5, Cooldown lvl 4, Max Ammo lvl 4 needed'
                             pc = 'red'
                     pygame.draw.rect(self.screen, color,
                                      (x - 18, y + 72, 40, 5))
@@ -235,8 +236,9 @@ class UpgradesMenu(Text):
 
         if heading == 'Blaster +':
             blaster = self.data.data['Blaster']
-            blaster_check = [blaster[n][0] == blaster[n][2] for n
-                             in blaster]
+            blaster_check = [blaster['Dmg'][0] == 5,
+                             blaster['Cooldown'][0] == 15,
+                             blaster['Max Ammo'][0] == 200]
             if not all(blaster_check):
                 do = False
 
