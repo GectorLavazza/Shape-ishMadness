@@ -69,7 +69,8 @@ def play_music(filename, volume=0.5):
 
 def set_screen(size):
     pygame.display.set_caption('Shape-ish Madness')
-    screen = pygame.display.set_mode(size)
+    flags = pygame.DOUBLEBUF
+    screen = pygame.display.set_mode(size, flags)
     screen_rect = (0, 0, size[0], size[1])
     print(SW, SH)
     return screen, size, screen_rect

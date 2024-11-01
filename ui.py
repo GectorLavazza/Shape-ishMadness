@@ -83,13 +83,13 @@ class CoinsCount(Text):
     def __init__(self, screen, screen_size, font_size, color, pos=(0, 0)):
         self.coins_count = 0
         super().__init__(screen, screen_size, font_size, color, pos)
+        self.image = load_image('coin')
 
     def update(self, message):
         self.render = self.font.render(str(message), True, self.color)
-        coin_image = load_image('coin')
         pos = (self.pos[0] - self.render.get_width(), self.pos[1])
 
-        self.screen.blit(coin_image, (self.pos[0] + 10, self.pos[1] - 2))
+        self.screen.blit(self.image, (self.pos[0] + 10, self.pos[1] - 2))
         self.screen.blit(self.render, pos)
 
 
@@ -144,6 +144,9 @@ class UpgradesMenu(Text):
         super().__init__(screen, screen_size, 20)
         self.image = load_image('menu')
         self.data = data
+
+        self.screen = screen
+
         self.pos = (self.width // 2 - self.image.get_width() // 2,
                     self.height // 2 - self.image.get_height() // 2)
         self.bg = pygame.Surface(
@@ -156,33 +159,29 @@ class UpgradesMenu(Text):
         self.current_name = ''
 
         self.player = player
+        self.headings, self.names, self.surface = self.oninit()
+
 
     def update(self, screen):
-        self.screen.blit(self.bg, (0, 0))
-        self.screen.blit(self.image, self.pos)
+        screen.blit(self.surface, self.pos)
 
         a = len(list(self.data.data.keys()))
 
         for i in range(a):
 
             heading = list(self.data.data.keys())[i]
+            self.headings[i].update(heading)
             if i == self.current[0]:
                 self.current_heading = heading
-            x, y = (self.pos[0] * 1.25 + self.image.get_width() // a * i,
-                    self.pos[1] + 40)
-            render = Text(screen, (self.width, self.height), 20, pos=(x, y),
-                          color='red')
-            render.update(heading)
 
             for j in range(len(list(self.data.data[heading].keys()))):
+                x, y = (self.pos[0] * 1.25 + self.image.get_width() // a * i,
+                          self.pos[1] + 80 + (150 * j + 1))
+
                 name = list(self.data.data[heading].keys())[j]
                 if j == self.current[1] and i == self.current[0]:
                     self.current_name = name
-                x, y = (self.pos[0] * 1.25 + self.image.get_width() // a * i,
-                        self.pos[1] + 80 + (150 * j + 1))
-                render = Text(screen, (self.width, self.height), 20,
-                              pos=(x, y))
-                render.update(name)
+                self.names[i][j].update(name)
 
                 v = self.data.data[heading][name][0]
                 min_v = self.data.data[heading][name][1]
@@ -233,6 +232,35 @@ class UpgradesMenu(Text):
             if v + c >= max_v and self.player.coins - p >= 0:
                 self.data.data[heading][name][0] += c
                 self.player.coins -= p
+
+    def oninit(self):
+        surface = pygame.Surface((self.image.get_width(),
+                                 self.image.get_height()))
+        surface = surface.convert_alpha()
+        surface.blit(self.image, (0, 0))
+        surface = surface.convert_alpha()
+        headings = []
+        names = []
+
+        a = len(list(self.data.data.keys()))
+        for i in range(a):
+            heading = list(self.data.data.keys())[i]
+            xh, yh = (self.pos[0] * 1.25 + self.image.get_width() // a * i,
+                    self.pos[1] + 40)
+            hr = Text(self.screen, (self.width, self.height), 20, pos=(xh, yh),
+                          color='red')
+            headings.append(hr)
+            names_row = []
+
+            for j in range(len(list(self.data.data[heading].keys()))):
+                yn = self.pos[1] + 80 + (150 * j + 1)
+                nr = Text(self.screen, (self.width, self.height), 20,
+                              pos=(xh, yn))
+                names_row.append(nr)
+
+            names.append(names_row)
+
+        return headings, names, surface
 
 
 class Data:

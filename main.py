@@ -12,6 +12,12 @@ async def main():
     pygame.init()
     clock = pygame.time.Clock()
     screen, size, screen_rect = set_screen((SW, SH))
+    pygame.event.set_allowed([pygame.QUIT,
+                              pygame.KEYDOWN,
+                              pygame.KEYUP,
+                              pygame.MOUSEBUTTONDOWN,
+                              pygame.MOUSEBUTTONUP,
+                              pygame.MOUSEWHEEL])
 
     last_time = time.time()
 
@@ -245,12 +251,15 @@ async def main():
         if player.health <= 0:
             playing = False
 
+        pygame.event.pump()
+
         screen.fill(pygame.Color('#0f380f'))
 
         if playing and not show_menu:
             particles_g.update(screen_rect, dt)
             bullets_g.update(screen_rect, dt)
-            enemies_g.update(screen, screen_rect, (player.rect.x, player.rect.y),
+            enemies_g.update(screen, screen_rect,
+                             (player.rect.x, player.rect.y),
                              dt)
             enemy_spawn.update(dt)
             items_g.update(dt)
@@ -295,7 +304,8 @@ async def main():
 
         ammo_msg = player.ammo[player.mode]
         ammo.max = player.weapons[player.mode]['Max Ammo'][0]
-        ammo.image = load_image(['ammo', 'shotgun_ammo', 'riffle_ammo'][player.mode])
+        ammo.image = load_image(
+            ['ammo', 'shotgun_ammo', 'riffle_ammo'][player.mode])
 
         ammo.update(ammo_msg)
 
@@ -311,6 +321,7 @@ async def main():
                 dead_label.update('Defeated')
 
         if show_menu:
+            screen.blit(menu.bg, (0, 0))
             menu.update(screen)
 
         coin_label.update(player.coins)
