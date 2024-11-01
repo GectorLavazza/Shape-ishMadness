@@ -115,7 +115,7 @@ class ValueBar(Text):
                                            self.color)
 
             self.screen.blit(self.render, (
-                110 * RATIO - self.render.get_width() // 2 * RATIO,
+                120 * RATIO - self.render.get_width() // 2 * RATIO,
                 self.pos[1]))
 
         self.screen.blit(self.image, (6, self.pos[1] - 6))
@@ -161,7 +161,6 @@ class UpgradesMenu(Text):
         self.player = player
         self.headings, self.names, self.surface = self.oninit()
 
-
     def update(self, screen):
         screen.blit(self.surface, self.pos)
 
@@ -176,7 +175,7 @@ class UpgradesMenu(Text):
 
             for j in range(len(list(self.data.data[heading].keys()))):
                 x, y = (self.pos[0] * 1.25 + self.image.get_width() // a * i,
-                          self.pos[1] + 80 + (150 * j + 1))
+                        self.pos[1] + 80 + (150 * j + 1))
 
                 name = list(self.data.data[heading].keys())[j]
                 if j == self.current[1] and i == self.current[0]:
@@ -196,10 +195,20 @@ class UpgradesMenu(Text):
                 if colliderect.collidepoint(pygame.mouse.get_pos()):
                     self.current = [i, j]
                     color = 'magenta'
-                    pygame.draw.rect(self.screen, 'magenta', (x - 18, y + 72, 40, 5))
+                    pc = 'yellow'
+                    if heading == 'Blaster +':
+                        blaster = self.data.data['Blaster']
+                        blaster_check = [blaster[n][0] == blaster[n][2] for n
+                                         in blaster]
+                        if not all(blaster_check):
+                            color = 'gray'
+                            p = 'Fully upgrade Blaster first'
+                            pc = 'red'
+                    pygame.draw.rect(self.screen, color,
+                                     (x - 18, y + 72, 40, 5))
                     if l < ml:
                         price = Text(screen, (self.width, self.height), 20,
-                                     pos=(x, y + 100), color='yellow')
+                                     pos=(x, y + 100), color=pc)
                         price.update(p)
                 else:
                     color = '#9bbc0f'
@@ -209,9 +218,9 @@ class UpgradesMenu(Text):
 
                 value.update(f'{l}/{ml}')
 
-
     def buy(self):
         i, j = self.current
+        do = True
 
         heading = list(self.data.data.keys())[i]
         name = list(self.data.data[heading].keys())[j]
@@ -224,18 +233,26 @@ class UpgradesMenu(Text):
         l = 1 + abs(v - min_v) // abs(c)
         p = self.data.data[heading][name][4] * l
 
-        if c > 0:
-            if v + c <= max_v and self.player.coins - p >= 0:
-                self.data.data[heading][name][0] += c
-                self.player.coins -= p
-        elif c < 0:
-            if v + c >= max_v and self.player.coins - p >= 0:
-                self.data.data[heading][name][0] += c
-                self.player.coins -= p
+        if heading == 'Blaster +':
+            blaster = self.data.data['Blaster']
+            blaster_check = [blaster[n][0] == blaster[n][2] for n
+                             in blaster]
+            if not all(blaster_check):
+                do = False
+
+        if do:
+            if c > 0:
+                if v + c <= max_v and self.player.coins - p >= 0:
+                    self.data.data[heading][name][0] += c
+                    self.player.coins -= p
+            elif c < 0:
+                if v + c >= max_v and self.player.coins - p >= 0:
+                    self.data.data[heading][name][0] += c
+                    self.player.coins -= p
 
     def oninit(self):
         surface = pygame.Surface((self.image.get_width(),
-                                 self.image.get_height()))
+                                  self.image.get_height()))
         surface = surface.convert_alpha()
         surface.blit(self.image, (0, 0))
         surface = surface.convert_alpha()
@@ -246,16 +263,16 @@ class UpgradesMenu(Text):
         for i in range(a):
             heading = list(self.data.data.keys())[i]
             xh, yh = (self.pos[0] * 1.25 + self.image.get_width() // a * i,
-                    self.pos[1] + 40)
+                      self.pos[1] + 40)
             hr = Text(self.screen, (self.width, self.height), 20, pos=(xh, yh),
-                          color='red')
+                      color='light blue')
             headings.append(hr)
             names_row = []
 
             for j in range(len(list(self.data.data[heading].keys()))):
                 yn = self.pos[1] + 80 + (150 * j + 1)
                 nr = Text(self.screen, (self.width, self.height), 20,
-                              pos=(xh, yn))
+                          pos=(xh, yn))
                 names_row.append(nr)
 
             names.append(names_row)

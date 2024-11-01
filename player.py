@@ -33,8 +33,8 @@ class Player(Sprite):
         self.data = data.data
 
         self.score = 0
-        self.coins = 0
-        self.health = 10
+        self.coins = 10000
+        self.health = self.data['Player']['Hp'][0]
         self.max_health = self.data['Player']['Hp'][0]
         self.crit_chance = self.data['Player']['Crit %'][0]
 
@@ -43,10 +43,10 @@ class Player(Sprite):
         self.hold_mode = False
         self.sprint = False
 
-        self.speed_boost_timer = 600
-        self.shield_timer = 600
-        self.max_speed_boost_time = 600
-        self.max_shield_time = 600
+        self.speed_boost_timer = self.data['Speed Boost']['Time'][0]
+        self.shield_timer = self.data['Shield']['Time'][0]
+        self.max_speed_boost_time = self.data['Speed Boost']['Time'][0]
+        self.max_shield_time = self.data['Shield']['Time'][0]
         self.speed_boost = 0
         self.shield = False
 
@@ -54,17 +54,13 @@ class Player(Sprite):
         self.particles_g = particles_g
         self.enemy_bullet_g = enemy_bullet_g
 
-        self.mode = 0
-        self.speed_mode = [(5, 8), (4, 6), (3, 5)]
-
         self.blaster = self.data['Blaster']
-        self.shotgun = self.data['Shotgun']
-        self.rifle = self.data['Rifle']
+        self.blaster_plus = self.data['Blaster +']
 
-        self.weapons = [self.blaster, self.shotgun, self.rifle]
-        self.ammo = [self.blaster['Max Ammo'][0],
-                     self.shotgun['Max Ammo'][0],
-                     self.rifle['Max Ammo'][0]]
+        self.sprint_speed = 8
+        self.normal_speed = 5
+
+        self.ammo = self.blaster['Max Ammo'][0]
 
 
     def update(self, screen, screen_rect, dt):
@@ -91,31 +87,25 @@ class Player(Sprite):
                              self.particles_g)
 
     def shoot(self, mouse_pos):
-        damage = self.weapons[self.mode]['Dmg'][0]
+        damage = self.blaster['Dmg'][0]
 
         if random.randint(1, 10) in range(1, self.crit_chance + 1):
             damage *= 2
 
-        c_time = self.weapons[self.mode]['Cooldown'][0]
-        e_time = self.weapons[self.mode]['Range'][0]
-        ammo = self.ammo[self.mode]
+        c_time = self.blaster['Cooldown'][0]
+        e_time = self.blaster_plus['Range'][0]
 
-        if self.cooldown >= c_time and ammo:
-            if self.mode == 0:
-                play_sound('shoot2', 0.2)
-                create_bullet(self.rect.center, mouse_pos, damage, e_time,
-                              self.particles_g, self.bullets_g)
+        if self.cooldown >= c_time and self.ammo:
+            play_sound('shoot2', 0.2)
 
-            elif self.mode == 1:
-                play_sound('shotgun_shoot2', 0.2)
-                spread_angle = 45
-                num_bullets = 5
+            spread_angle = self.blaster_plus['Angle'][0]
+            num_bullets = self.blaster_plus['Amount'][0]
 
-                direction = Vector2(mouse_pos) - Vector2(self.rect.center)
-                distance = direction.length()
-                if distance > 0:
-                    direction = direction.normalize()
-
+            direction = Vector2(mouse_pos) - Vector2(self.rect.center)
+            distance = direction.length()
+            if distance > 0:
+                direction = direction.normalize()
+            if num_bullets > 1:
                 for i in range(num_bullets):
                     angle_offset = spread_angle * (i / (num_bullets - 1) - 0.5)
                     rotated_direction = direction.rotate(angle_offset)
@@ -123,23 +113,21 @@ class Player(Sprite):
                     target = Vector2(
                         self.rect.center) + rotated_direction * distance
 
-                    bullet_damage = damage - abs(i - (num_bullets // 2))
-                    bullet_e_time = e_time - abs(i - (num_bullets // 2)) // 10
 
-                    create_bullet(self.rect.center, target, bullet_damage,
-                                  bullet_e_time,
+                    create_bullet(self.rect.center, target,
+                                  damage, e_time,
                                   self.particles_g, self.bullets_g)
-
-            elif self.mode == 2:
-                play_sound('rifle_shoot', 0.2)
-                create_bullet(self.rect.center, mouse_pos, damage, e_time,
+            else:
+                create_bullet(self.rect.center, mouse_pos,
+                              damage, e_time,
                               self.particles_g, self.bullets_g)
+
             self.cooldown = 0
 
-            self.ammo[self.mode] -= 1
+            self.ammo -= 1
 
     def draw_cooldown_bar(self, screen, cooldown):
-        c_time = self.weapons[self.mode]['Cooldown'][0]
+        c_time = self.blaster['Cooldown'][0]
         pygame.draw.rect(screen, pygame.Color('#306230'),
                          pygame.Rect(self.rect.centerx - 15 * RATIO, self.rect.y - 10 * RATIO,
                                      30 * RATIO, 5 * RATIO))
@@ -182,11 +170,11 @@ class Player(Sprite):
     def handle_sprint(self):
         if not self.hold:
             if self.sprint:
-                self.max_speed = self.speed_mode[self.mode][1] + self.speed_boost
+                self.max_speed = self.sprint_speed + self.speed_boost
             else:
-                self.max_speed = self.speed_mode[self.mode][0] + self.speed_boost
+                self.max_speed = self.normal_speed + self.speed_boost
         else:
-            self.max_speed = self.speed_mode[self.mode][0] + self.speed_boost
+            self.max_speed = self.normal_speed + self.speed_boost
 
     def bullet_check(self):
         for bullet in self.enemy_bullet_g:
@@ -195,7 +183,7 @@ class Player(Sprite):
                 bullet.kill()
 
     def handle_timers(self, screen, dt):
-        c_time = self.weapons[self.mode]['Cooldown'][0]
+        c_time = self.blaster['Cooldown'][0]
         if self.cooldown < c_time:
             self.cooldown += dt
             self.draw_cooldown_bar(screen, self.cooldown)
@@ -214,21 +202,17 @@ class Player(Sprite):
     def update_stats(self, data, menu):
         self.data = data.data
         ch, cn = menu.current_heading, menu.current_name
-        print(ch, cn)
 
         self.max_health = self.data['Player']['Hp'][0]
-        if ch == 'Player' and cn == 'Max Ammo':
+        if ch == 'Player' and cn == 'Hp':
             self.health = self.max_health
+
         self.crit_chance = self.data['Player']['Crit %'][0]
 
         self.max_speed_boost_time = self.data['Speed Boost']['Time'][0]
         self.max_shield_time = self.data['Shield']['Time'][0]
 
         self.blaster = self.data['Blaster']
-        self.shotgun = self.data['Shotgun']
-        self.rifle = self.data['Rifle']
 
-        self.weapons = [self.blaster, self.shotgun, self.rifle]
-        k = list(self.data.keys())[1:4]
-        if ch in k and cn == 'Max Ammo':
-            self.ammo[k.index(ch)] = self.data[ch]['Max Ammo'][0]
+        if ch == 'Blaster' and cn == 'Max Ammo':
+            self.ammo = self.data[ch]['Max Ammo'][0]

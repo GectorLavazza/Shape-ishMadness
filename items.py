@@ -61,11 +61,10 @@ class HealthBox(Item):
 
 
 class AmmoBox(Item):
-    def __init__(self, player, pos, ammo, particles_g, *group):
-        self.type = random.choices((0, 1, 2), weights=(10, 5, 1), k=1)[0]
-        images = ['ammo', 'shotgun_ammo', 'riffle_ammo']
-        super().__init__(player, pos, images[self.type], particles_g, *group)
-        self.ammo = [20, 10, 1]
+    def __init__(self, player, pos, particles_g, *group):
+        images = 'ammo'
+        super().__init__(player, pos, images, particles_g, *group)
+        self.ammo = 50
 
     def on_collide(self):
         if self.hitbox.colliderect(self.player.rect):
@@ -75,13 +74,13 @@ class AmmoBox(Item):
                              self.particles_g)
             play_sound('ammo')
 
-            ma = self.player.weapons[self.type]['Max Ammo'][0]
-            a = self.player.ammo[self.type]
-            if ma >= a + self.ammo[self.type]:
-                self.player.ammo[self.type] += self.ammo[self.type]
+            ma = self.player.blaster['Max Ammo'][0]
+            a = self.player.ammo
+            if ma >= a + self.ammo:
+                self.player.ammo += self.ammo
             else:
-                self.player.ammo[self.type] = (
-                    self.player.weapons[self.type]['Max Ammo'][0])
+                self.player.ammo = (
+                    self.player.blaster['Max Ammo'][0])
 
             self.kill()
 
