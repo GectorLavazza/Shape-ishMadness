@@ -33,8 +33,8 @@ class Bullet(Sprite):
         self.elapsed_time += dt
         self.check_e_time()
 
-        if not (-20 <= self.rect.centerx <= SW + 20 and
-                -20 <= self.rect.centery <= SH + 20):
+        if not (-5 <= self.rect.centerx <= SW + 5 and
+                -5 <= self.rect.centery <= SH + 5):
             self.kill()
 
     def check_e_time(self):

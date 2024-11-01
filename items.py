@@ -24,8 +24,12 @@ class Item(Sprite):
         self.offset = 20
         self.direction = 1
         self.velocity = 0
+        self.timer = 1200
+        self.group = group[0]
 
     def update(self, dt):
+        self.handle_overlap(self.group)
+
         if self.rect.y > self.orig_pos[1] + self.offset:
             self.direction = -1
         if self.rect.y < self.orig_pos[1] - self.offset:
@@ -34,8 +38,12 @@ class Item(Sprite):
         self.rect.y += self.velocity
         self.hitbox.y += self.velocity
 
-        if not (-50 <= self.rect.centerx <= SW + 50 and
-                -50 <= self.rect.centery <= SH + 50):
+        self.timer -= dt
+        if self.timer <= 0:
+            self.kill()
+
+        if not (-20 <= self.rect.centerx <= SW + 20 and
+                -20 <= self.rect.centery <= SH + 20):
             self.kill()
 
 
@@ -44,6 +52,14 @@ class Item(Sprite):
 
     def on_collide(self):
         pass
+
+    def handle_overlap(self, all_items):
+        count = 0
+        for other in all_items:
+            if other != self and self.hitbox.colliderect(other.hitbox):
+                count += 1
+                if count > 10:
+                    self.kill()
 
 
 class HealthBox(Item):

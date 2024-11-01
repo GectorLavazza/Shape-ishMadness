@@ -233,6 +233,7 @@ class Square(Triangle):
 
         self.acceleration = 0.1
         self.deceleration = 0.05
+        self.push_strength = 0.3
 
 
 class Pentagon(Triangle):
@@ -259,6 +260,7 @@ class Pentagon(Triangle):
 
         self.acceleration = 0.025
         self.deceleration = 0.0125
+        self.push_strength = 0.1
 
         self.cooldown = 0
         self.c_time = 60 - 2 * self.player.score // 2000
@@ -348,7 +350,7 @@ class EnemySpawn:
     def __init__(self, group, particles_g, bullet_g, items_g, enemy_bullet_g,
                  player):
         self.elapsed_time = 0
-        self.spawn_time = 5
+        self.spawn_time = 1
         self.group = group
         self.particles_g = particles_g
         self.bullet_g = bullet_g
