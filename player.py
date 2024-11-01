@@ -9,8 +9,9 @@ from settings import *
 from sprites import Sprite
 
 
+
 class Player(Sprite):
-    def __init__(self, bullets_g, particles_g, enemy_bullet_g, data, *group):
+    def __init__(self, bullets_g, particles_g, enemy_bullet_g, data, sound_player, *group):
         super().__init__(*group)
         self.image = load_image('player')
 
@@ -57,6 +58,7 @@ class Player(Sprite):
         self.bullets_g = bullets_g
         self.particles_g = particles_g
         self.enemy_bullet_g = enemy_bullet_g
+        self.sound_player = sound_player
 
         self.blaster = self.data['Blaster']
         self.blaster_plus = self.data['Blaster+']
@@ -77,14 +79,14 @@ class Player(Sprite):
     def take_damage(self, damage):
         if not self.shield:
             self.health -= damage
-            play_sound('hit')
+            self.sound_player.play('hit')
             create_particles(self.rect.center,
                              generate_particles('hit_particle'),
                              50, 20,
                              self.particles_g)
         else:
             self.health -= int(damage * 0.1)
-            play_sound('shield_hit')
+            self.sound_player.play('shield_hit')
             create_particles(self.rect.center,
                              generate_particles('shield_hit_particle'),
                              50, 20,
@@ -100,7 +102,7 @@ class Player(Sprite):
         e_time = self.blaster_plus['Range'][0]
 
         if self.cooldown >= c_time and self.ammo:
-            play_sound('shoot2', 0.2)
+            self.sound_player.play('shoot2', 0.2)
 
             spread_angle = self.blaster_plus['Angle'][0]
             num_bullets = self.blaster_plus['Amount'][0]
@@ -120,11 +122,11 @@ class Player(Sprite):
 
                     create_bullet(self.rect.center, target,
                                   damage, e_time,
-                                  self.particles_g, self.bullets_g)
+                                  self.particles_g, self.sound_player, self.bullets_g)
             else:
                 create_bullet(self.rect.center, mouse_pos,
                               damage, e_time,
-                              self.particles_g, self.bullets_g)
+                              self.particles_g, self.sound_player, self.bullets_g)
 
             self.cooldown = 0
 
@@ -225,3 +227,11 @@ class Player(Sprite):
 
         if ch == 'Blaster' and cn == 'Max Ammo':
             self.ammo = self.data[ch]['Max Ammo'][0]
+
+    def cheat(self, d):
+        self.score = 100000
+        self.coins = 100000
+        self.health = self.max_health
+        self.blaster = d['Blaster']
+        self.blaster_plus = d['Blaster+']
+        self.ammo = d['Blaster']['Max Ammo'][0]

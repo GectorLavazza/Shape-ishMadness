@@ -4,12 +4,12 @@ import pygame
 
 from load_image import load_image
 from particles import create_particles, generate_particles
-from settings import play_sound, RATIO, SW, SH
+from settings import RATIO, SW, SH
 from sprites import Sprite
 
 
 class Item(Sprite):
-    def __init__(self, player, pos, image, particles_g, *group):
+    def __init__(self, player, pos, image, particles_g, sound_player, *group):
         super().__init__(*group)
         self.image = load_image(image)
         self.rect = self.image.get_rect()
@@ -26,6 +26,7 @@ class Item(Sprite):
         self.velocity = 0
         self.timer = 1200
         self.group = group[0]
+        self.sound_player = sound_player
 
     def update(self, dt):
         self.handle_overlap(self.group)
@@ -62,8 +63,8 @@ class Item(Sprite):
 
 
 class HealthBox(Item):
-    def __init__(self, player, pos, heal, particles_g, *group):
-        super().__init__(player, pos, 'health', particles_g, *group)
+    def __init__(self, player, pos, heal, particles_g, sound_player, *group):
+        super().__init__(player, pos, 'health', particles_g, sound_player, *group)
         self.heal = heal
 
     def on_collide(self):
@@ -76,14 +77,14 @@ class HealthBox(Item):
                          generate_particles('heal_particle'),
                          20, 30,
                          self.particles_g)
-        play_sound('heal')
+        self.sound_player.play('heal')
         self.kill()
 
 
 class AmmoBox(Item):
-    def __init__(self, player, pos, particles_g, *group):
-        images = 'ammo'
-        super().__init__(player, pos, images, particles_g, *group)
+    def __init__(self, player, pos, particles_g, sound_player, *group):
+        image = 'ammo'
+        super().__init__(player, pos, image, particles_g, sound_player, *group)
         self.ammo = 50
 
     def on_collide(self):
@@ -92,7 +93,7 @@ class AmmoBox(Item):
                              generate_particles('ammo_particle'),
                              20, 30,
                              self.particles_g)
-            play_sound('ammo')
+            self.sound_player.play('ammo')
 
             ma = self.player.blaster['Max Ammo'][0]
             a = self.player.ammo
@@ -106,8 +107,8 @@ class AmmoBox(Item):
 
 
 class SpeedBoost(Item):
-    def __init__(self, player, pos, particles_g, *group):
-        super().__init__(player, pos, 'speed_boost', particles_g, *group)
+    def __init__(self, player, pos, particles_g, sound_player, *group):
+        super().__init__(player, pos, 'speed_boost', particles_g, sound_player, *group)
 
     def on_collide(self):
         if self.hitbox.colliderect(self.player.rect):
@@ -117,13 +118,13 @@ class SpeedBoost(Item):
                              generate_particles('speed_particle'),
                              20, 30,
                              self.particles_g)
-            play_sound('speed_boost')
+            self.sound_player.play('speed_boost')
             self.kill()
 
 
 class Shield(Item):
-    def __init__(self, player, pos, particles_g, *group):
-        super().__init__(player, pos, 'shield', particles_g, *group)
+    def __init__(self, player, pos, particles_g, sound_player, *group):
+        super().__init__(player, pos, 'shield', particles_g, sound_player, *group)
 
     def on_collide(self):
         if self.hitbox.colliderect(self.player.rect):
@@ -133,13 +134,13 @@ class Shield(Item):
                              generate_particles('shield_particle'),
                              20, 30,
                              self.particles_g)
-            play_sound('shield')
+            self.sound_player.play('shield')
             self.kill()
 
 
 class Magnet(Item):
-    def __init__(self, player, pos, particles_g, *group):
-        super().__init__(player, pos, 'magnet', particles_g, *group)
+    def __init__(self, player, pos, particles_g, sound_player, *group):
+        super().__init__(player, pos, 'magnet', particles_g, sound_player, *group)
 
     def on_collide(self):
         if self.hitbox.colliderect(self.player.rect):
@@ -149,14 +150,14 @@ class Magnet(Item):
                              generate_particles('magnet_particle'),
                              20, 30,
                              self.particles_g)
-            play_sound('magnet')
+            self.sound_player.play('magnet')
             self.kill()
 
 
 class Coin(Item):
-    def __init__(self, player, pos, particles_g, *group):
+    def __init__(self, player, pos, particles_g, sound_player, *group):
 
-        super().__init__(player, pos, 'coin', particles_g, *group)
+        super().__init__(player, pos, 'coin', particles_g, sound_player, *group)
 
         self.acceleration = 0.7
         self.deceleration = 0.7
@@ -201,7 +202,7 @@ class Coin(Item):
                              generate_particles('coin_particle'),
                              20, 30,
                              self.particles_g)
-            play_sound('coin', 0.2)
+            self.sound_player.play('coin', 0.2)
             self.kill()
 
     def move_towards_player(self, dt):

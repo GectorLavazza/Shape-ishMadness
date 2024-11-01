@@ -66,20 +66,6 @@ RATIO = SW / 1920
 
 SONGS = ['stains_of_time', 'metal_shape_synth_ver', 'metal_shape_v2']
 
-
-def play_sound(filename, volume=0.5):
-    sfx = pygame.mixer.Sound(f'assets/sfx/{filename}.wav')
-    sfx.set_volume(volume)
-    sfx.play()
-
-
-def play_music(filename, volume=0.5):
-    pygame.mixer.music.stop()
-    pygame.mixer.music.load(f'assets/music/{filename}.mp3')
-    pygame.mixer.music.set_volume(volume)
-    pygame.mixer.music.play(-1)
-
-
 def set_screen(size):
     pygame.display.set_caption('Shape-ish Madness')
     flags = pygame.DOUBLEBUF

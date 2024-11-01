@@ -1,11 +1,10 @@
 import asyncio
 import time
 
-import pygame
-
 from cursor import Cursor
 from enemies import *
 from player import Player
+from sound import SoundPlayer
 from ui import *
 
 
@@ -41,6 +40,8 @@ async def main():
 
     data = Data(d)
 
+    sound_player = SoundPlayer()
+
     particles_g = pygame.sprite.Group()
     bullets_g = pygame.sprite.Group()
     enemies_g = pygame.sprite.Group()
@@ -51,10 +52,10 @@ async def main():
     cursor = Cursor(cursor_g)
 
     player_g = pygame.sprite.Group()
-    player = Player(bullets_g, particles_g, enemy_bullet_g, data, player_g)
+    player = Player(bullets_g, particles_g, enemy_bullet_g, data, sound_player, player_g)
 
     enemy_spawn = EnemySpawn(enemies_g, particles_g, bullets_g, items_g,
-                             enemy_bullet_g, player)
+                             enemy_bullet_g, player, sound_player)
 
     score_label = Text(screen, size, 40, pos=(SW // 2, 25))
 
@@ -69,7 +70,12 @@ async def main():
     magnet_bar = ValueBar(screen, size, player.max_magnet_time, 'magnet',
                           (10, 0))
 
-    fps_label = Text(screen, size, 10, pos=(40, SH - 15))
+    fps_label = Text(screen, size, 10, pos=(10, SH - 15), center_align=False)
+    enemies_label = Text(screen, size, 10, pos=(10, SH - 30), center_align=False)
+    items_label = Text(screen, size, 10, pos=(10, SH - 45), center_align=False)
+    bullets_label = Text(screen, size, 10, pos=(10, SH - 60), center_align=False)
+    particles_label = Text(screen, size, 10, pos=(10, SH - 75),
+                         center_align=False)
 
     hint_label = Text(screen, size, 12, pos=(SW // 2, SH - 15))
 
@@ -78,13 +84,12 @@ async def main():
 
     coin_label = CoinsCount(screen, size, 30, 'white', pos=(SW - 50, 10))
 
-    menu = UpgradesMenu(screen, (SW, SH), data, player)
-
-    # play_music(SONGS[0], 0.3)
+    menu = UpgradesMenu(screen, (SW, SH), data, player, sound_player)
 
     show_hint = True
     show_hitbox = False
     show_rect = False
+    show_debug = False
 
     playing = True
     show_menu = False
@@ -134,13 +139,17 @@ async def main():
 
                         data = Data(d)
                         player = Player(bullets_g, particles_g, enemy_bullet_g,
-                                        data, player_g)
-                        menu = UpgradesMenu(screen, (SW, SH), data, player)
+                                        data, sound_player, player_g)
+
+                        health = ValueBar(screen, size, player.max_health,
+                                          'heart', (10, 10))
+
+                        menu = UpgradesMenu(screen, (SW, SH), data, player, sound_player)
 
                         enemy_spawn = EnemySpawn(enemies_g, particles_g,
                                                  bullets_g,
                                                  items_g, enemy_bullet_g,
-                                                 player)
+                                                 player, sound_player)
 
                 if event.key == pygame.K_ESCAPE:
                     if player.health and not show_menu:
@@ -150,22 +159,35 @@ async def main():
                     if player.health and playing:
                         show_menu = not show_menu
 
-                # if event.key == pygame.K_F1:
-                #     if fps == 120:
-                #         fps = 60
-                #     elif fps == 60:
-                #         fps = 10
-                #     elif fps == 10:
-                #         fps = 120
+                if event.key == pygame.K_F1:
+                    show_hint = not show_hint
 
                 if event.key == pygame.K_F2:
-                    show_hint = not show_hint
+                    show_debug = not show_debug
 
                 if event.key == pygame.K_F3:
                     show_hitbox = not show_hitbox
 
                 if event.key == pygame.K_F4:
                     show_rect = not show_rect
+
+                if event.key == pygame.K_F5:
+                    if sound_player.volume:
+                        sound_player.volume = 0
+                    else:
+                        sound_player.volume = 0.5
+
+                if event.key == pygame.K_F6:
+                    if sound_player.music_set:
+                        if sound_player.music_volume:
+                            sound_player.set_music_volume(0)
+                        else:
+                            sound_player.set_music_volume(0.5)
+
+                if event.key == pygame.K_F7:
+                    if not sound_player.music_set:
+                        sound_player.set_music(SONGS[0])
+
 
                 if event.key == pygame.K_LSHIFT:
                     player.sprint = True
@@ -179,6 +201,16 @@ async def main():
                         player.dx = -1
                     if event.key == pygame.K_d:
                         player.dx = 1
+
+                if event.key == pygame.K_F12:
+                    if event.mod & pygame.KMOD_CTRL and event.mod & pygame.KMOD_SHIFT:
+                        d = CHEAT_DATA.copy()
+                        data.data = d
+                        player.update_stats(data, menu)
+                        player.cheat(d)
+                        health.max = player.max_health
+                        shield_bar.max = player.max_shield_time
+                        speed_boost_bar.max = player.max_speed_boost_time
 
             if event.type == pygame.KEYUP:
                 if event.key == pygame.K_w:
@@ -286,10 +318,16 @@ async def main():
 
         ammo.update(ammo_msg)
 
-        fps_label.update(f'FPS: {round(clock.get_fps())}')
-        # if show_hint:
-        #     hint_label.update('[Q] - quit. [R] - restart (upon death). '
-        #                       '[Esc] - pause/unpause. [F2] - toggle hint.')
+        if show_debug:
+            fps_label.update(f'FPS: {round(clock.get_fps())}')
+            enemies_label.update(f'Enemies: {len(enemies_g)}')
+            items_label.update(f'Items: {len(items_g)}')
+            bullets_label.update(f'Bullets: {len(bullets_g) + len(enemy_bullet_g)}')
+            particles_label.update(f'Particles: {len(particles_g)}')
+
+        if show_hint:
+            hint_label.update('[E] - upgrades menu. [R] - restart (upon death). '
+                              '[Esc] - pause/unpause. [F1] - toggle hint.')
 
         if not playing:
             if player.health > 0:
@@ -302,6 +340,8 @@ async def main():
             menu.update(screen)
 
         coin_label.update(player.coins)
+
+        sound_player.update(dt)
 
         cursor_g.draw(screen)
         cursor.update()

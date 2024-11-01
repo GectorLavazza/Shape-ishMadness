@@ -4,7 +4,6 @@ from load_image import load_image
 from settings import *
 from sprites import Sprite
 
-
 class Button(Sprite):
     def __init__(self, screen, screen_size, image, highlighted, pos=(0, 0),
                  *group):
@@ -61,12 +60,13 @@ class Ui:
 
 class Text(Ui):
     def __init__(self, screen, screen_size, font_size, color='white',
-                 pos=(0, 0)):
+                 pos=(0, 0), center_align=True):
         super().__init__(screen, screen_size)
         self.font = pygame.font.Font('assets/fonts/PixelOperator8-Bold.ttf',
                                      int(font_size * RATIO))
         self.pos = pos
         self.color = pygame.Color(color)
+        self.center_align = center_align
 
         self.render = self.font.render('', True, self.color)
         self.rect = self.render.get_rect()
@@ -74,8 +74,12 @@ class Text(Ui):
     def update(self, message):
         self.render = self.font.render(str(message), True, self.color)
         self.rect = self.render.get_rect()
-        pos = (self.pos[0] - self.render.get_width() // 2,
-               self.pos[1] - self.render.get_height() // 2)
+        if self.center_align:
+            pos = (self.pos[0] - self.render.get_width() // 2,
+                   self.pos[1] - self.render.get_height() // 2)
+        else:
+            pos = (self.pos[0],
+                   self.pos[1] - self.render.get_height() // 2)
         self.screen.blit(self.render, pos)
 
 
@@ -140,7 +144,7 @@ class Menu(Ui):
 
 
 class UpgradesMenu(Text):
-    def __init__(self, screen, screen_size, data, player):
+    def __init__(self, screen, screen_size, data, player, sound_player):
         super().__init__(screen, screen_size, 20)
         self.image = load_image('menu')
         self.data = data
@@ -159,6 +163,7 @@ class UpgradesMenu(Text):
         self.current_name = ''
 
         self.player = player
+        self.sound_player = sound_player
         self.headings, self.names, self.surface = self.oninit()
 
     def update(self, screen):
@@ -243,7 +248,7 @@ class UpgradesMenu(Text):
                 do = False
 
         if do:
-            play_sound('click')
+            self.sound_player.play('click')
             if c > 0:
                 if v + c <= max_v and self.player.coins - p >= 0:
                     self.data.data[heading][name][0] += c

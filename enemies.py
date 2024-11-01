@@ -4,7 +4,7 @@ from settings import *
 
 
 class Triangle(Sprite):
-    def __init__(self, pos, particles_g, bullet_g, items_g, player, *group):
+    def __init__(self, pos, particles_g, bullet_g, items_g, player, sound_player, *group):
         super().__init__(*group)
 
         self.image = load_image('triangle')
@@ -55,8 +55,11 @@ class Triangle(Sprite):
         self.recovering = False  # Track if the enemy is recovering after the hit
         self.push_strength = 0.5
 
-        self.item_type = random.choices(['health', 'ammo', 'speed', 'shield', 'magnet', ''],
-                                   weights=ITEMS_WEIGHTS, k=1)[0]
+        self.sound_player = sound_player
+
+        self.item_type = \
+        random.choices(['health', 'ammo', 'speed', 'shield', 'magnet', ''],
+                       weights=ITEMS_WEIGHTS, k=1)[0]
         # weights=(1, 2, 2, 1, 1, 17)
 
     def update(self, screen, screen_rect, target_pos, dt):
@@ -135,30 +138,30 @@ class Triangle(Sprite):
 
     def generate_coin(self, pos):
         coin = Coin(self.player, pos,
-                    self.particles_g, self.items_g)
+                    self.particles_g, self.sound_player, self.items_g)
         self.items_g.add(coin)
 
     def generate_item(self, item_type, pos):
         if item_type == 'health':
             item = HealthBox(self.player, pos,
-                             2, self.particles_g, self.items_g)
+                             2, self.particles_g, self.sound_player, self.items_g)
         if item_type == 'ammo':
-            item = AmmoBox(self.player, pos, self.particles_g, self.items_g)
+            item = AmmoBox(self.player, pos, self.particles_g, self.sound_player, self.items_g)
         if item_type == 'speed':
             item = SpeedBoost(self.player, pos,
-                              self.particles_g, self.items_g)
+                              self.particles_g, self.sound_player, self.items_g)
         if item_type == 'shield':
             item = Shield(self.player, pos,
-                          self.particles_g, self.items_g)
+                          self.particles_g, self.sound_player, self.items_g)
         if item_type == 'magnet':
             item = Magnet(self.player, pos,
-                          self.particles_g, self.items_g)
+                          self.particles_g, self.sound_player, self.items_g)
         self.items_g.add(item)
 
     def death(self):
         self.player.score += self.score_weight
 
-        play_sound('explosion')
+        self.sound_player.play('explosion')
         create_particles(self.rect.center,
                          generate_particles('death_particle'),
                          50, 30,
@@ -200,7 +203,7 @@ class Triangle(Sprite):
                                      5 * RATIO))
 
     def take_damage(self):
-        play_sound('enemy_hit')
+        self.sound_player.play('enemy_hit')
         create_particles(self.rect.center,
                          generate_particles(
                              f'{self.name}_particle'),
@@ -209,8 +212,8 @@ class Triangle(Sprite):
 
 
 class Square(Triangle):
-    def __init__(self, pos, particles_g, bullet_g, items_g, player, *group):
-        super().__init__(pos, particles_g, bullet_g, items_g, player, *group)
+    def __init__(self, pos, particles_g, bullet_g, items_g, player, sound_player, *group):
+        super().__init__(pos, particles_g, bullet_g, items_g, player, sound_player, *group)
 
         self.image = load_image('square')
         self.name = 'square'
@@ -242,8 +245,8 @@ class Square(Triangle):
 
 class Pentagon(Triangle):
     def __init__(self, pos, particles_g, bullet_g, items_g, enemy_bullet_g,
-                 player, *group):
-        super().__init__(pos, particles_g, bullet_g, items_g, player, *group)
+                 player, sound_player, *group):
+        super().__init__(pos, particles_g, bullet_g, items_g, player, sound_player, *group)
         self.image = load_image('pentagon')
         self.name = 'pentagon'
         self.rect = self.image.get_rect()
@@ -312,15 +315,15 @@ class Pentagon(Triangle):
 
     def shoot(self):
         if self.cooldown >= self.c_time:
-            play_sound('enemy_bullet', 0.2)
+            self.sound_player.play('enemy_bullet', 0.2)
             create_enemy_bullet(self.rect.center, self.player.rect.center,
-                                self.particles_g, self.enemy_bullet_g)
+                                self.particles_g, self.sound_player, self.enemy_bullet_g)
             self.cooldown = 0
 
     def death(self):
         self.player.score += self.score_weight
 
-        play_sound('explosion')
+        self.sound_player.play('explosion')
         create_particles(self.rect.center,
                          generate_particles('death_particle'),
                          80, 60,
@@ -342,7 +345,7 @@ class Pentagon(Triangle):
         self.kill()
 
     def take_damage(self):
-        play_sound('enemy_hit')
+        self.sound_player.play('enemy_hit')
         create_particles(self.rect.center,
                          generate_particles(
                              f'{self.name}_particle'),
@@ -352,7 +355,7 @@ class Pentagon(Triangle):
 
 class EnemySpawn:
     def __init__(self, group, particles_g, bullet_g, items_g, enemy_bullet_g,
-                 player):
+                 player, sound_player):
         self.elapsed_time = 0
         self.spawn_time = 1
         self.group = group
@@ -361,6 +364,7 @@ class EnemySpawn:
         self.player = player
         self.items_g = items_g
         self.enemy_bullet_g = enemy_bullet_g
+        self.sound_player = sound_player
         self.pentagon_count = 0
         self.score = 0
         self.max_enemy_count = 5
@@ -394,12 +398,12 @@ class EnemySpawn:
         if enemy_type == 'square':
             enemy = Square(pos, self.particles_g, self.bullet_g,
                            self.items_g,
-                           self.player, self.group)
+                           self.player, self.sound_player, self.group)
             self.group.add(enemy)
         elif enemy_type == 'triangle':
             enemy = Triangle(pos, self.particles_g, self.bullet_g,
                              self.items_g,
-                             self.player, self.group)
+                             self.player, self.sound_player, self.group)
             self.group.add(enemy)
         else:
             if self.score > 200:
@@ -407,6 +411,6 @@ class EnemySpawn:
                 if [e.name == 'pentagon' for e in self.group].count(True) < m:
                     enemy = Pentagon(pos, self.particles_g, self.bullet_g,
                                      self.items_g, self.enemy_bullet_g,
-                                     self.player, self.group)
+                                     self.player, self.sound_player, self.group)
 
                     self.group.add(enemy)
