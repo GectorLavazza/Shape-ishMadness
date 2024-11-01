@@ -198,9 +198,9 @@ class UpgradesMenu(Text):
                     pc = 'yellow'
                     if heading == 'Blaster +':
                         blaster = self.data.data['Blaster']
-                        blaster_check = [blaster['Dmg'][0] == 5,
-                                         blaster['Cooldown'][0] == 15,
-                                         blaster['Max Ammo'][0] == 200]
+                        blaster_check = [blaster['Dmg'][0] >= 5,
+                                         blaster['Cooldown'][0] <= 15,
+                                         blaster['Max Ammo'][0] >= 200]
                         if not all(blaster_check):
                             color = 'gray'
                             p = 'Dmg lvl 5, Cooldown lvl 4, Max Ammo lvl 4 needed'
