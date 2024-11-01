@@ -55,6 +55,10 @@ class Triangle(Sprite):
         self.recovering = False  # Track if the enemy is recovering after the hit
         self.push_strength = 0.5
 
+        self.item_type = random.choices(['health', 'ammo', 'speed', 'shield', 'magnet', ''],
+                                   weights=ITEMS_WEIGHTS, k=1)[0]
+        # weights=(1, 2, 2, 1, 1, 17)
+
     def update(self, screen, screen_rect, target_pos, dt):
         self.move(target_pos, dt)
         if (0 <= self.rect.centerx <= SW and
@@ -146,6 +150,9 @@ class Triangle(Sprite):
         if item_type == 'shield':
             item = Shield(self.player, pos,
                           self.particles_g, self.items_g)
+        if item_type == 'magnet':
+            item = Magnet(self.player, pos,
+                          self.particles_g, self.items_g)
         self.items_g.add(item)
 
     def death(self):
@@ -156,18 +163,15 @@ class Triangle(Sprite):
                          generate_particles('death_particle'),
                          50, 30,
                          self.particles_g)
-
-        item_type = random.choices(['health', 'ammo', 'speed', 'shield', ''],
-                                   weights=(1, 2, 2, 1, 17), k=1)[0]
-        # weights=(1, 2, 2, 1, 17)
-        if item_type:
+        if self.item_type:
             pos = (self.rect.centerx + random.randint(0, 10),
                    self.rect.centery + random.randint(0, 10))
-            self.generate_item(item_type, pos)
+            self.generate_item(self.item_type, pos)
         else:
-            pos = (self.rect.centerx + random.randint(0, 10),
-                   self.rect.centery + random.randint(0, 10))
-            self.generate_coin(pos)
+            if random.randint(0, 1):
+                pos = (self.rect.centerx + random.randint(0, 10),
+                       self.rect.centery + random.randint(0, 10))
+                self.generate_coin(pos)
 
         self.kill()
 
@@ -324,8 +328,8 @@ class Pentagon(Triangle):
 
         for i in range(random.randint(3, 6)):
             item_type = \
-                random.choices(['health', 'ammo', 'speed', 'shield'],
-                               weights=(2, 3, 1, 1), k=1)[0]
+                random.choices(['health', 'ammo', 'speed', 'shield', 'magnet'],
+                               weights=(2, 3, 1, 1, 1), k=1)[0]
             pos = (self.rect.centerx + random.randint(0, 100),
                    self.rect.centery + random.randint(0, 100))
             self.generate_item(item_type, pos)

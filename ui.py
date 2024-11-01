@@ -196,7 +196,7 @@ class UpgradesMenu(Text):
                     self.current = [i, j]
                     color = 'magenta'
                     pc = 'yellow'
-                    if heading == 'Blaster +':
+                    if heading == 'Blaster+':
                         blaster = self.data.data['Blaster']
                         blaster_check = [blaster['Dmg'][0] >= 5,
                                          blaster['Cooldown'][0] <= 15,
@@ -234,7 +234,7 @@ class UpgradesMenu(Text):
         l = 1 + abs(v - min_v) // abs(c)
         p = self.data.data[heading][name][4] * l
 
-        if heading == 'Blaster +':
+        if heading == 'Blaster+':
             blaster = self.data.data['Blaster']
             blaster_check = [blaster['Dmg'][0] >= 5,
                              blaster['Cooldown'][0] <= 15,
@@ -243,6 +243,7 @@ class UpgradesMenu(Text):
                 do = False
 
         if do:
+            play_sound('click')
             if c > 0:
                 if v + c <= max_v and self.player.coins - p >= 0:
                     self.data.data[heading][name][0] += c

@@ -34,9 +34,8 @@ class Item(Sprite):
             self.direction = -1
         if self.rect.y < self.orig_pos[1] - self.offset:
             self.direction = 1
-        self.velocity = dt * self.direction * RATIO
-        self.rect.y += self.velocity
-        self.hitbox.y += self.velocity
+        self.rect.y += dt * self.direction * RATIO
+        self.hitbox.y += dt * self.direction * RATIO
 
         self.timer -= dt
         if self.timer <= 0:
@@ -138,9 +137,62 @@ class Shield(Item):
             self.kill()
 
 
+class Magnet(Item):
+    def __init__(self, player, pos, particles_g, *group):
+        super().__init__(player, pos, 'magnet', particles_g, *group)
+
+    def on_collide(self):
+        if self.hitbox.colliderect(self.player.rect):
+            self.player.magnet = True
+            self.player.magnet_timer = self.player.max_magnet_time
+            create_particles(self.rect.center,
+                             generate_particles('magnet_particle'),
+                             20, 30,
+                             self.particles_g)
+            play_sound('magnet')
+            self.kill()
+
+
 class Coin(Item):
     def __init__(self, player, pos, particles_g, *group):
+
         super().__init__(player, pos, 'coin', particles_g, *group)
+
+        self.acceleration = 0.7
+        self.deceleration = 0.7
+        self.max_speed = 10
+
+        self.velocity = pygame.Vector2(0, 0)
+        self.just_ended = False
+
+    def update(self, dt):
+        self.handle_overlap(self.group)
+
+        if self.player.magnet:
+            self.just_ended = False
+            self.move_towards_player(dt)
+        else:
+            if not self.just_ended:
+                self.just_ended = True
+                self.orig_pos = self.rect.center
+            if self.rect.y > self.orig_pos[1] + self.offset:
+                self.direction = -1
+            if self.rect.y < self.orig_pos[1] - self.offset:
+                self.direction = 1
+            self.rect.y += dt * self.direction * RATIO
+            self.hitbox.y += dt * self.direction * RATIO
+
+            self.timer -= dt
+            if self.timer <= 0:
+                self.kill()
+
+        if not (-20 <= self.rect.centerx <= SW + 20 and
+                -20 <= self.rect.centery <= SH + 20):
+            self.kill()
+
+
+        if self.hitbox.colliderect(self.player.rect):
+            self.on_collide()
 
     def on_collide(self):
         if self.hitbox.colliderect(self.player.rect):
@@ -151,3 +203,22 @@ class Coin(Item):
                              self.particles_g)
             play_sound('coin', 0.2)
             self.kill()
+
+    def move_towards_player(self, dt):
+        direction = pygame.Vector2(self.player.rect.center) - pygame.Vector2(
+            self.rect.center)
+
+        if direction.length() > 0:
+            direction = direction.normalize()
+
+        self.velocity.x += direction.x * self.acceleration * dt * RATIO
+        self.velocity.y += direction.y * self.acceleration * dt * RATIO
+
+
+        if self.velocity.length() > self.max_speed:
+            self.velocity = self.velocity.normalize() * self.max_speed
+
+        self.rect.centerx += self.velocity.x * dt * RATIO
+        self.hitbox.centerx += self.velocity.x * dt * RATIO
+        self.rect.centery += self.velocity.y * dt * RATIO
+        self.hitbox.centery += self.velocity.y * dt * RATIO

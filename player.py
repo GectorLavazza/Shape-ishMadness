@@ -32,7 +32,7 @@ class Player(Sprite):
 
         self.data = data.data
 
-        self.score = 0
+        self.score = 100000
         self.coins = 0
         self.health = self.data['Player']['Hp'][0]
         self.max_health = self.data['Player']['Hp'][0]
@@ -43,10 +43,14 @@ class Player(Sprite):
         self.hold_mode = False
         self.sprint = False
 
-        self.speed_boost_timer = self.data['Speed Boost']['Time'][0]
+        self.speed_boost_timer = self.data['Spd Boost']['Time'][0]
         self.shield_timer = self.data['Shield']['Time'][0]
-        self.max_speed_boost_time = self.data['Speed Boost']['Time'][0]
+        self.max_speed_boost_time = self.data['Spd Boost']['Time'][0]
         self.max_shield_time = self.data['Shield']['Time'][0]
+        self.magnet_timer = self.data['Magnet']['Time'][0]
+        self.max_magnet_time = self.data['Magnet']['Time'][0]
+
+        self.magnet = False
         self.speed_boost = 0
         self.shield = False
 
@@ -55,7 +59,7 @@ class Player(Sprite):
         self.enemy_bullet_g = enemy_bullet_g
 
         self.blaster = self.data['Blaster']
-        self.blaster_plus = self.data['Blaster +']
+        self.blaster_plus = self.data['Blaster+']
 
         self.sprint_speed = 8
         self.normal_speed = 5
@@ -199,6 +203,11 @@ class Player(Sprite):
         else:
             self.shield = False
 
+        if self.magnet_timer > 0 and self.magnet:
+            self.magnet_timer -= dt
+        else:
+            self.magnet = False
+
     def update_stats(self, data, menu):
         self.data = data.data
         ch, cn = menu.current_heading, menu.current_name
@@ -209,7 +218,7 @@ class Player(Sprite):
 
         self.crit_chance = self.data['Player']['Crit %'][0]
 
-        self.max_speed_boost_time = self.data['Speed Boost']['Time'][0]
+        self.max_speed_boost_time = self.data['Spd Boost']['Time'][0]
         self.max_shield_time = self.data['Shield']['Time'][0]
 
         self.blaster = self.data['Blaster']
