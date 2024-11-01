@@ -1,6 +1,6 @@
 import pygame
 
-from settings import RATIO
+from settings import RATIO, SW, SH
 from sprites import Sprite
 import random
 from load_image import load_image
@@ -26,6 +26,10 @@ class Particle(Sprite):
         self.elapsed_time += dt
 
         if self.elapsed_time >= self.existence_time:
+            self.kill()
+
+        if not (-20 <= self.rect.centerx <= SW + 20 and
+                -20 <= self.rect.centery <= SH + 20):
             self.kill()
 
 
