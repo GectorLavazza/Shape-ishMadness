@@ -236,9 +236,9 @@ class UpgradesMenu(Text):
 
         if heading == 'Blaster +':
             blaster = self.data.data['Blaster']
-            blaster_check = [blaster['Dmg'][0] == 5,
-                             blaster['Cooldown'][0] == 15,
-                             blaster['Max Ammo'][0] == 200]
+            blaster_check = [blaster['Dmg'][0] >= 5,
+                             blaster['Cooldown'][0] <= 15,
+                             blaster['Max Ammo'][0] >= 200]
             if not all(blaster_check):
                 do = False
 
