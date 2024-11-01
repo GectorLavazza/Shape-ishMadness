@@ -77,6 +77,29 @@ async def main():
     particles_label = Text(screen, size, 10, pos=(10, SH - 75),
                          center_align=False)
 
+    f7_label = Text(screen, size, 10, pos=(SW - 10, SH - 15),
+                    center_align=False, right_align=True)
+    f6_label = Text(screen, size, 10, pos=(SW - 10, SH - 30),
+                    center_align=False, right_align=True)
+    f5_label = Text(screen, size, 10, pos=(SW - 10, SH - 45),
+                    center_align=False, right_align=True)
+    f4_label = Text(screen, size, 10, pos=(SW - 10, SH - 60),
+                    center_align=False, right_align=True)
+    f3_label = Text(screen, size, 10, pos=(SW - 10, SH - 75),
+                    center_align=False, right_align=True)
+    f2_label = Text(screen, size, 10, pos=(SW - 10, SH - 90),
+                    center_align=False, right_align=True)
+    r_label = Text(screen, size, 10, pos=(SW - 10, SH - 105),
+                    center_align=False, right_align=True)
+    esc_label = Text(screen, size, 10, pos=(SW - 10, SH - 120),
+                    center_align=False, right_align=True)
+    e_label = Text(screen, size, 10, pos=(SW - 10, SH - 135),
+                    center_align=False, right_align=True)
+
+    song_label = Text(screen, size, 10, pos=(SW - 10, SH - 165),
+                    center_align=False, right_align=True)
+
+
     hint_label = Text(screen, size, 12, pos=(SW // 2, SH - 15))
 
     pause_label = Text(screen, size, 60, pos=(SW // 2, SH // 2))
@@ -93,6 +116,8 @@ async def main():
 
     playing = True
     show_menu = False
+
+    song_index = 0
 
     while running:
 
@@ -179,14 +204,17 @@ async def main():
 
                 if event.key == pygame.K_F6:
                     if sound_player.music_set:
+                        song_index += 1
+                    if song_index >= len(SONGS):
+                        song_index = 0
+                    sound_player.set_music(SONGS[song_index])
+
+                if event.key == pygame.K_F7:
+                    if sound_player.music_set:
                         if sound_player.music_volume:
                             sound_player.set_music_volume(0)
                         else:
                             sound_player.set_music_volume(0.5)
-
-                if event.key == pygame.K_F7:
-                    if not sound_player.music_set:
-                        sound_player.set_music(SONGS[0])
 
 
                 if event.key == pygame.K_LSHIFT:
@@ -318,16 +346,9 @@ async def main():
 
         ammo.update(ammo_msg)
 
-        if show_debug:
-            fps_label.update(f'FPS: {round(clock.get_fps())}')
-            enemies_label.update(f'Enemies: {len(enemies_g)}')
-            items_label.update(f'Items: {len(items_g)}')
-            bullets_label.update(f'Bullets: {len(bullets_g) + len(enemy_bullet_g)}')
-            particles_label.update(f'Particles: {len(particles_g)}')
-
-        if show_hint:
-            hint_label.update('[E] - upgrades menu. [R] - restart (upon death). '
-                              '[Esc] - pause/unpause. [F1] - toggle hint.')
+        # if show_hint:
+        #     hint_label.update('[E] - upgrades menu. [R] - restart (upon death). '
+        #                       '[Esc] - pause/unpause. [F1] - toggle hint.')
 
         if not playing:
             if player.health > 0:
@@ -340,6 +361,26 @@ async def main():
             menu.update(screen)
 
         coin_label.update(player.coins)
+
+        if show_debug:
+            fps_label.update(f'FPS: {round(clock.get_fps())}')
+            enemies_label.update(f'Enemies: {len(enemies_g)}')
+            items_label.update(f'Items: {len(items_g)}')
+            bullets_label.update(f'Bullets: {len(bullets_g) + len(enemy_bullet_g)}')
+            particles_label.update(f'Particles: {len(particles_g)}')
+
+            e_label.update('[E] - upgrades menu')
+            esc_label.update('[Esc] - pause/unpause')
+            r_label.update('[R] - restart (upon defeat)')
+            f2_label.update('[F2] - toggle debug (this)')
+            f3_label.update('[F3] - toggle hitbox')
+            f4_label.update('[F4] - toggle rect')
+            f5_label.update('[F5] - toggle sfx volume')
+            f6_label.update('[F6] - turn/switch music')
+            f7_label.update('[F7] - toggle music volume')
+
+            song_label.update(f'Music [{song_index + 1}/{len(SONGS)}]: '
+                              f'{SONGS[song_index]}')
 
         sound_player.update(dt)
 
