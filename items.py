@@ -4,7 +4,7 @@ import pygame
 
 from load_image import load_image
 from particles import create_particles, generate_particles
-from settings import play_sound, RATIO
+from settings import play_sound, RATIO, SW, SH
 from sprites import Sprite
 
 
@@ -33,6 +33,11 @@ class Item(Sprite):
         self.velocity = dt * self.direction * RATIO
         self.rect.y += self.velocity
         self.hitbox.y += self.velocity
+
+        if not (-50 <= self.rect.centerx <= SW + 50 and
+                -50 <= self.rect.centery <= SH + 50):
+            self.kill()
+
 
         if self.hitbox.colliderect(self.player.rect):
             self.on_collide()

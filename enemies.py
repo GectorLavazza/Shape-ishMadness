@@ -57,9 +57,11 @@ class Triangle(Sprite):
 
     def update(self, screen, screen_rect, target_pos, dt):
         self.move(target_pos, dt)
-        self.bullet_check()
+        if (0 <= self.rect.centerx <= SW and
+                0 <= self.rect.centery <= SH):
+            self.bullet_check()
+            self.player_check()
         self.draw_health_bar(screen)
-        self.player_check()
         self.handle_overlap(self.all_enemies, dt)
 
         # Handle damage cooldown and recovery
@@ -143,7 +145,7 @@ class Triangle(Sprite):
                               self.particles_g, self.items_g)
         if item_type == 'shield':
             item = Shield(self.player, pos,
-                              self.particles_g, self.items_g)
+                          self.particles_g, self.items_g)
         self.items_g.add(item)
 
     def death(self):
@@ -176,18 +178,22 @@ class Triangle(Sprite):
                 self.damage_timer = 0
                 self.recovering = True
                 if (not self.player.ammo and
-                    not len(list(filter(lambda s: type(s) == AmmoBox, self.items_g)))):
+                        not len(list(filter(lambda s: type(s) == AmmoBox,
+                                            self.items_g)))):
                     pos = (self.rect.centerx + random.randint(0, 10),
                            self.rect.centery + random.randint(0, 10))
                     self.generate_item('ammo', pos)
 
     def draw_health_bar(self, screen):
         pygame.draw.rect(screen, pygame.Color('#306230'),
-                         pygame.Rect(self.rect.centerx - 15 * RATIO, self.rect.y - 10 * RATIO,
+                         pygame.Rect(self.rect.centerx - 15 * RATIO,
+                                     self.rect.y - 10 * RATIO,
                                      30 * RATIO, 5 * RATIO))
         pygame.draw.rect(screen, pygame.Color('#8bac0f'),
-                         pygame.Rect(self.rect.centerx - 15 * RATIO, self.rect.y - 10 * RATIO,
-                                     30 / self.max_health * self.health * RATIO, 5 * RATIO))
+                         pygame.Rect(self.rect.centerx - 15 * RATIO,
+                                     self.rect.y - 10 * RATIO,
+                                     30 / self.max_health * self.health * RATIO,
+                                     5 * RATIO))
 
     def take_damage(self):
         play_sound('enemy_hit')
@@ -196,7 +202,6 @@ class Triangle(Sprite):
                              f'{self.name}_particle'),
                          30, 15,
                          self.particles_g)
-
 
 
 class Square(Triangle):
@@ -262,9 +267,11 @@ class Pentagon(Triangle):
 
     def update(self, screen, screen_rect, target_pos, dt):
         self.move(target_pos, dt)
-        self.bullet_check()
+        if (0 <= self.rect.centerx <= SW and
+                0 <= self.rect.centery <= SH):
+            self.bullet_check()
+            self.player_check()
         self.draw_health_bar(screen)
-        self.player_check()
         self.handle_overlap(self.all_enemies, dt)
 
         if self.damage_timer < 120:
@@ -315,8 +322,8 @@ class Pentagon(Triangle):
 
         for i in range(random.randint(3, 6)):
             item_type = \
-            random.choices(['health', 'ammo', 'speed', 'shield'],
-                           weights=(2, 3, 1, 1), k=1)[0]
+                random.choices(['health', 'ammo', 'speed', 'shield'],
+                               weights=(2, 3, 1, 1), k=1)[0]
             pos = (self.rect.centerx + random.randint(0, 100),
                    self.rect.centery + random.randint(0, 100))
             self.generate_item(item_type, pos)
@@ -371,7 +378,6 @@ class EnemySpawn:
 
             pos = random.choice(self.x), random.choice(self.y)
             if not (-200 <= pos[0] <= SW + 200 and -200 <= pos[1] <= SH + 200):
-
                 enemy_type = \
                     random.choices(['square', 'triangle', 'pentagon'],
                                    weights=(3, 7, 1), k=1)[0]
