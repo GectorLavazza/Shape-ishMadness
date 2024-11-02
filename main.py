@@ -49,8 +49,6 @@ async def main():
     enemy_bullet_g = pygame.sprite.Group()
     cursor_g = pygame.sprite.Group()
 
-    cursor = Cursor(cursor_g)
-
     player_g = pygame.sprite.Group()
     player = Player(bullets_g, particles_g, enemy_bullet_g, data, sound_player, player_g)
 
@@ -69,6 +67,8 @@ async def main():
                           (10, 0))
     magnet_bar = ValueBar(screen, size, player.max_magnet_time, 'magnet',
                           (10, 0))
+
+    cursor = Cursor(player, cursor_g)
 
     fps_label = Text(screen, size, 10, pos=(10, SH - 15), center_align=False)
     enemies_label = Text(screen, size, 10, pos=(10, SH - 30), center_align=False)
@@ -168,6 +168,8 @@ async def main():
 
                         health = ValueBar(screen, size, player.max_health,
                                           'heart', (10, 10))
+
+                        cursor = Cursor(player, cursor_g)
 
                         menu = UpgradesMenu(screen, (SW, SH), data, player, sound_player)
 
