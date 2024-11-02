@@ -171,10 +171,9 @@ class Triangle(Sprite):
                    self.rect.centery + random.randint(0, 10))
             self.generate_item(self.item_type, pos)
         else:
-            if random.randint(0, 1):
-                pos = (self.rect.centerx + random.randint(0, 10),
-                       self.rect.centery + random.randint(0, 10))
-                self.generate_coin(pos)
+            pos = (self.rect.centerx + random.randint(0, 10),
+                   self.rect.centery + random.randint(0, 10))
+            self.generate_coin(pos)
 
         self.kill()
 
