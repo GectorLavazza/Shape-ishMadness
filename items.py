@@ -159,6 +159,23 @@ class Coin(Item):
 
         super().__init__(player, pos, 'coin', particles_g, sound_player, *group)
 
+        self.weight = 1
+        self.particles_amount = 20
+        self.particles_e_time = 30
+
+        if random.randint(1, 100) == 1:
+            self.weight = 50
+            self.particles_amount = 40
+            self.particles_e_time = 60
+            self.image = pygame.transform.scale_by(self.image, (1.5, 1.5)).convert_alpha()
+            self.rect = self.image.get_rect()
+            self.rect.center = pos
+            self.orig_pos = pos
+            self.hitbox = pygame.Rect(0, 0, self.rect.w * 2, self.rect.h * 2)
+            self.hitbox.topleft = (
+                self.rect.centerx + - self.hitbox.w // 2,
+                self.rect.centery + - self.hitbox.h // 2)
+
         self.acceleration = 0.7
         self.deceleration = 0.7
         self.max_speed = 10
@@ -197,10 +214,10 @@ class Coin(Item):
 
     def on_collide(self):
         if self.hitbox.colliderect(self.player.rect):
-            self.player.coins += 1
+            self.player.coins += self.weight
             create_particles(self.rect.center,
                              generate_particles('coin_particle'),
-                             20, 30,
+                             self.particles_amount, self.particles_e_time,
                              self.particles_g)
             self.sound_player.play('coin', 0.2)
             self.kill()
