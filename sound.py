@@ -16,8 +16,6 @@ class SoundPlayer:
         else:
             self.count = 0
 
-        print(self.elapsed_time, self.count)
-
     def set_music(self, filename):
         pygame.mixer.music.stop()
         pygame.mixer.music.load(f'assets/music/{filename}.mp3')
