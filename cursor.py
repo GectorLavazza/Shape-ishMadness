@@ -3,8 +3,6 @@ import pygame
 from load_image import load_image
 from sprites import Sprite
 
-from settings import SW, SH
-
 
 class Cursor(Sprite):
     def __init__(self, player, *group):

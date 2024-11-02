@@ -1,5 +1,4 @@
 import pygame
-from pygame.mixer_music import set_volume
 
 
 class SoundPlayer:

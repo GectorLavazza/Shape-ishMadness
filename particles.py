@@ -1,9 +1,10 @@
+import random
+
 import pygame
 
+from load_image import load_image
 from settings import RATIO, SW, SH
 from sprites import Sprite
-import random
-from load_image import load_image
 
 
 class Particle(Sprite):

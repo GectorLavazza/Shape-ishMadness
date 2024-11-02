@@ -1,8 +1,4 @@
-import random
-
 import pygame
-
-from load_image import load_image
 
 
 class Sprite(pygame.sprite.Sprite):

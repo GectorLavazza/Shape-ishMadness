@@ -4,6 +4,7 @@ from load_image import load_image
 from settings import *
 from sprites import Sprite
 
+
 class Button(Sprite):
     def __init__(self, screen, screen_size, image, highlighted, pos=(0, 0),
                  *group):

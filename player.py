@@ -9,7 +9,6 @@ from settings import *
 from sprites import Sprite
 
 
-
 class Player(Sprite):
     def __init__(self, bullets_g, particles_g, enemy_bullet_g, data, sound_player, *group):
         super().__init__(*group)
