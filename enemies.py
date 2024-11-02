@@ -58,8 +58,8 @@ class Triangle(Sprite):
         self.sound_player = sound_player
 
         self.item_type = \
-        random.choices(['health', 'ammo', 'speed', 'shield', 'magnet', ''],
-                       weights=ITEMS_WEIGHTS, k=1)[0]
+        random.choices(['ammo', 'speed', 'magnet', ''],
+                       weights=(5, 3, 2, 90), k=1)[0]
         # weights=(1, 2, 2, 1, 1, 17)
 
     def update(self, screen, screen_rect, target_pos, dt):
@@ -240,6 +240,10 @@ class Square(Triangle):
         self.acceleration = 0.1
         self.deceleration = 0.05
         self.push_strength = 0.3
+
+        self.item_type = \
+            random.choices(['ammo', 'health', 'shield', ''],
+                           weights=(5, 3, 2, 90), k=1)[0]
 
 
 class Pentagon(Triangle):

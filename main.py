@@ -145,6 +145,7 @@ async def main():
                         enemies_g = pygame.sprite.Group()
                         items_g = pygame.sprite.Group()
                         enemy_bullet_g = pygame.sprite.Group()
+                        cursor_g = pygame.sprite.Group()
 
                         player_g = pygame.sprite.Group()
 
