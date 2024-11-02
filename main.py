@@ -26,7 +26,8 @@ async def main():
 
     d = {
         "Player": {"Hp": [10, 10, 30, 2, 50],
-                   "Crit %": [1, 1, 5, 1, 50]},
+                   "Crit %": [1, 1, 5, 1, 50],
+                   "Spd": [5, 5, 8, 1, 50]},
         "Blaster": {"Dmg": [1, 1, 10, 1, 20],
                     "Cooldown": [30, 30, 5, -5, 5],
                     'Max Ammo': [50, 50, 1000, 50, 10]},
@@ -50,7 +51,8 @@ async def main():
     cursor_g = pygame.sprite.Group()
 
     player_g = pygame.sprite.Group()
-    player = Player(bullets_g, particles_g, enemy_bullet_g, data, sound_player, player_g)
+    player = Player(bullets_g, particles_g, enemy_bullet_g, data, sound_player,
+                    player_g)
 
     enemy_spawn = EnemySpawn(enemies_g, particles_g, bullets_g, items_g,
                              enemy_bullet_g, player, sound_player)
@@ -71,11 +73,13 @@ async def main():
     cursor = Cursor(player, cursor_g)
 
     fps_label = Text(screen, size, 10, pos=(10, SH - 15), center_align=False)
-    enemies_label = Text(screen, size, 10, pos=(10, SH - 30), center_align=False)
-    items_label = Text(screen, size, 10, pos=(10, SH - 45), center_align=False)
-    bullets_label = Text(screen, size, 10, pos=(10, SH - 60), center_align=False)
-    particles_label = Text(screen, size, 10, pos=(10, SH - 75),
+    enemies_label = Text(screen, size, 10, pos=(10, SH - 30),
                          center_align=False)
+    items_label = Text(screen, size, 10, pos=(10, SH - 45), center_align=False)
+    bullets_label = Text(screen, size, 10, pos=(10, SH - 60),
+                         center_align=False)
+    particles_label = Text(screen, size, 10, pos=(10, SH - 75),
+                           center_align=False)
 
     f7_label = Text(screen, size, 10, pos=(SW - 10, SH - 15),
                     center_align=False, right_align=True)
@@ -90,15 +94,14 @@ async def main():
     f2_label = Text(screen, size, 10, pos=(SW - 10, SH - 90),
                     center_align=False, right_align=True)
     r_label = Text(screen, size, 10, pos=(SW - 10, SH - 105),
-                    center_align=False, right_align=True)
+                   center_align=False, right_align=True)
     esc_label = Text(screen, size, 10, pos=(SW - 10, SH - 120),
-                    center_align=False, right_align=True)
+                     center_align=False, right_align=True)
     e_label = Text(screen, size, 10, pos=(SW - 10, SH - 135),
-                    center_align=False, right_align=True)
+                   center_align=False, right_align=True)
 
     song_label = Text(screen, size, 10, pos=(SW - 10, SH - 165),
-                    center_align=False, right_align=True)
-
+                      center_align=False, right_align=True)
 
     hint_label = Text(screen, size, 12, pos=(SW // 2, SH - 15))
 
@@ -151,7 +154,8 @@ async def main():
 
                         d = {
                             "Player": {"Hp": [10, 10, 30, 2, 50],
-                                       "Crit %": [1, 1, 5, 1, 50]},
+                                       "Crit %": [1, 1, 5, 1, 50],
+                                       "Spd": [5, 5, 8, 1, 50]},
                             "Blaster": {"Dmg": [1, 1, 10, 1, 20],
                                         "Cooldown": [30, 30, 5, -5, 5],
                                         'Max Ammo': [50, 50, 1000, 50, 10]},
@@ -172,7 +176,8 @@ async def main():
 
                         cursor = Cursor(player, cursor_g)
 
-                        menu = UpgradesMenu(screen, (SW, SH), data, player, sound_player)
+                        menu = UpgradesMenu(screen, (SW, SH), data, player,
+                                            sound_player)
 
                         enemy_spawn = EnemySpawn(enemies_g, particles_g,
                                                  bullets_g,
@@ -218,7 +223,6 @@ async def main():
                             sound_player.set_music_volume(0)
                         else:
                             sound_player.set_music_volume(0.5)
-
 
                 if event.key == pygame.K_LSHIFT:
                     player.sprint = True
@@ -371,7 +375,8 @@ async def main():
             fps_label.update(f'FPS: {round(clock.get_fps())}')
             enemies_label.update(f'Enemies: {len(enemies_g)}')
             items_label.update(f'Items: {len(items_g)}')
-            bullets_label.update(f'Bullets: {len(bullets_g) + len(enemy_bullet_g)}')
+            bullets_label.update(
+                f'Bullets: {len(bullets_g) + len(enemy_bullet_g)}')
             particles_label.update(f'Particles: {len(particles_g)}')
 
             e_label.update('[E] - upgrades menu')

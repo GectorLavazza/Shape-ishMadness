@@ -7,13 +7,14 @@ FPS = 60
 
 DATA = {
     "Player": {"Hp": [10, 10, 30, 2, 50],
-               "Crit %": [1, 1, 5, 1, 50]},
+               "Crit %": [1, 1, 5, 1, 50],
+               "Spd": [5, 5, 8, 1, 50]},
     "Blaster": {"Dmg": [1, 1, 10, 1, 20],
                 "Cooldown": [30, 30, 5, -5, 5],
                 'Max Ammo': [50, 50, 1000, 50, 10]},
     'Blaster+': {'Range': [60, 60, 240, 10, 10],
-                  'Amount': [1, 1, 21, 2, 30],
-                  'Angle': [10, 10, 90, 10, 50]},
+                 'Amount': [1, 1, 21, 2, 30],
+                 'Angle': [10, 10, 90, 10, 50]},
     "Spd Boost": {"Time": [600, 600, 1200, 100, 40]},
     "Shield": {"Time": [600, 600, 1200, 100, 40]},
     "Magnet": {"Time": [300, 300, 600, 100, 40]}
@@ -21,13 +22,14 @@ DATA = {
 
 CHEAT_DATA = {
     "Player": {"Hp": [30, 10, 30, 2, 50],
-               "Crit %": [5, 1, 5, 1, 50]},
+               "Crit %": [5, 1, 5, 1, 50],
+               "Spd": [8, 5, 8, 1, 50]},
     "Blaster": {"Dmg": [10, 1, 10, 1, 20],
                 "Cooldown": [5, 30, 5, -5, 5],
                 'Max Ammo': [1000, 50, 1000, 50, 10]},
     'Blaster+': {'Range': [240, 60, 240, 10, 10],
-                  'Amount': [21, 1, 21, 2, 30],
-                  'Angle': [90, 10, 90, 10, 50]},
+                 'Amount': [21, 1, 21, 2, 30],
+                 'Angle': [90, 10, 90, 10, 50]},
     "Spd Boost": {"Time": [1200, 600, 1200, 100, 40]},
     "Shield": {"Time": [1200, 600, 1200, 100, 40]},
     "Magnet": {"Time": [600, 300, 600, 100, 40]}
@@ -65,6 +67,7 @@ SW, SH = fit_aspect_ratio(sw, sh)
 RATIO = SW / 1920
 
 SONGS = ['stains_of_time', 'metal_shape_synth_ver', 'metal_shape']
+
 
 def set_screen(size):
     pygame.display.set_caption('Shape-ish Madness')

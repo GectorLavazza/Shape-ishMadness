@@ -63,8 +63,8 @@ class Player(Sprite):
         self.blaster = self.data['Blaster']
         self.blaster_plus = self.data['Blaster+']
 
-        self.sprint_speed = 8
-        self.normal_speed = 5
+        self.normal_speed = self.data['Player']['Spd'][0]
+        self.sprint_speed = self.data['Player']['Spd'][0] + 3
 
         self.ammo = self.blaster['Max Ammo'][0]
 
@@ -214,6 +214,9 @@ class Player(Sprite):
         self.data = data.data
         ch, cn = menu.current_heading, menu.current_name
 
+        self.normal_speed = self.data['Player']['Spd'][0]
+        self.sprint_speed = self.data['Player']['Spd'][0] + 3
+
         self.max_health = self.data['Player']['Hp'][0]
         if ch == 'Player' and cn == 'Hp':
             self.health = self.max_health
@@ -230,8 +233,11 @@ class Player(Sprite):
             self.ammo = self.data[ch]['Max Ammo'][0]
 
     def cheat(self, d):
+        self.data = d
         self.score = 100000
         self.coins = 100000
+        self.normal_speed = self.data['Player']['Spd'][0]
+        self.sprint_speed = self.data['Player']['Spd'][0] + 3
         self.health = self.max_health
         self.blaster = d['Blaster']
         self.blaster_plus = d['Blaster+']
