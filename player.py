@@ -222,6 +222,7 @@ class Player(Sprite):
 
         self.max_speed_boost_time = self.data['Spd Boost']['Time'][0]
         self.max_shield_time = self.data['Shield']['Time'][0]
+        self.max_magnet_time = self.data['Magnet']['Time'][0]
 
         self.blaster = self.data['Blaster']
 

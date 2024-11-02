@@ -239,6 +239,7 @@ async def main():
                         health.max = player.max_health
                         shield_bar.max = player.max_shield_time
                         speed_boost_bar.max = player.max_speed_boost_time
+                        magnet_bar.max = player.max_magnet_time
 
             if event.type == pygame.KEYUP:
                 if event.key == pygame.K_w:
@@ -269,6 +270,7 @@ async def main():
                             health.max = player.max_health
                             shield_bar.max = player.max_shield_time
                             speed_boost_bar.max = player.max_speed_boost_time
+                            magnet_bar.max = player.max_magnet_time
                         except Exception as e:
                             print(e)
 
