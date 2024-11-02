@@ -10,7 +10,8 @@ from sprites import Sprite
 
 
 class Player(Sprite):
-    def __init__(self, bullets_g, particles_g, enemy_bullet_g, data, sound_player, *group):
+    def __init__(self, bullets_g, particles_g, enemy_bullet_g, data,
+                 sound_player, *group):
         super().__init__(*group)
         self.image = load_image('player')
 
@@ -67,13 +68,11 @@ class Player(Sprite):
 
         self.ammo = self.blaster['Max Ammo'][0]
 
-
     def update(self, screen, screen_rect, dt):
         self.move(dt)
         self.bullet_check()
         self.handle_sprint()
         self.handle_timers(screen, dt)
-
 
     def take_damage(self, damage):
         if not self.shield:
@@ -84,7 +83,8 @@ class Player(Sprite):
                              50, 20,
                              self.particles_g)
         else:
-            self.health -= int(damage * 0.1)
+            self.health -= int(
+                damage * (1 - self.data['Shield']['Protection'][0] / 10))
             self.sound_player.play('shield_hit')
             create_particles(self.rect.center,
                              generate_particles('shield_hit_particle'),
@@ -118,14 +118,15 @@ class Player(Sprite):
                     target = Vector2(
                         self.rect.center) + rotated_direction * distance
 
-
                     create_bullet(self.rect.center, target,
                                   damage, e_time,
-                                  self.particles_g, self.sound_player, self.bullets_g)
+                                  self.particles_g, self.sound_player,
+                                  self.bullets_g)
             else:
                 create_bullet(self.rect.center, mouse_pos,
                               damage, e_time,
-                              self.particles_g, self.sound_player, self.bullets_g)
+                              self.particles_g, self.sound_player,
+                              self.bullets_g)
 
             self.cooldown = 0
 
@@ -134,11 +135,14 @@ class Player(Sprite):
     def draw_cooldown_bar(self, screen, cooldown):
         c_time = self.blaster['Cooldown'][0]
         pygame.draw.rect(screen, pygame.Color('#306230'),
-                         pygame.Rect(self.rect.centerx - 15 * RATIO, self.rect.y - 10 * RATIO,
+                         pygame.Rect(self.rect.centerx - 15 * RATIO,
+                                     self.rect.y - 10 * RATIO,
                                      30 * RATIO, 5 * RATIO))
         pygame.draw.rect(screen, pygame.Color('#8bac0f'),
-                         pygame.Rect(self.rect.centerx - 15 * RATIO, self.rect.y - 10 * RATIO,
-                                     30 / c_time * cooldown * RATIO, 5 * RATIO))
+                         pygame.Rect(self.rect.centerx - 15 * RATIO,
+                                     self.rect.y - 10 * RATIO,
+                                     30 / c_time * cooldown * RATIO,
+                                     5 * RATIO))
 
     def draw_shield(self, screen):
         image = load_image('shield_cover')
@@ -195,6 +199,7 @@ class Player(Sprite):
 
         if self.speed_boost_timer > 0 and self.speed_boost:
             self.speed_boost_timer -= dt
+            self.speed_boost = self.data['Spd Boost']['Boost'][0]
         else:
             self.speed_boost = 0
 

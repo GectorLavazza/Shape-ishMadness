@@ -112,7 +112,7 @@ class SpeedBoost(Item):
 
     def on_collide(self):
         if self.hitbox.colliderect(self.player.rect):
-            self.player.speed_boost = 2
+            self.player.speed_boost = self.player.data['Spd Boost']['Boost'][0]
             self.player.speed_boost_timer = self.player.max_speed_boost_time
             create_particles(self.rect.center,
                              generate_particles('speed_particle'),
@@ -176,14 +176,16 @@ class Coin(Item):
                 self.rect.centerx + - self.hitbox.w // 2,
                 self.rect.centery + - self.hitbox.h // 2)
 
-        self.acceleration = 0.7
-        self.deceleration = 0.7
-        self.max_speed = 10
+        self.acceleration = 0.95
+        self.deceleration = 0.95
+        self.max_speed = self.player.data['Magnet']['Force'][0]
 
         self.velocity = pygame.Vector2(0, 0)
         self.just_ended = False
 
     def update(self, dt):
+        self.max_speed = self.player.data['Magnet']['Force'][0]
+
         self.handle_overlap(self.group)
 
         if self.player.magnet:
