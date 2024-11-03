@@ -171,6 +171,8 @@ class UpgradesMenu(Text):
         self.sound_player = sound_player
         self.headings, self.names, self.surface = self.oninit()
 
+        self.do = True
+
     def update(self, screen):
         screen.blit(self.surface, self.pos)
 
@@ -231,7 +233,7 @@ class UpgradesMenu(Text):
 
     def buy(self):
         i, j = self.current
-        do = True
+        self.do = True
 
         heading = list(self.data.data.keys())[i]
         name = list(self.data.data[heading].keys())[j]
@@ -250,18 +252,22 @@ class UpgradesMenu(Text):
                              blaster['Cooldown'][0] <= 15,
                              blaster['Max Ammo'][0] >= 200]
             if not all(blaster_check):
-                do = False
+                self.do = False
 
-        if do:
+        if self.do:
             self.sound_player.play('click')
             if c > 0:
                 if v + c <= max_v and self.player.coins - p >= 0:
                     self.data.data[heading][name][0] += c
                     self.player.coins -= p
+                else:
+                    self.do = False
             elif c < 0:
                 if v + c >= max_v and self.player.coins - p >= 0:
                     self.data.data[heading][name][0] += c
                     self.player.coins -= p
+                else:
+                    self.do = False
 
     def oninit(self):
         surface = pygame.Surface((self.image.get_width(),
