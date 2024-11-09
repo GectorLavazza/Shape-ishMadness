@@ -125,6 +125,13 @@ async def main():
 
     song_index = 0
 
+    max_particles = 0
+    max_items = 0
+    max_bullets = 0
+    max_enemies = 0
+    max_fps = 0
+    min_fps = 1000
+
     while running:
 
         dt = time.time() - last_time
@@ -378,12 +385,33 @@ async def main():
         coin_label.update(player.coins)
 
         if show_debug:
-            fps_label.update(f'FPS: {round(clock.get_fps())}')
-            enemies_label.update(f'Enemies: {len(enemies_g)}')
-            items_label.update(f'Items: {len(items_g)}')
+            if len(particles_g) > max_particles:
+                max_particles = len(particles_g)
+
+            if len(enemies_g) > max_enemies:
+                max_enemies = len(enemies_g)
+
+            if len(bullets_g) + len(enemy_bullet_g) > max_bullets:
+                max_bullets = len(bullets_g) + len(enemy_bullet_g)
+
+            if len(items_g) > max_items:
+                max_items = len(items_g)
+
+            if len(particles_g) > max_particles:
+                max_particles = len(particles_g)
+
+            if round(clock.get_fps()) > max_fps:
+                max_fps = round(clock.get_fps())
+
+            if round(clock.get_fps()) < min_fps:
+                min_fps = round(clock.get_fps())
+
+            fps_label.update(f'FPS: {round(clock.get_fps())} / {min_fps} / {max_fps}')
+            enemies_label.update(f'Enemies: {len(enemies_g)} / {max_enemies}')
+            items_label.update(f'Items: {len(items_g)} / {max_items}')
             bullets_label.update(
-                f'Bullets: {len(bullets_g) + len(enemy_bullet_g)}')
-            particles_label.update(f'Particles: {len(particles_g)}')
+                f'Bullets: {len(bullets_g) + len(enemy_bullet_g)} / {max_bullets}')
+            particles_label.update(f'Particles: {len(particles_g)} / {max_particles}')
 
             e_label.update('[E] - upgrades menu')
             esc_label.update('[Esc] - pause/unpause')

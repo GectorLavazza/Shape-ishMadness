@@ -72,7 +72,7 @@ sw, sh = 1920, 1080
 SW, SH = fit_aspect_ratio(sw, sh)
 RATIO = SW / 1920
 
-SONGS = ['stains_of_time', 'metal_shape_synth_ver', 'metal_shape']
+SONGS = ['shape-ish_madness', 'metal_shape_synth_ver', 'metal_shape']
 
 
 def set_screen(size):
