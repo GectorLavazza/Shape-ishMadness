@@ -59,7 +59,7 @@ class Triangle(Sprite):
 
         self.item_type = \
         random.choices(['ammo', 'speed', 'magnet', ''],
-                       weights=(5, 3, 2, 90), k=1)[0]
+                       weights=(20, 10, 10, 70), k=1)[0]
         # weights=(1, 2, 2, 1, 1, 17)
 
     def update(self, screen, screen_rect, target_pos, dt):
@@ -243,7 +243,7 @@ class Square(Triangle):
 
         self.item_type = \
             random.choices(['ammo', 'health', 'shield', ''],
-                           weights=(5, 3, 2, 90), k=1)[0]
+                           weights=(20, 10, 10, 60), k=1)[0]
 
 
 class Pentagon(Triangle):
@@ -335,12 +335,12 @@ class Pentagon(Triangle):
         for i in range(random.randint(3, 6)):
             item_type = \
                 random.choices(['health', 'ammo', 'speed', 'shield', 'magnet'],
-                               weights=(2, 3, 1, 1, 1), k=1)[0]
+                               weights=(10, 10, 5, 5, 5), k=1)[0]
             pos = (self.rect.centerx + random.randint(0, 100),
                    self.rect.centery + random.randint(0, 100))
             self.generate_item(item_type, pos)
 
-        for i in range(random.randint(10, 20)):
+        for i in range(random.randint(20, 50)):
             pos = (self.rect.centerx + random.randint(0, 100),
                    self.rect.centery + random.randint(0, 100))
             self.generate_coin(pos)
