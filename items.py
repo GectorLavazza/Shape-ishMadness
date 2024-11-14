@@ -163,7 +163,7 @@ class Coin(Item):
         self.particles_amount = 20
         self.particles_e_time = 30
 
-        if random.randint(1, 50) == 1:
+        if random.randint(1, 100) == 1:
             self.weight = 50
             self.particles_amount = 40
             self.particles_e_time = 60
