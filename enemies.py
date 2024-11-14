@@ -25,6 +25,9 @@ class Triangle(Sprite):
 
         self.elapsed_time = 0
 
+        self.max_damage_taking_timer = 0.5
+        self.damage_taking_timer = self.max_damage_taking_timer
+
         self.quotient = (5 + self.player.score // 50 -
                          3 * self.player.score // 200 -
                          3 * self.player.score // 1000 -
@@ -59,7 +62,7 @@ class Triangle(Sprite):
 
         self.item_type = \
         random.choices(['ammo', 'speed', 'magnet', ''],
-                       weights=(20, 10, 10, 70), k=1)[0]
+                       weights=(10, 5, 5, 80), k=1)[0]
         # weights=(1, 2, 2, 1, 1, 17)
 
     def update(self, screen, screen_rect, target_pos, dt):
@@ -77,6 +80,9 @@ class Triangle(Sprite):
             self.recovering = True
         else:
             self.recovering = False  # Stop recovering when cooldown is done
+
+        if self.damage_taking_timer >= 0:
+            self.damage_taking_timer -= dt
 
     def handle_overlap(self, all_enemies, dt):
         for other in all_enemies:
@@ -128,13 +134,14 @@ class Triangle(Sprite):
         for bullet in self.bullet_g:
             if self.rect.colliderect(bullet.rect):
 
-                self.health -= bullet.damage
+                if self.damage_taking_timer < 0:
+                    bullet.kill()
+                    self.take_damage(bullet.damage)
 
-                bullet.kill()
-                if self.health > 0:
-                    self.take_damage()
-                else:
-                    self.death()
+                    if self.health <= 0:
+                        self.death()
+
+                    self.damage_taking_timer = self.max_damage_taking_timer
 
     def generate_coin(self, pos):
         coin = Coin(self.player, pos,
@@ -201,7 +208,8 @@ class Triangle(Sprite):
                                      30 / self.max_health * self.health * RATIO,
                                      5 * RATIO))
 
-    def take_damage(self):
+    def take_damage(self, damage):
+        self.health -= damage
         self.sound_player.play('enemy_hit')
         create_particles(self.rect.center,
                          generate_particles(
@@ -243,7 +251,7 @@ class Square(Triangle):
 
         self.item_type = \
             random.choices(['ammo', 'health', 'shield', ''],
-                           weights=(20, 10, 10, 60), k=1)[0]
+                           weights=(15, 10, 5, 80), k=1)[0]
 
 
 class Pentagon(Triangle):
@@ -295,6 +303,9 @@ class Pentagon(Triangle):
         if self.cooldown < self.c_time:
             self.cooldown += dt
 
+        if self.damage_taking_timer >= 0:
+            self.damage_taking_timer -= dt
+
         self.shoot()
 
     def draw_health_bar(self, screen):
@@ -308,13 +319,13 @@ class Pentagon(Triangle):
     def bullet_check(self):
         for bullet in self.bullet_g:
             if self.hitbox.colliderect(bullet.rect):
-                self.health -= bullet.damage
-                bullet.kill()
-                if self.health > 0:
-                    self.take_damage()
-                else:
-                    self.death()
-                    self.kill()
+                if self.damage_taking_timer < 0:
+                    bullet.kill()
+                    self.take_damage(bullet.damage)
+                    if self.health <= 0:
+                        self.death()
+
+                    self.damage_taking_timer = self.max_damage_taking_timer
 
     def shoot(self):
         if self.cooldown >= self.c_time:
@@ -332,7 +343,7 @@ class Pentagon(Triangle):
                          80, 60,
                          self.particles_g)
 
-        for i in range(random.randint(3, 6)):
+        for i in range(random.randint(1, 3)):
             item_type = \
                 random.choices(['health', 'ammo', 'speed', 'shield', 'magnet'],
                                weights=(10, 10, 5, 5, 5), k=1)[0]
@@ -340,14 +351,15 @@ class Pentagon(Triangle):
                    self.rect.centery + random.randint(0, 100))
             self.generate_item(item_type, pos)
 
-        for i in range(random.randint(20, 50)):
+        for i in range(random.randint(10, 20)):
             pos = (self.rect.centerx + random.randint(0, 100),
                    self.rect.centery + random.randint(0, 100))
             self.generate_coin(pos)
 
         self.kill()
 
-    def take_damage(self):
+    def take_damage(self, damage):
+        self.health -= damage
         self.sound_player.play('enemy_hit')
         create_particles(self.rect.center,
                          generate_particles(

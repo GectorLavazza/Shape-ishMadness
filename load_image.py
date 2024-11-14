@@ -10,7 +10,7 @@ def load_image(name, color_key=None, scale=(RATIO, RATIO)):
 
     try:
         image = pygame.image.load(fullname).convert_alpha()
-        # image = pygame.transform.smoothscale_by(image, scale)
+        image = pygame.transform.smoothscale_by(image, scale).convert_alpha()
     except pygame.error as e:
         print(f"Err: {e}")
         raise SystemExit(e)

@@ -29,7 +29,7 @@ class Item(Sprite):
         self.sound_player = sound_player
 
     def update(self, dt):
-        self.handle_overlap(self.group)
+        # self.handle_overlap(self.group)
 
         if self.rect.y > self.orig_pos[1] + self.offset:
             self.direction = -1
@@ -206,8 +206,8 @@ class Coin(Item):
             if self.timer <= 0:
                 self.kill()
 
-        if not (-20 <= self.rect.centerx <= SW + 20 and
-                -20 <= self.rect.centery <= SH + 20):
+        if not (-20 * RATIO <= self.rect.centerx <= SW + 20 * RATIO and
+                -20 * RATIO <= self.rect.centery <= SH + 20 * RATIO):
             self.kill()
 
 
