@@ -152,12 +152,16 @@ class UpgradesMenu(Text):
     def __init__(self, screen, screen_size, data, player, sound_player):
         super().__init__(screen, screen_size, 20)
         self.image = load_image('menu')
+
+        self.w, self.h = 1200, 1000
+        self.pos = (self.width // 2 - self.w // 2,
+                    self.height // 2 - self.h // 2)
+        self.rect = pygame.Rect(self.w, self.h, *self.pos)
+
         self.data = data
 
         self.screen = screen
 
-        self.pos = (self.width // 2 - self.image.get_width() // 2,
-                    self.height // 2 - self.image.get_height() // 2)
         self.bg = pygame.Surface(
             (self.width, self.height))
         self.bg.set_alpha(128)
@@ -186,7 +190,7 @@ class UpgradesMenu(Text):
                 self.current_heading = heading
 
             for j in range(len(list(self.data.data[heading].keys()))):
-                x, y = (self.pos[0] * 1.25 + self.image.get_width() // a * i,
+                x, y = (self.pos[0] * 1.25 + self.w // a * i,
                         self.pos[1] + 80 + (150 * j + 1))
 
                 name = list(self.data.data[heading].keys())[j]
@@ -270,18 +274,18 @@ class UpgradesMenu(Text):
                     self.do = False
 
     def oninit(self):
-        surface = pygame.Surface((self.image.get_width(),
-                                  self.image.get_height()))
+        surface = pygame.Surface((self.w,
+                                  self.h))
         surface = surface.convert_alpha()
-        surface.blit(self.image, (0, 0))
-        surface = surface.convert_alpha()
+        # surface.blit(self.image, (0, 0))
+        # surface = surface.convert_alpha()
         headings = []
         names = []
 
         a = len(list(self.data.data.keys()))
         for i in range(a):
             heading = list(self.data.data.keys())[i]
-            xh, yh = (self.pos[0] * 1.25 + self.image.get_width() // a * i,
+            xh, yh = (self.pos[0] * 1.25 + self.w // a * i,
                       self.pos[1] + 40)
             hr = Text(self.screen, (self.width, self.height), 20, pos=(xh, yh),
                       color='light blue')
