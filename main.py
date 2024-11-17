@@ -24,6 +24,7 @@ async def main():
 
     running = True
 
+    # [current, min, max, step, price step]
     d = {
         "Player": {"Hp": [10, 10, 30, 2, 50],
                    "Crit %": [1, 1, 5, 1, 50],
@@ -39,7 +40,10 @@ async def main():
         "Shield": {"Time": [600, 600, 1200, 100, 40],
                    "Protection": [1, 1, 9, 1, 60]},
         "Magnet": {"Time": [300, 300, 600, 100, 40],
-                   "Force": [5, 5, 15, 2, 60]}
+                   "Force": [5, 5, 15, 2, 60]},
+        "Powers": {"Thorns": [0, 0, 5, 1, 500],
+                   "Spd Theft": [0, 0, 5, 1, 500],
+                   "Rage": [0, 0, 8, 1, 500]}
     }
 
     data = Data(d)
