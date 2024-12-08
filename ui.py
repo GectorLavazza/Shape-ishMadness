@@ -227,6 +227,7 @@ class UpgradesMenu(Text):
                                              blaster['Max Ammo'][0] >= 200]
 
                             if not all(blaster_check):
+
                                 self.message.update('Dmg lvl 5, Cooldown lvl 4, Max Ammo lvl 4 needed')
                                 upd = False
 
@@ -235,8 +236,12 @@ class UpgradesMenu(Text):
                             color_front = '#7453f0'
 
                             price = Text(screen, (self.width, self.height), 20,
-                                         pos=(x, y + 100), color='yellow')
+                                         pos=(x, y + 130), color='yellow')
                             price.update(p)
+
+                            lvl = Text(screen, (self.width, self.height), 20,
+                                         pos=(x, y + 100), color='white')
+                            lvl.update(f'lvl {l}')
 
                 pygame.draw.rect(screen, pygame.Color(color_back),
                                  pygame.Rect(x - 40, y + 50,
