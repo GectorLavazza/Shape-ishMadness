@@ -40,10 +40,7 @@ async def main():
         "Shield": {"Time": [600, 600, 1200, 100, 40],
                    "Protection": [1, 1, 9, 1, 60]},
         "Magnet": {"Time": [300, 300, 600, 100, 40],
-                   "Force": [5, 5, 15, 2, 60]},
-        "Powers": {"Thorns": [0, 0, 5, 1, 500],
-                   "Spd Theft": [0, 0, 5, 1, 500],
-                   "Rage": [0, 0, 8, 1, 500]}
+                   "Force": [5, 5, 15, 2, 60]}
     }
 
     data = Data(d)
@@ -110,14 +107,17 @@ async def main():
     song_label = Text(screen, size, 10, pos=(SW - 10, SH - 165),
                       center_align=False, right_align=True)
 
-    hint_label = Text(screen, size, 12, pos=(SW // 2, SH - 15))
-
-    pause_label = Text(screen, size, 60, pos=(SW // 2, SH // 2))
-    dead_label = Text(screen, size, 60, pos=(SW // 2, SH // 2))
+    dead_label = Text(screen, size, 60, pos=(SW // 2, SH // 2 - 35))
+    restart_hint_label = Text(screen, size, 20, pos=(SW // 2, SH // 2 + 25))
 
     coin_label = CoinsCount(screen, size, 30, 'white', pos=(SW - 50, 10))
 
     menu = UpgradesMenu(screen, (SW, SH), data, player, sound_player)
+
+    upgrades_label = Text(screen, size, 40,
+                          pos=(SW // 2, SH // 2 - menu.h // 2 - 80))
+    upgrades_hint_label = Text(screen, size, 20,
+                          pos=(SW // 2, SH // 2 - menu.h // 2 - 30))
 
     show_hint = True
     show_hitbox = False
@@ -153,7 +153,7 @@ async def main():
                 #     if not playing:
                 #         running = False
 
-                if event.key == pygame.K_r:
+                if event.key == pygame.K_SPACE:
                     if player.health <= 0:
                         playing = True
 
@@ -172,8 +172,8 @@ async def main():
                                        "Spd": [5, 5, 8, 1, 50]},
                             "Blaster": {"Dmg": [1, 1, 10, 1, 20],
                                         "Cooldown": [30, 30, 5, -5, 5],
-                                        'Max Ammo': [50, 50, 1000, 50, 10]},
-                            'Blaster+': {'Range': [60, 60, 240, 10, 10],
+                                        'Max Ammo': [50, 50, 500, 50, 10]},
+                            'Blaster+': {'Range': [60, 60, 240, 30, 20],
                                          'Amount': [1, 1, 21, 2, 30],
                                          'Angle': [10, 10, 90, 10, 50]},
                             "Spd Boost": {"Time": [600, 600, 1200, 100, 40],
@@ -378,12 +378,18 @@ async def main():
 
         if not playing:
             if player.health > 0:
-                pause_label.update('Paused')
+                screen.blit(menu.bg, (0, 0))
+                dead_label.update('Paused')
+                restart_hint_label.update('Press [Esc] to continue')
             else:
+                screen.blit(menu.bg, (0, 0))
                 dead_label.update('Defeated')
+                restart_hint_label.update('Press [Space] to restart')
 
         if show_menu:
             screen.blit(menu.bg, (0, 0))
+            upgrades_label.update('Upgrades')
+            upgrades_hint_label.update('Press [E] to quit')
             menu.update(screen)
 
         coin_label.update(player.coins)
@@ -410,16 +416,18 @@ async def main():
             if round(clock.get_fps()) < min_fps:
                 min_fps = round(clock.get_fps())
 
-            fps_label.update(f'FPS: {round(clock.get_fps())} / {min_fps} / {max_fps}')
+            fps_label.update(
+                f'FPS: {round(clock.get_fps())} / {min_fps} / {max_fps}')
             enemies_label.update(f'Enemies: {len(enemies_g)} / {max_enemies}')
             items_label.update(f'Items: {len(items_g)} / {max_items}')
             bullets_label.update(
                 f'Bullets: {len(bullets_g) + len(enemy_bullet_g)} / {max_bullets}')
-            particles_label.update(f'Particles: {len(particles_g)} / {max_particles}')
+            particles_label.update(
+                f'Particles: {len(particles_g)} / {max_particles}')
 
             e_label.update('[E] - upgrades menu')
             esc_label.update('[Esc] - pause/unpause')
-            r_label.update('[R] - restart (upon defeat)')
+            r_label.update('[Space] - restart (upon defeat)')
             f2_label.update('[F2] - toggle debug (this)')
             f3_label.update('[F3] - toggle hitbox')
             f4_label.update('[F4] - toggle rect')
