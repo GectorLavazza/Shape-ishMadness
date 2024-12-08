@@ -349,7 +349,6 @@ async def main():
         score_label.update(player.score)
 
         health.update(player.health)
-        e_hint.update('[E]')
 
         active_effects = []
 
@@ -388,6 +387,15 @@ async def main():
         #     hint_label.update('[E] - upgrades menu. [R] - restart (upon death). '
         #                       '[Esc] - pause/unpause. [F1] - toggle hint.')
 
+        if show_menu:
+            screen.blit(menu.bg, (0, 0))
+            upgrades_label.update('Upgrades')
+            restart_hint_label.update('Press [E] to quit')
+            menu.update(screen)
+
+        coin_label.update(player.coins)
+        e_hint.update('[E]')
+
         if not playing:
             if starting:
                 screen.blit(menu.bg, (0, 0))
@@ -403,14 +411,6 @@ async def main():
                     screen.blit(menu.bg, (0, 0))
                     dead_label.update('Defeated')
                     restart_hint_label.update('Press [Space] to restart')
-
-        if show_menu:
-            screen.blit(menu.bg, (0, 0))
-            upgrades_label.update('Upgrades')
-            restart_hint_label.update('Press [E] to quit')
-            menu.update(screen)
-
-        coin_label.update(player.coins)
 
         if show_debug:
             if len(particles_g) > max_particles:
