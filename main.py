@@ -279,12 +279,12 @@ async def main():
                     player.sprint = False
 
             if event.type == pygame.MOUSEBUTTONDOWN:
-                if event.button == 3:
+                if event.button == 3 or event.button == 1:
                     player.hold = True
 
-                elif event.button == 1:
-                    if playing and not show_menu:
-                        player.shoot(mouse_pos)
+                # elif event.button == 1:
+                #     if playing and not show_menu:
+                #         player.shoot(mouse_pos)
 
                 if show_menu:
                     if event.button == 1:
@@ -299,7 +299,7 @@ async def main():
                             print(e)
 
             if event.type == pygame.MOUSEBUTTONUP:
-                if event.button == 3:
+                if event.button == 3 or event.button == 1:
                     player.hold = False
 
         if playing and not show_menu:
