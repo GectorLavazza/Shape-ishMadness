@@ -299,14 +299,14 @@ class UpgradesMenu(Text):
             xh, yh = (self.pos[0] * 1.25 + self.w // a * i,
                       self.pos[1] + 40)
             hr = Text(self.screen, (self.width, self.height), 20, pos=(xh, yh),
-                      color='light blue')
+                      color='#9bbc0f')
             headings.append(hr)
             names_row = []
 
             for j in range(len(list(self.data.data[heading].keys()))):
                 yn = self.pos[1] + 100 + (150 * j + 1)
                 nr = Text(self.screen, (self.width, self.height), 20,
-                          pos=(xh, yn))
+                          pos=(xh, yn), color='#9bbc0f')
                 names_row.append(nr)
 
             names.append(names_row)

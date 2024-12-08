@@ -5,6 +5,9 @@ screen_info = pygame.display.Info()
 
 FPS = 30
 
+# brightest to darkest
+PALETTE = ['#9bbc0f', '#8bac0f', '#306230', '#0f380f']
+
 DATA = {
         "Player": {"Hp": [10, 10, 30, 2, 50],
                    "Crit %": [1, 1, 5, 1, 50],

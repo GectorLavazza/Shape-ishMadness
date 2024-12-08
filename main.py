@@ -107,24 +107,26 @@ async def main():
     song_label = Text(screen, size, 10, pos=(SW - 10, SH - 165),
                       center_align=False, right_align=True)
 
-    dead_label = Text(screen, size, 60, pos=(SW // 2, SH // 2 - 35))
-    restart_hint_label = Text(screen, size, 20, pos=(SW // 2, SH // 2 + 25))
+    gl_label = Text(screen, size, 40, pos=(SW // 2, SH // 2 - 170))
+    dead_label = Text(screen, size, 60, pos=(SW // 2, SH // 2 - 100))
+    restart_hint_label = Text(screen, size, 20, pos=(SW // 2, SH - 50))
 
     coin_label = CoinsCount(screen, size, 30, 'white', pos=(SW - 50, 10))
 
     menu = UpgradesMenu(screen, (SW, SH), data, player, sound_player)
 
     upgrades_label = Text(screen, size, 40,
-                          pos=(SW // 2, SH // 2 - menu.h // 2 - 80))
-    upgrades_hint_label = Text(screen, size, 20,
-                          pos=(SW // 2, SH // 2 - menu.h // 2 - 30))
+                          pos=(SW // 2, SH // 2 - menu.h // 2 - 60))
+
+    e_hint = Text(screen, size, 15, color='#9bbc0f', pos=(SW - 4, 55),
+                  center_align=False, right_align=True)
 
     show_hint = True
     show_hitbox = False
     show_rect = False
     show_debug = False
 
-    playing = True
+    playing = False
     show_menu = False
 
     song_index = 0
@@ -135,6 +137,8 @@ async def main():
     max_enemies = 0
     max_fps = 0
     min_fps = 1000
+
+    starting = True
 
     while running:
 
@@ -154,7 +158,11 @@ async def main():
                 #         running = False
 
                 if event.key == pygame.K_SPACE:
-                    if player.health <= 0:
+                    if starting:
+                        starting = False
+                        playing = True
+
+                    elif player.health <= 0:
                         playing = True
 
                         particles_g = pygame.sprite.Group()
@@ -202,8 +210,9 @@ async def main():
                                                  player, sound_player)
 
                 if event.key == pygame.K_ESCAPE:
-                    if player.health and not show_menu:
-                        playing = not playing
+                    if not starting:
+                        if player.health and not show_menu:
+                            playing = not playing
 
                 if event.key == pygame.K_e:
                     if player.health and playing:
@@ -338,6 +347,7 @@ async def main():
         score_label.update(player.score)
 
         health.update(player.health)
+        e_hint.update('[E]')
 
         active_effects = []
 
@@ -377,19 +387,25 @@ async def main():
         #                       '[Esc] - pause/unpause. [F1] - toggle hint.')
 
         if not playing:
-            if player.health > 0:
+            if starting:
                 screen.blit(menu.bg, (0, 0))
-                dead_label.update('Paused')
-                restart_hint_label.update('Press [Esc] to continue')
+                gl_label.update("Gector Lavazza's")
+                dead_label.update('Shape-ish Madness')
+                restart_hint_label.update('Press [Space] to start')
             else:
-                screen.blit(menu.bg, (0, 0))
-                dead_label.update('Defeated')
-                restart_hint_label.update('Press [Space] to restart')
+                if player.health > 0:
+                    screen.blit(menu.bg, (0, 0))
+                    dead_label.update('Paused')
+                    restart_hint_label.update('Press [Esc] to continue')
+                else:
+                    screen.blit(menu.bg, (0, 0))
+                    dead_label.update('Defeated')
+                    restart_hint_label.update('Press [Space] to restart')
 
         if show_menu:
             screen.blit(menu.bg, (0, 0))
             upgrades_label.update('Upgrades')
-            upgrades_hint_label.update('Press [E] to quit')
+            restart_hint_label.update('Press [E] to quit')
             menu.update(screen)
 
         coin_label.update(player.coins)
