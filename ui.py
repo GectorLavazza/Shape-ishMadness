@@ -153,7 +153,7 @@ class UpgradesMenu(Text):
         super().__init__(screen, screen_size, 20)
         self.image = load_image('menu')
 
-        self.w, self.h = 1200, 1000
+        self.w, self.h = 1200, 600
         self.pos = (self.width // 2 - self.w // 2,
                     self.height // 2 - self.h // 2)
         self.rect = pygame.Rect(self.w, self.h, *self.pos)
@@ -165,7 +165,7 @@ class UpgradesMenu(Text):
         self.bg = pygame.Surface(
             (self.width, self.height))
         self.bg.set_alpha(128)
-        self.bg.fill((0, 0, 0))
+        self.bg.fill('black')
 
         self.current = [0, 0]
         self.current_heading = ''
@@ -176,6 +176,9 @@ class UpgradesMenu(Text):
         self.headings, self.names, self.surface = self.oninit()
 
         self.do = True
+
+        self.message = Text(screen, (self.width, self.height), 20,
+                     pos=(self.pos[0] + self.w // 2, self.pos[1] + self.h - 40), color='red', center_align=True)
 
     def update(self, screen):
         screen.blit(self.surface, self.pos)
@@ -206,34 +209,41 @@ class UpgradesMenu(Text):
                 l = 1 + abs(v - min_v) // abs(c)
                 p = self.data.data[heading][name][4] * l
 
-                colliderect = pygame.Rect(x - 50, y, 100, 120)
+                colliderect = pygame.Rect(x - 50, y + 30, 100, 60)
+                # pygame.draw.rect(screen, '#9bbc0f', colliderect)
 
-                if colliderect.collidepoint(pygame.mouse.get_pos()):
-                    self.current = [i, j]
-                    color = 'magenta'
-                    pc = 'yellow'
-                    if heading == 'Blaster+':
-                        blaster = self.data.data['Blaster']
-                        blaster_check = [blaster['Dmg'][0] >= 5,
-                                         blaster['Cooldown'][0] <= 15,
-                                         blaster['Max Ammo'][0] >= 200]
-                        if not all(blaster_check):
-                            color = 'gray'
-                            p = 'Dmg lvl 5, Cooldown lvl 4, Max Ammo lvl 4 needed'
-                            pc = 'red'
-                    pygame.draw.rect(self.screen, color,
-                                     (x - 18, y + 72, 40, 5))
-                    if l < ml:
-                        price = Text(screen, (self.width, self.height), 20,
-                                     pos=(x, y + 100), color=pc)
-                        price.update(p)
-                else:
-                    color = '#9bbc0f'
+                color_back = '#306230'
+                color_front = '#8bac0f'
 
-                value = Text(screen, (self.width, self.height), 20,
-                             pos=(x, y + 50), color=color)
+                if l < ml:
+                    if colliderect.collidepoint(pygame.mouse.get_pos()):
+                        self.current = [i, j]
+                        upd = True
 
-                value.update(f'{l}/{ml}')
+                        if heading == 'Blaster+':
+                            blaster = self.data.data['Blaster']
+                            blaster_check = [blaster['Dmg'][0] >= 5,
+                                             blaster['Cooldown'][0] <= 15,
+                                             blaster['Max Ammo'][0] >= 200]
+
+                            if not all(blaster_check):
+                                self.message.update('Dmg lvl 5, Cooldown lvl 4, Max Ammo lvl 4 needed')
+                                upd = False
+
+                        if upd:
+                            color_back = '#cf9dcf'
+                            color_front = '#7453f0'
+
+                            price = Text(screen, (self.width, self.height), 20,
+                                         pos=(x, y + 100), color='yellow')
+                            price.update(p)
+
+                pygame.draw.rect(screen, pygame.Color(color_back),
+                                 pygame.Rect(x - 40, y + 50,
+                                             80, 20))
+                pygame.draw.rect(screen, pygame.Color(color_front),
+                                 pygame.Rect(x - 40, y + 50,
+                                             80 / ml * l, 20))
 
     def buy(self):
         i, j = self.current
@@ -277,6 +287,7 @@ class UpgradesMenu(Text):
         surface = pygame.Surface((self.w,
                                   self.h))
         surface = surface.convert_alpha()
+        surface.fill('#0b2b0b')
         # surface.blit(self.image, (0, 0))
         # surface = surface.convert_alpha()
         headings = []
@@ -293,7 +304,7 @@ class UpgradesMenu(Text):
             names_row = []
 
             for j in range(len(list(self.data.data[heading].keys()))):
-                yn = self.pos[1] + 80 + (150 * j + 1)
+                yn = self.pos[1] + 100 + (150 * j + 1)
                 nr = Text(self.screen, (self.width, self.height), 20,
                           pos=(xh, yn))
                 names_row.append(nr)
