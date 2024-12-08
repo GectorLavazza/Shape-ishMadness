@@ -140,6 +140,8 @@ async def main():
 
     starting = True
 
+    sound_player.set_music(SONGS[song_index])
+
     while running:
 
         dt = time.time() - last_time
