@@ -27,6 +27,13 @@ DATA = d = {
                    "Force": [5, 5, 15, 2, 60, 7]}
     }
 
+MAX_XP = 0
+for d in DATA:
+    e = DATA[d]
+    for i in e:
+        s = e[i]
+        MAX_XP += (s[2] - s[1]) // s[3] * s[5]
+
 CHEAT_DATA = {
         "Player": {"Hp": [30, 10, 30, 2, 50],
                    "Crit %": [5, 1, 5, 1, 50],
