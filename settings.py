@@ -8,22 +8,23 @@ FPS = 30
 # brightest to darkest
 PALETTE = ['#9bbc0f', '#8bac0f', '#306230', '#0f380f']
 
-DATA = {
-        "Player": {"Hp": [10, 10, 30, 2, 50],
-                   "Crit %": [1, 1, 5, 1, 50],
-                   "Spd": [5, 5, 8, 1, 50]},
-        "Blaster": {"Dmg": [1, 1, 10, 1, 20],
-                    "Cooldown": [30, 30, 5, -5, 5],
-                    'Max Ammo': [50, 50, 500, 50, 10]},
-        'Blaster+': {'Range': [60, 60, 240, 30, 20],
-                     'Amount': [1, 1, 21, 2, 30],
-                     'Angle': [10, 10, 90, 10, 50]},
-        "Spd Boost": {"Time": [600, 600, 1200, 100, 40],
-                      "Boost": [1, 1, 4, 1, 60]},
-        "Shield": {"Time": [600, 600, 1200, 100, 40],
-                   "Protection": [1, 1, 9, 1, 60]},
-        "Magnet": {"Time": [300, 300, 600, 100, 40],
-                   "Force": [5, 5, 15, 2, 60]}
+# [current, min, max, step, price_step, xp]
+DATA = d = {
+        "Player": {"Hp": [10, 10, 30, 2, 50, 10],
+                   "Crit %": [1, 1, 5, 1, 50, 7],
+                   "Spd": [5, 5, 8, 1, 5, 5]},
+        "Blaster": {"Dmg": [1, 1, 10, 1, 10, 7],
+                    "Cooldown": [30, 30, 5, -5, 5, 2],
+                    'Max Ammo': [50, 50, 500, 50, 10, 3]},
+        'Blaster+': {'Range': [60, 60, 240, 30, 20, 2],
+                     'Amount': [1, 1, 21, 2, 30, 5],
+                     'Angle': [10, 10, 90, 10, 50, 6]},
+        "Spd Boost": {"Time": [600, 600, 1200, 100, 40, 7],
+                      "Boost": [1, 1, 4, 1, 60, 9]},
+        "Shield": {"Time": [600, 600, 1200, 100, 40, 8],
+                   "Protection": [1, 1, 9, 1, 60, 10]},
+        "Magnet": {"Time": [300, 300, 600, 100, 40, 5],
+                   "Force": [5, 5, 15, 2, 60, 7]}
     }
 
 CHEAT_DATA = {
@@ -91,7 +92,7 @@ def fit_aspect_ratio(screen_width, screen_height,
     return int(max_width), int(max_height)
 
 
-# sw, sh = screen_info.current_w, screen_info.current_h
+sw, sh = screen_info.current_w, screen_info.current_h
 sw, sh = 1920, 1080
 SW, SH = fit_aspect_ratio(sw, sh)
 RATIO = SW / 1920
