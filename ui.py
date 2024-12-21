@@ -88,17 +88,46 @@ class Text(Ui):
         self.screen.blit(self.render, pos)
 
 
-class CoinsCount(Text):
-    def __init__(self, screen, screen_size, font_size, color, pos=(0, 0)):
+class ResourceCount(Text):
+    def __init__(self, screen, screen_size, font_size, color, image, pos=(0, 0)):
         self.coins_count = 0
         super().__init__(screen, screen_size, font_size, color, pos)
-        self.image = load_image('coin')
+        self.image = load_image(image)
 
     def update(self, message):
         self.render = self.font.render(str(message), True, self.color)
         pos = (self.pos[0] - self.render.get_width(), self.pos[1])
 
         self.screen.blit(self.image, (self.pos[0] + 10, self.pos[1] - 2))
+        self.screen.blit(self.render, pos)
+
+
+class XpBar(Text):
+    def __init__(self, screen, screen_size, font_size, color, image, pos=(0, 0)):
+        super().__init__(screen, screen_size, font_size, color, pos)
+        self.image = load_image(image)
+
+    def update(self, xp):
+        l = xp // 30
+
+        self.render = self.font.render(str(l), True, self.color)
+
+        pos = (self.pos[0] - self.render.get_width() // 2 - 53, self.pos[1] - 5)
+        xp_pos = (self.pos[0] - 103, self.pos[1] + 20)
+        l_pos = (self.pos[0] - 103, self.pos[1])
+
+        self.screen.blit(self.image, (self.pos[0] + 10, self.pos[1]))
+
+        pygame.draw.rect(self.screen, pygame.Color('#306230'),
+                         pygame.Rect(*l_pos, 100, 15))
+        pygame.draw.rect(self.screen, pygame.Color('#8bac0f'),
+                         pygame.Rect(*l_pos, 100 / 20 * l, 15))
+
+        pygame.draw.rect(self.screen, pygame.Color('#306230'),
+                         pygame.Rect(*xp_pos, 100, 10))
+        pygame.draw.rect(self.screen, pygame.Color('#8bac0f'),
+                         pygame.Rect(*xp_pos, 100 / 30 * (xp % 30), 10))
+
         self.screen.blit(self.render, pos)
 
 
@@ -264,6 +293,7 @@ class UpgradesMenu(Text):
         ml = abs(max_v - min_v) // abs(c) + 1
         l = 1 + abs(v - min_v) // abs(c)
         p = self.data.data[heading][name][4] * l
+        xp = self.data.data[heading][name][5]
 
         if heading == 'Blaster+':
             blaster = self.data.data['Blaster']
@@ -274,19 +304,24 @@ class UpgradesMenu(Text):
                 self.do = False
 
         if self.do:
-            self.sound_player.play('click')
             if c > 0:
                 if v + c <= max_v and self.player.coins - p >= 0:
-                    self.data.data[heading][name][0] += c
-                    self.player.coins -= p
+                    self.take_coins(heading, name, c, p, xp)
                 else:
                     self.do = False
             elif c < 0:
                 if v + c >= max_v and self.player.coins - p >= 0:
-                    self.data.data[heading][name][0] += c
-                    self.player.coins -= p
+                    self.take_coins(heading, name, c, p, xp)
                 else:
                     self.do = False
+
+    def take_coins(self, heading, name, c, p, xp):
+        self.sound_player.play('click')
+
+        self.data.data[heading][name][0] += c
+        self.player.coins -= p
+
+        self.player.xp += xp
 
     def oninit(self):
         surface = pygame.Surface((self.w,
