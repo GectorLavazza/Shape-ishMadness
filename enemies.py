@@ -4,7 +4,8 @@ from settings import *
 
 
 class Triangle(Sprite):
-    def __init__(self, pos, particles_g, bullet_g, items_g, player, sound_player, *group):
+    def __init__(self, pos, particles_g, bullet_g, items_g, player,
+                 sound_player, *group):
         super().__init__(*group)
 
         self.image = load_image('triangle')
@@ -61,8 +62,8 @@ class Triangle(Sprite):
         self.sound_player = sound_player
 
         self.item_type = \
-        random.choices(['ammo', 'speed', 'magnet', ''],
-                       weights=(10, 5, 5, 80), k=1)[0]
+            random.choices(['ammo', 'speed', 'magnet', ''],
+                           weights=(10, 5, 5, 80), k=1)[0]
         # weights=(1, 2, 2, 1, 1, 17)
 
     def update(self, screen, screen_rect, target_pos, dt):
@@ -151,12 +152,15 @@ class Triangle(Sprite):
     def generate_item(self, item_type, pos):
         if item_type == 'health':
             item = HealthBox(self.player, pos,
-                             2, self.particles_g, self.sound_player, self.items_g)
+                             2, self.particles_g, self.sound_player,
+                             self.items_g)
         if item_type == 'ammo':
-            item = AmmoBox(self.player, pos, self.particles_g, self.sound_player, self.items_g)
+            item = AmmoBox(self.player, pos, self.particles_g,
+                           self.sound_player, self.items_g)
         if item_type == 'speed':
             item = SpeedBoost(self.player, pos,
-                              self.particles_g, self.sound_player, self.items_g)
+                              self.particles_g, self.sound_player,
+                              self.items_g)
         if item_type == 'shield':
             item = Shield(self.player, pos,
                           self.particles_g, self.sound_player, self.items_g)
@@ -219,8 +223,10 @@ class Triangle(Sprite):
 
 
 class Square(Triangle):
-    def __init__(self, pos, particles_g, bullet_g, items_g, player, sound_player, *group):
-        super().__init__(pos, particles_g, bullet_g, items_g, player, sound_player, *group)
+    def __init__(self, pos, particles_g, bullet_g, items_g, player,
+                 sound_player, *group):
+        super().__init__(pos, particles_g, bullet_g, items_g, player,
+                         sound_player, *group)
 
         self.image = load_image('square')
         self.name = 'square'
@@ -257,7 +263,8 @@ class Square(Triangle):
 class Pentagon(Triangle):
     def __init__(self, pos, particles_g, bullet_g, items_g, enemy_bullet_g,
                  player, sound_player, *group):
-        super().__init__(pos, particles_g, bullet_g, items_g, player, sound_player, *group)
+        super().__init__(pos, particles_g, bullet_g, items_g, player,
+                         sound_player, *group)
         self.image = load_image('pentagon')
         self.name = 'pentagon'
         self.rect = self.image.get_rect()
@@ -331,7 +338,8 @@ class Pentagon(Triangle):
         if self.cooldown >= self.c_time:
             self.sound_player.play('enemy_bullet', 0.2)
             create_enemy_bullet(self.rect.center, self.player.rect.center,
-                                self.particles_g, self.sound_player, self.enemy_bullet_g)
+                                self.particles_g, self.sound_player,
+                                self.enemy_bullet_g)
             self.cooldown = 0
 
     def death(self):
@@ -426,6 +434,7 @@ class EnemySpawn:
                 if [e.name == 'pentagon' for e in self.group].count(True) < m:
                     enemy = Pentagon(pos, self.particles_g, self.bullet_g,
                                      self.items_g, self.enemy_bullet_g,
-                                     self.player, self.sound_player, self.group)
+                                     self.player, self.sound_player,
+                                     self.group)
 
                     self.group.add(enemy)

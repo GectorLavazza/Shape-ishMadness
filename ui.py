@@ -74,7 +74,8 @@ class Text(Ui):
         self.rect = self.render.get_rect()
 
     def update(self, message):
-        self.render = self.font.render(str(message), True, self.color).convert_alpha()
+        self.render = self.font.render(str(message), True,
+                                       self.color).convert_alpha()
         self.rect = self.render.get_rect()
         if self.center_align:
             pos = (self.pos[0] - self.render.get_width() // 2,
@@ -89,7 +90,8 @@ class Text(Ui):
 
 
 class ResourceCount(Text):
-    def __init__(self, screen, screen_size, font_size, color, image, pos=(0, 0)):
+    def __init__(self, screen, screen_size, font_size, color, image,
+                 pos=(0, 0)):
         self.coins_count = 0
         super().__init__(screen, screen_size, font_size, color, pos)
         self.image = load_image(image)
@@ -103,7 +105,8 @@ class ResourceCount(Text):
 
 
 class XpBar(Text):
-    def __init__(self, screen, screen_size, font_size, color, image, pos=(0, 0)):
+    def __init__(self, screen, screen_size, font_size, color, image,
+                 pos=(0, 0)):
         super().__init__(screen, screen_size, font_size, color, pos)
         self.image = load_image(image)
 
@@ -112,7 +115,8 @@ class XpBar(Text):
 
         self.render = self.font.render(str(l), True, self.color)
 
-        pos = (self.pos[0] - self.render.get_width() // 2 - 53, self.pos[1] - 5)
+        pos = (
+        self.pos[0] - self.render.get_width() // 2 - 53, self.pos[1] - 5)
         xp_pos = (self.pos[0] - 103, self.pos[1] + 20)
         l_pos = (self.pos[0] - 103, self.pos[1])
 
@@ -207,7 +211,9 @@ class UpgradesMenu(Text):
         self.do = True
 
         self.message = Text(screen, (self.width, self.height), 20,
-                     pos=(self.pos[0] + self.w // 2, self.pos[1] + self.h - 40), color='red', center_align=True)
+                            pos=(self.pos[0] + self.w // 2,
+                                 self.pos[1] + self.h - 40), color='red',
+                            center_align=True)
 
     def update(self, screen):
         screen.blit(self.surface, self.pos)
@@ -256,8 +262,8 @@ class UpgradesMenu(Text):
                                              blaster['Max Ammo'][0] >= 200]
 
                             if not all(blaster_check):
-
-                                self.message.update('Dmg lvl 5, Cooldown lvl 4, Max Ammo lvl 4 needed')
+                                self.message.update(
+                                    'Dmg lvl 5, Cooldown lvl 4, Max Ammo lvl 4 needed')
                                 upd = False
 
                         if upd:
@@ -269,7 +275,7 @@ class UpgradesMenu(Text):
                             price.update(p)
 
                             lvl = Text(screen, (self.width, self.height), 20,
-                                         pos=(x, y + 100), color='white')
+                                       pos=(x, y + 100), color='white')
                             lvl.update(f'lvl {l}')
 
                 pygame.draw.rect(screen, pygame.Color(color_back),

@@ -111,8 +111,8 @@ async def main():
     dead_label = Text(screen, size, 60, pos=(SW // 2, SH // 2 - 100))
     restart_hint_label = Text(screen, size, 20, pos=(SW // 2, SH - 50))
 
-    coin_label = ResourceCount(screen, size, 30, 'white', 'coin', pos=(SW - 50, 10))
-    xp_label = XpBar(screen, size, 20, 'white', 'xp', pos=(SW - 50, 50))
+    coin_label = ResourceCount(screen, size, 30, 'white', 'coin',
+                               pos=(SW - 50, 10))
 
     menu = UpgradesMenu(screen, (SW, SH), data, player, sound_player)
 
@@ -392,7 +392,6 @@ async def main():
             screen.blit(menu.bg, (0, 0))
             upgrades_label.update('Upgrades')
             restart_hint_label.update('Press [E] to quit')
-            xp_label.update(player.xp)
             menu.update(screen)
         else:
             e_hint.update('[E]')

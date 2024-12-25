@@ -46,7 +46,6 @@ class Item(Sprite):
                 -20 <= self.rect.centery <= SH + 20):
             self.kill()
 
-
         if self.hitbox.colliderect(self.player.rect):
             self.on_collide()
 
@@ -64,7 +63,8 @@ class Item(Sprite):
 
 class HealthBox(Item):
     def __init__(self, player, pos, heal, particles_g, sound_player, *group):
-        super().__init__(player, pos, 'health', particles_g, sound_player, *group)
+        super().__init__(player, pos, 'health', particles_g, sound_player,
+                         *group)
         self.heal = heal
 
     def on_collide(self):
@@ -108,7 +108,8 @@ class AmmoBox(Item):
 
 class SpeedBoost(Item):
     def __init__(self, player, pos, particles_g, sound_player, *group):
-        super().__init__(player, pos, 'speed_boost', particles_g, sound_player, *group)
+        super().__init__(player, pos, 'speed_boost', particles_g, sound_player,
+                         *group)
 
     def on_collide(self):
         if self.hitbox.colliderect(self.player.rect):
@@ -124,7 +125,8 @@ class SpeedBoost(Item):
 
 class Shield(Item):
     def __init__(self, player, pos, particles_g, sound_player, *group):
-        super().__init__(player, pos, 'shield', particles_g, sound_player, *group)
+        super().__init__(player, pos, 'shield', particles_g, sound_player,
+                         *group)
 
     def on_collide(self):
         if self.hitbox.colliderect(self.player.rect):
@@ -140,7 +142,8 @@ class Shield(Item):
 
 class Magnet(Item):
     def __init__(self, player, pos, particles_g, sound_player, *group):
-        super().__init__(player, pos, 'magnet', particles_g, sound_player, *group)
+        super().__init__(player, pos, 'magnet', particles_g, sound_player,
+                         *group)
 
     def on_collide(self):
         if self.hitbox.colliderect(self.player.rect):
@@ -157,7 +160,8 @@ class Magnet(Item):
 class Coin(Item):
     def __init__(self, player, pos, particles_g, sound_player, *group):
 
-        super().__init__(player, pos, 'coin', particles_g, sound_player, *group)
+        super().__init__(player, pos, 'coin', particles_g, sound_player,
+                         *group)
 
         self.weight = 1
         self.particles_amount = 20
@@ -167,7 +171,8 @@ class Coin(Item):
             self.weight = 50
             self.particles_amount = 40
             self.particles_e_time = 60
-            self.image = pygame.transform.scale_by(self.image, (1.5, 1.5)).convert_alpha()
+            self.image = pygame.transform.scale_by(self.image,
+                                                   (1.5, 1.5)).convert_alpha()
             self.rect = self.image.get_rect()
             self.rect.center = pos
             self.orig_pos = pos
@@ -210,7 +215,6 @@ class Coin(Item):
                 -20 * RATIO <= self.rect.centery <= SH + 20 * RATIO):
             self.kill()
 
-
         if self.hitbox.colliderect(self.player.rect):
             self.on_collide()
 
@@ -233,7 +237,6 @@ class Coin(Item):
 
         self.velocity.x += direction.x * self.acceleration * dt * RATIO
         self.velocity.y += direction.y * self.acceleration * dt * RATIO
-
 
         if self.velocity.length() > self.max_speed:
             self.velocity = self.velocity.normalize() * self.max_speed

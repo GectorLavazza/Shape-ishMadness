@@ -34,7 +34,7 @@ class Player(Sprite):
         self.data = data.data
 
         self.score = 0
-        self.coins = 100000
+        self.coins = 0
         self.xp = 0
 
         self.health = self.data['Player']['Hp'][0]
