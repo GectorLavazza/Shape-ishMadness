@@ -119,19 +119,19 @@ def fit_aspect_ratio(screen_width, screen_height,
 
 
 sw, sh = screen_info.current_w, screen_info.current_h
-sw, sh = 1920, 1080
-SW, SH = fit_aspect_ratio(sw, sh)
-RATIO = SW / 1920
+# sw, sh = 1920, 1080
+SW, SH = 1280, 720
+RATIO = 1
 
 SONGS = ['shape-ish_madness', 'metal_shape_synth_ver', 'metal_shape']
 
 
 def set_screen(size):
     pygame.display.set_caption('Shape-ish Madness')
-    flags = pygame.DOUBLEBUF
-    screen = pygame.display.set_mode(size, flags)
+    flags = pygame.DOUBLEBUF | pygame.SCALED
+    screen = pygame.display.set_mode(size, flags, depth=8, vsync=1)
     screen_rect = (0, 0, size[0], size[1])
-    print(SW, SH)
+
     return screen, size, screen_rect
 
 

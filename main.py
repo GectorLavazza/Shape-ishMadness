@@ -1,4 +1,5 @@
 import asyncio
+import sys
 import time
 
 from cursor import Cursor
@@ -156,9 +157,9 @@ async def main():
                 running = False
 
             if event.type == pygame.KEYDOWN:
-                # if event.key == pygame.K_q:
-                #     if not playing:
-                #         running = False
+                if event.key == pygame.K_q:
+                    if not playing:
+                        running = False
 
                 if event.key == pygame.K_SPACE:
                     if starting:
@@ -252,6 +253,9 @@ async def main():
                             sound_player.set_music_volume(0)
                         else:
                             sound_player.set_music_volume(0.5)
+
+                if event.key == pygame.K_F12:
+                    pygame.display.toggle_fullscreen()
 
                 if event.key == pygame.K_LSHIFT:
                     player.sprint = True
@@ -464,11 +468,12 @@ async def main():
         cursor.update()
 
         pygame.display.flip()
-        clock.tick(FPS)
+        clock.tick()
 
         await asyncio.sleep(0)
 
     pygame.quit()
+    sys.exit()
 
 
 if __name__ == '__main__':

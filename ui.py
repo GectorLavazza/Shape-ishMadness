@@ -186,9 +186,9 @@ class UpgradesMenu(Text):
         super().__init__(screen, screen_size, 20)
         self.image = load_image('menu')
 
-        self.w, self.h = 1200, 600
-        self.pos = (self.width // 2 - self.w // 2,
-                    self.height // 2 - self.h // 2)
+        self.w, self.h = SW * 3 // 4,  SH * 3 // 4
+        self.pos = (SW // 2 - self.w // 2,
+                    SH // 2 - self.h // 2)
         self.rect = pygame.Rect(self.w, self.h, *self.pos)
 
         self.data = data
@@ -196,7 +196,7 @@ class UpgradesMenu(Text):
         self.screen = screen
 
         self.bg = pygame.Surface(
-            (self.width, self.height))
+            (SW, SH))
         self.bg.set_alpha(128)
         self.bg.fill('black')
 
@@ -210,7 +210,7 @@ class UpgradesMenu(Text):
 
         self.do = True
 
-        self.message = Text(screen, (self.width, self.height), 20,
+        self.message = Text(screen, (self.width, self.height), 15,
                             pos=(self.pos[0] + self.w // 2,
                                  self.pos[1] + self.h - 40), color='red',
                             center_align=True)
@@ -228,7 +228,7 @@ class UpgradesMenu(Text):
                 self.current_heading = heading
 
             for j in range(len(list(self.data.data[heading].keys()))):
-                x, y = (self.pos[0] * 1.25 + self.w // a * i,
+                x, y = (self.pos[0] * 1.5 + self.w // a * i,
                         self.pos[1] + 80 + (150 * j + 1))
 
                 name = list(self.data.data[heading].keys())[j]
@@ -270,11 +270,11 @@ class UpgradesMenu(Text):
                             color_back = '#cf9dcf'
                             color_front = '#7453f0'
 
-                            price = Text(screen, (self.width, self.height), 20,
+                            price = Text(screen, (self.width, self.height), 15,
                                          pos=(x, y + 130), color='yellow')
                             price.update(p)
 
-                            lvl = Text(screen, (self.width, self.height), 20,
+                            lvl = Text(screen, (self.width, self.height), 15,
                                        pos=(x, y + 100), color='white')
                             lvl.update(f'lvl {l}')
 
@@ -342,16 +342,16 @@ class UpgradesMenu(Text):
         a = len(list(self.data.data.keys()))
         for i in range(a):
             heading = list(self.data.data.keys())[i]
-            xh, yh = (self.pos[0] * 1.25 + self.w // a * i,
+            xh, yh = (self.pos[0] * 1.5 + self.w // a * i,
                       self.pos[1] + 40)
-            hr = Text(self.screen, (self.width, self.height), 20, pos=(xh, yh),
+            hr = Text(self.screen, (self.width, self.height), 15, pos=(xh, yh),
                       color='#9bbc0f')
             headings.append(hr)
             names_row = []
 
             for j in range(len(list(self.data.data[heading].keys()))):
                 yn = self.pos[1] + 100 + (150 * j + 1)
-                nr = Text(self.screen, (self.width, self.height), 20,
+                nr = Text(self.screen, (self.width, self.height), 15,
                           pos=(xh, yn), color='#9bbc0f')
                 names_row.append(nr)
 
