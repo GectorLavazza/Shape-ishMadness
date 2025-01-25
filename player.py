@@ -69,8 +69,22 @@ class Player(Sprite):
         self.sprint_speed = self.data['Player']['Spd'][0] + 3
 
         self.ammo = self.blaster['Max Ammo'][0]
+        self.dash = False
+        self.max_dash_time = 5
+        self.dash_time = self.max_dash_time
+
+        self.max_dash_cd = 60
+        self.dash_cd = self.max_dash_cd
 
     def update(self, screen, screen_rect, dt):
+        if self.dash:
+            self.dash_time -= dt
+            if self.dash_time <= 0:
+                self.dash = False
+
+        if self.dash_cd >= 0:
+            self.dash_cd -= dt
+
         self.move(dt)
         self.bullet_check()
         self.handle_sprint()
@@ -170,17 +184,21 @@ class Player(Sprite):
         if self.velocity.length() > self.max_speed:
             self.velocity = self.velocity.normalize() * self.max_speed
 
+        if self.dash:
+            m = 5
+        else:
+            m = 1
         # Update player position based on velocity
-        if 0 <= self.rect.x + self.velocity.x * dt * RATIO <= SW - self.rect.w:
-            self.rect.centerx += self.velocity.x * dt * RATIO
-            self.hitbox.centerx += self.velocity.x * dt * RATIO
-        if 0 <= self.rect.y + self.velocity.y * dt * RATIO <= SH - self.rect.h:
-            self.rect.centery += self.velocity.y * dt * RATIO
-            self.hitbox.centery += self.velocity.y * dt * RATIO
+        if 0 <= self.rect.x + self.velocity.x * dt * RATIO * m <= SW - self.rect.w:
+            self.rect.centerx += self.velocity.x * dt * RATIO * m
+            self.hitbox.centerx += self.velocity.x * dt * RATIO * m
+        if 0 <= self.rect.y + self.velocity.y * dt * RATIO * m <= SH - self.rect.h:
+            self.rect.centery += self.velocity.y * dt * RATIO * m
+            self.hitbox.centery += self.velocity.y * dt * RATIO * m
 
     def handle_sprint(self):
         if not self.hold:
-            if self.sprint:
+            if self.sprint and not self.dash:
                 self.max_speed = self.sprint_speed + self.speed_boost
             else:
                 self.max_speed = self.normal_speed + self.speed_boost

@@ -210,7 +210,7 @@ class UpgradesMenu(Text):
 
         self.do = True
 
-        self.message = Text(screen, (self.width, self.height), 15,
+        self.message = Text(screen, (self.width, self.height), 30,
                             pos=(self.pos[0] + self.w // 2,
                                  self.pos[1] + self.h - 40), color='red',
                             center_align=True)
@@ -270,11 +270,11 @@ class UpgradesMenu(Text):
                             color_back = '#cf9dcf'
                             color_front = '#7453f0'
 
-                            price = Text(screen, (self.width, self.height), 15,
+                            price = Text(screen, (self.width, self.height), 20,
                                          pos=(x, y + 130), color='yellow')
                             price.update(p)
 
-                            lvl = Text(screen, (self.width, self.height), 15,
+                            lvl = Text(screen, (self.width, self.height), 20,
                                        pos=(x, y + 100), color='white')
                             lvl.update(f'lvl {l}')
 
@@ -344,14 +344,14 @@ class UpgradesMenu(Text):
             heading = list(self.data.data.keys())[i]
             xh, yh = (self.pos[0] * 1.5 + self.w // a * i,
                       self.pos[1] + 40)
-            hr = Text(self.screen, (self.width, self.height), 15, pos=(xh, yh),
+            hr = Text(self.screen, (self.width, self.height), 25, pos=(xh, yh),
                       color='#9bbc0f')
             headings.append(hr)
             names_row = []
 
             for j in range(len(list(self.data.data[heading].keys()))):
                 yn = self.pos[1] + 100 + (150 * j + 1)
-                nr = Text(self.screen, (self.width, self.height), 15,
+                nr = Text(self.screen, (self.width, self.height), 25,
                           pos=(xh, yn), color='#9bbc0f')
                 names_row.append(nr)
 

@@ -120,7 +120,7 @@ def fit_aspect_ratio(screen_width, screen_height,
 
 sw, sh = screen_info.current_w, screen_info.current_h
 # sw, sh = 1920, 1080
-SW, SH = 1280, 720
+SW, SH = 1920, 1080
 RATIO = 1
 
 SONGS = ['shape-ish_madness', 'metal_shape_synth_ver', 'metal_shape']

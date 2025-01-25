@@ -2,6 +2,8 @@ import asyncio
 import sys
 import time
 
+import pygame
+
 from cursor import Cursor
 from enemies import *
 from player import Player
@@ -254,11 +256,17 @@ async def main():
                         else:
                             sound_player.set_music_volume(0.5)
 
-                if event.key == pygame.K_F12:
+                if event.key == pygame.K_F10:
                     pygame.display.toggle_fullscreen()
 
                 if event.key == pygame.K_LSHIFT:
                     player.sprint = True
+
+                if event.key == pygame.K_SPACE:
+                    if player.dash_cd < 0:
+                        player.dash = True
+                        player.dash_time = player.max_dash_time
+                        player.dash_cd = player.max_dash_cd
 
                 if not show_menu:
                     if event.key == pygame.K_w:
