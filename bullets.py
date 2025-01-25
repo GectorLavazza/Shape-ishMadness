@@ -2,7 +2,7 @@ import pygame
 
 from load_image import load_image
 from particles import create_particles, generate_particles
-from settings import RATIO
+from settings import RATIO, IMAGES
 from settings import SW, SH
 from sprites import Sprite
 
@@ -10,7 +10,7 @@ from sprites import Sprite
 class Bullet(Sprite):
     def __init__(self, pos, target_pos, particles_g, e_time, damage, sound_player, *group):
         super().__init__(*group)
-        self.image = load_image('bullet')
+        self.image = IMAGES['bullet']
         self.rect = self.image.get_rect()
 
         self.rect.center = pos
@@ -52,7 +52,7 @@ class Bullet(Sprite):
 class EnemyBullet(Bullet):
     def __init__(self, pos, target_pos, particles_g, sound_player, *group):
         super().__init__(pos, target_pos, particles_g, 150, 1, sound_player, *group)
-        self.image = load_image('enemy_bullet')
+        self.image = IMAGES['enemy_bullet']
         self.rect = self.image.get_rect()
         self.rect.center = pos
 

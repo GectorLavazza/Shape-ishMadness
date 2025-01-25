@@ -10,11 +10,13 @@ from player import Player
 from sound import SoundPlayer
 from ui import *
 
+from settings import screen
+
 
 async def main():
     pygame.init()
     clock = pygame.time.Clock()
-    screen, size, screen_rect = set_screen((SW, SH))
+    size, screen_rect = (SW, SH), pygame.Rect(0, 0, SW, SH)
     pygame.event.set_allowed([pygame.QUIT,
                               pygame.KEYDOWN,
                               pygame.KEYUP,

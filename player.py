@@ -13,7 +13,7 @@ class Player(Sprite):
     def __init__(self, bullets_g, particles_g, enemy_bullet_g, data,
                  sound_player, *group):
         super().__init__(*group)
-        self.image = load_image('player')
+        self.image = IMAGES['player']
 
         self.rect = self.image.get_rect()
         self.rect.center = SW // 2, SH // 2

@@ -3,7 +3,7 @@ import random
 import pygame
 
 from load_image import load_image
-from settings import RATIO, SW, SH
+from settings import RATIO, SW, SH, IMAGES
 from sprites import Sprite
 
 
@@ -44,7 +44,7 @@ def create_particles(position, particles, particle_count, existence_time,
 
 
 def generate_particles(filename):
-    particles = [load_image(filename)]
+    particles = [IMAGES[filename]]
     for scale in [5, 10, 15]:
         particles.append(pygame.transform.scale(particles[0],
                                                 (scale * RATIO, scale * RATIO)))

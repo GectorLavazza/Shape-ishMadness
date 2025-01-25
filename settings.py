@@ -126,13 +126,13 @@ RATIO = 1
 SONGS = ['shape-ish_madness', 'metal_shape_synth_ver', 'metal_shape']
 
 
-def set_screen(size):
-    pygame.display.set_caption('Shape-ish Madness')
-    flags = pygame.DOUBLEBUF | pygame.SCALED
-    screen = pygame.display.set_mode(size, flags, depth=8, vsync=1)
-    screen_rect = (0, 0, size[0], size[1])
+# def set_screen(size):
+pygame.display.set_caption('Shape-ish Madness')
+flags = pygame.DOUBLEBUF | pygame.SCALED
+screen = pygame.display.set_mode((SW, SH), flags, depth=8, vsync=1)
+screen_rect = (0, 0, SW, SH)
 
-    return screen, size, screen_rect
+    # return screen, size, screen_rect
 
 
 def render_hitbox(screen, player, enemies, p_bullets, e_bullets, items,
@@ -162,3 +162,19 @@ def render_hitbox(screen, player, enemies, p_bullets, e_bullets, items,
 
     if hitbox:
         pygame.draw.rect(screen, pygame.Color('green'), player.hitbox)
+
+
+from os import listdir, path
+
+def load_image(name):
+    fullname = path.join("assets/sprites/", name + '.png')
+
+    image = pygame.image.load(fullname).convert_alpha()
+
+    return image
+
+images = [load_image(s.replace('.png', '')) for s in listdir('assets/sprites')]
+keys = [s.replace('.png', '') for s in listdir('assets/sprites')]
+
+IMAGES = dict(zip(keys, images))
+# print(IMAGES)

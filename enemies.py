@@ -8,7 +8,7 @@ class Triangle(Sprite):
                  sound_player, *group):
         super().__init__(*group)
 
-        self.image = load_image('triangle')
+        self.image = IMAGES['triangle']
         self.name = 'triangle'
         self.rect = self.image.get_rect()
         self.rect.center = pos
@@ -228,7 +228,7 @@ class Square(Triangle):
         super().__init__(pos, particles_g, bullet_g, items_g, player,
                          sound_player, *group)
 
-        self.image = load_image('square')
+        self.image = IMAGES['square']
         self.name = 'square'
         self.rect = self.image.get_rect()
         self.rect.center = pos
@@ -265,7 +265,7 @@ class Pentagon(Triangle):
                  player, sound_player, *group):
         super().__init__(pos, particles_g, bullet_g, items_g, player,
                          sound_player, *group)
-        self.image = load_image('pentagon')
+        self.image = IMAGES['pentagon']
         self.name = 'pentagon'
         self.rect = self.image.get_rect()
         self.rect.center = pos

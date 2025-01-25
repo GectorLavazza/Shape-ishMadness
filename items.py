@@ -4,14 +4,14 @@ import pygame
 
 from load_image import load_image
 from particles import create_particles, generate_particles
-from settings import RATIO, SW, SH
+from settings import RATIO, SW, SH, IMAGES
 from sprites import Sprite
 
 
 class Item(Sprite):
     def __init__(self, player, pos, image, particles_g, sound_player, *group):
         super().__init__(*group)
-        self.image = load_image(image)
+        self.image = IMAGES[image]
         self.rect = self.image.get_rect()
         self.rect.center = pos
         self.orig_pos = pos
