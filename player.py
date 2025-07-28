@@ -25,6 +25,8 @@ class Player(Sprite):
         self.dx = 0
         self.dy = 0
 
+        self.hardcore = 0
+
         self.speed = 5
         self.max_speed = 8
         self.acceleration = 0.5
@@ -75,6 +77,11 @@ class Player(Sprite):
         self.bullet_check()
         self.handle_sprint()
         self.handle_timers(screen, dt)
+
+    def init_hardcore(self):
+        self.hardcore = 1
+        self.health = 1
+        self.max_health = 1
 
     def take_damage(self, damage):
         if not self.shield:

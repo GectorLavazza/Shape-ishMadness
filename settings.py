@@ -9,7 +9,7 @@ FPS = 30
 PALETTE = ['#9bbc0f', '#8bac0f', '#306230', '#0f380f']
 
 # [current, min, max, step, price_step, xp]
-DATA = d = {
+DATA = {
     "Player": {"Hp": [10, 10, 30, 2, 50, 10],
                "Crit %": [1, 1, 5, 1, 50, 7],
                "Spd": [5, 5, 8, 1, 5, 5]},

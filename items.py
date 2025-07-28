@@ -68,16 +68,17 @@ class HealthBox(Item):
         self.heal = heal
 
     def on_collide(self):
-        if self.player.health + self.heal <= self.player.max_health:
-            self.player.health += self.heal
-        else:
-            self.player.health = self.player.max_health
+        if not self.player.hardcore:
+            if self.player.health + self.heal <= self.player.max_health:
+                self.player.health += self.heal
+            else:
+                self.player.health = self.player.max_health
 
-        create_particles(self.rect.center,
-                         generate_particles('heal_particle'),
-                         20, 30,
-                         self.particles_g)
-        self.sound_player.play('heal')
+            create_particles(self.rect.center,
+                             generate_particles('heal_particle'),
+                             20, 30,
+                             self.particles_g)
+            self.sound_player.play('heal')
         self.kill()
 
 

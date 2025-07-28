@@ -266,6 +266,12 @@ class UpgradesMenu(Text):
                                     'Dmg lvl 5, Cooldown lvl 4, Max Ammo lvl 4 needed')
                                 upd = False
 
+                        if self.player.hardcore:
+                            if name == 'Hp':
+                                self.message.update(
+                                    'Disgusting.')
+                                upd = False
+
                         if upd:
                             color_back = '#cf9dcf'
                             color_front = '#7453f0'
@@ -308,6 +314,11 @@ class UpgradesMenu(Text):
                              blaster['Max Ammo'][0] >= 200]
             if not all(blaster_check):
                 self.do = False
+
+        if self.player.hardcore:
+            if name == 'Hp':
+                self.do = False
+
 
         if self.do:
             if c > 0:
